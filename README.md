@@ -1,7 +1,7 @@
 # 발자취
 일생동안 내가 걷는 걸음을 시각화하기 위한 프로젝트
 - Mapkit 라이브러리를 통한 사용자 위치정보 획득, 가공
-- draw()를 주요 메소드로 한 Map 위의 사용자 인터렉션 설계
+- MKPolyline의 addOverlay 메소드를 주로 한 Map 위의 사용자 인터렉션 설계
 - Realm Swift를 통한 유저 데이터 저장
 - AVFoundation을 통한 영상 제공
 - TabbarView를 주축으로 CollectionView, TableView, MapView 등의 다채로운 활용
