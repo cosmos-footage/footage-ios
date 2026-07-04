@@ -45,6 +45,14 @@ Phase R5 starts migrating direct Realm manager reads behind repository protocols
 - Replaced direct current-badge and badge-list reads in `LevelVC.viewDidLoad()`.
 - Preserved the existing empty badge fallback behavior.
 
+## R5-6 Completed
+
+- Added `footsteps(hex:from:to:)` to `ColorRepository`.
+- Implemented `RealmColorRepository.footsteps(hex:from:to:)` through the existing `ColorManager.footstepsWithColor(color:from:to:)` adapter path.
+- Added a default `ColorRepository` dependency to `ColoredJourneyVC`.
+- Replaced direct colored route reads in `ColoredJourneyVC.configureMap()`.
+- Preserved the existing Realm `List<Footstep>` route rendering behavior.
+
 ## Behavior
 
 - Existing date screen behavior was not intentionally changed.
@@ -57,4 +65,4 @@ Phase R5 starts migrating direct Realm manager reads behind repository protocols
 
 ## Next Step
 
-Next repository migration should add read models for map and colored journey screens before migrating those views.
+Next repository migration should add read models for map screens before migrating those views.

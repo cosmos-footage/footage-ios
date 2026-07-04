@@ -59,6 +59,7 @@ protocol ColorRepository {
     func update(hex: String, distance: Double) throws
     func distance(hex: String, startDate: Int, endDate: Int) -> Double
     func rankingDistance(startDate: Int, endDate: Int) -> [(key: String, value: Double)]
+    func footsteps(hex: String, from startDate: Int, to endDate: Int) -> [List<Footstep>]
 }
 
 protocol PlaceRepository {

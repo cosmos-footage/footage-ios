@@ -11,6 +11,7 @@ import MapKit
 
 class ColoredJourneyVC: UIViewController, MKMapViewDelegate {
     var color: String = ""
+    var colorRepository: ColorRepository = RealmColorRepository()
     @IBOutlet weak var mainMap: MKMapView!
     @IBOutlet weak var colorImage: UIImageView!
     
@@ -27,7 +28,7 @@ class ColoredJourneyVC: UIViewController, MKMapViewDelegate {
     
     func configureMap() {
         let days = DateConverter.lastMondayToday()
-        let footstepsArray = ColorManager.footstepsWithColor(color: color, from: days.0, to: days.1)
+        let footstepsArray = colorRepository.footsteps(hex: color, from: days.0, to: days.1)
         for footsteps in footstepsArray {
             DrawOnMap.polylineFromFootsteps(Array(footsteps), on: mainMap)
         }

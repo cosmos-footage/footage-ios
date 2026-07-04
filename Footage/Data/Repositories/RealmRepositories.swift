@@ -69,6 +69,10 @@ struct RealmColorRepository: ColorRepository {
     func rankingDistance(startDate: Int, endDate: Int) -> [(key: String, value: Double)] {
         ColorManager.getRankingDistance(startDate: startDate, endDate: endDate)
     }
+
+    func footsteps(hex: String, from startDate: Int, to endDate: Int) -> [List<Footstep>] {
+        ColorManager.footstepsWithColor(color: hex, from: startDate, to: endDate)
+    }
 }
 
 struct RealmPlaceRepository: PlaceRepository {

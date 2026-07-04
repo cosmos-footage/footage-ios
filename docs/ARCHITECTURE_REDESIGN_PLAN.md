@@ -221,11 +221,12 @@ R5 progress:
 - Routed `ReportVC` monthly color/place ranking reads and month availability checks through `ColorRepository` and `PlaceRepository`.
 - Added `BadgeRepository.monthlyBadges(month:)` and routed `ReportDetailVC` monthly badge reads through it.
 - Added `BadgeRepository.badge(imageName:)` and routed `LevelVC` current/list badge reads through `BadgeRepository`.
+- Added `ColorRepository.footsteps(hex:from:to:)` and routed `ColoredJourneyVC` colored route reads through it.
 
 R5 remaining:
 
-- Add read models for map and colored journey screens before migrating those views.
-- Defer map screens and colored journey queries until repository protocols expose the needed read models.
+- Add read models for map screens before migrating those views.
+- Defer heavier `LocationUpdate` and badge-awarding write migrations until side-effect ordering is documented.
 
 ### R6: S3-Ready Backup Pipeline
 
