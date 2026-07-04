@@ -218,10 +218,11 @@ R5 progress:
 - Preserved the existing `DateViewController.journeys` static storage and the exact day/month/year range keys.
 - `RealmRouteRepository` still delegates to `DateManager.loadFromRealm(rangeOf:)`, so Realm schema and screen behavior are unchanged.
 - Routed `StatsViewController.viewWillAppear(_:)` monthly distance, color ranking, and place ranking reads through `DaySummaryRepository`, `ColorRepository`, and `PlaceRepository`.
+- Routed `ReportVC` monthly color/place ranking reads and month availability checks through `ColorRepository` and `PlaceRepository`.
 
 R5 remaining:
 
-- Continue with read-only report screens that already match ranking repository methods.
+- Continue with badge/report detail reads after `BadgeRepository` exposes monthly badge lookup.
 - Defer map screens and colored journey queries until repository protocols expose the needed read models.
 
 ### R6: S3-Ready Backup Pipeline

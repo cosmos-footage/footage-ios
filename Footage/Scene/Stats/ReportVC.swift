@@ -51,6 +51,8 @@ class ReportVC: UIViewController {
     var startDate: Int?
     var endDate: Int?
     var thisYear = 2020
+    var colorRepository: ColorRepository = RealmColorRepository()
+    var placeRepository: PlaceRepository = RealmPlaceRepository()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -63,8 +65,8 @@ class ReportVC: UIViewController {
         guard let selectedButton = sender as? UIButton else { return }
         setStartEndDate(year: thisYear, tag: selectedButton.tag)
         destinationVC.whichMonth = String(selectedButton.tag)
-        destinationVC.colorRanking = ColorManager.getRankingDistance(startDate: startDate!, endDate: endDate!)
-        destinationVC.placeRanking = PlaceManager.getRankingDistance(startDate: startDate!, endDate: endDate!)
+        destinationVC.colorRanking = colorRepository.rankingDistance(startDate: startDate!, endDate: endDate!)
+        destinationVC.placeRanking = placeRepository.rankingDistance(startDate: startDate!, endDate: endDate!)
     }
     
     func setButtons() {
@@ -72,7 +74,7 @@ class ReportVC: UIViewController {
         let monthButtonList = [januaryButton, februaryButton, marchButton, aprilButton, mayButton, juneButton, julyButton, augustButton, septemberButton, octoberButton, novemberButton, decemberButton]
         for index in 0...11 {
             setStartEndDate(year: thisYear, tag: (index+1))
-            if ColorManager.getRankingDistance(startDate: startDate!, endDate: endDate!).isEmpty {
+            if colorRepository.rankingDistance(startDate: startDate!, endDate: endDate!).isEmpty {
                 monthButtonList[index]!.isEnabled = false
                 monthButtonList[index]!.alpha = 0.1
             } else {
@@ -93,13 +95,13 @@ class ReportVC: UIViewController {
         var nextCnt = 0
         for index in 0...11 {
             setStartEndDate(year: thisYear+1, tag: (index+1))
-            if !ColorManager.getRankingDistance(startDate: startDate!, endDate: endDate!).isEmpty {
+            if !colorRepository.rankingDistance(startDate: startDate!, endDate: endDate!).isEmpty {
                 nextCnt+=1
             }
         }
         for index in 0...11 {
             setStartEndDate(year: thisYear-1, tag: (index+1))
-            if !ColorManager.getRankingDistance(startDate: startDate!, endDate: endDate!).isEmpty {
+            if !colorRepository.rankingDistance(startDate: startDate!, endDate: endDate!).isEmpty {
                 prevCnt+=1
             }
         }
