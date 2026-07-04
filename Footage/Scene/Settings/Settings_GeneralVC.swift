@@ -10,7 +10,10 @@ import UIKit
 class Settings_GeneralVC: UIViewController {
     
     let cellIdentifier = "generalCell"
-    let cellContent = ["내 정보","알림 설정", "암호잠금", "FaceID 및 TouchID"]
+    let cloudBackupCellIdentifier = "cloudBackupCell"
+    let cellContent = ["내 정보","알림 설정", "암호잠금", "FaceID 및 TouchID", "클라우드 백업"]
+    var cloudBackupSettingsStore = CloudBackupSettingsStore()
+    let manualBackupRunner = AppCompositionRoot().makeManualCloudBackupRunner()
     
     @IBOutlet weak var tableView: UITableView!
     @IBAction func backButtonPressed(_ sender: UIButton) {
@@ -42,10 +45,26 @@ class Settings_GeneralVC: UIViewController {
 
 extension Settings_GeneralVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 4
+        return cellContent.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if indexPath.row == 4 {
+            let cell = UITableViewCell(style: .subtitle, reuseIdentifier: cloudBackupCellIdentifier)
+            let switchView = UISwitch(frame: .zero)
+            switchView.setOn(cloudBackupSettingsStore.isOptedIn, animated: false)
+            switchView.tag = indexPath.row
+            switchView.addTarget(self, action: #selector(self.switchChanged(_:)), for: .valueChanged)
+            cell.accessoryView = switchView
+            cell.selectionStyle = .none
+            cell.textLabel?.text = cellContent[indexPath.row]
+            cell.textLabel?.font = UIFont(name: "NanumBarunpen", size: 20)
+            cell.detailTextLabel?.text = cloudBackupStatusText()
+            cell.detailTextLabel?.font = UIFont(name: "NanumBarunpen", size: 13)
+            cell.detailTextLabel?.textColor = .gray
+            return cell
+        }
+
         let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
         if indexPath.row == 0 || indexPath.row == 1 {
             cell.accessoryType = .disclosureIndicator; cell.selectionStyle = .default
@@ -125,6 +144,11 @@ extension Settings_GeneralVC: UITableViewDelegate, UITableViewDataSource {
             }
             
         }
+
+        if sender.tag == 4 {
+            cloudBackupSettingsStore.isOptedIn = sender.isOn
+            tableView.reloadRows(at: [IndexPath(row: sender.tag, section: 0)], with: .none)
+        }
         
 //        if sender.tag == 3 {
 //            if sender.isOn {
@@ -137,6 +161,11 @@ extension Settings_GeneralVC: UITableViewDelegate, UITableViewDataSource {
 //                UserDefaults.standard.setValue(false, forKey: "wantPush")
 //            }
 //        }
+    }
+
+    private func cloudBackupStatusText() -> String {
+        let status = manualBackupRunner.localBackupStatus()
+        return "대기 \(status.pendingCount) / 실패 \(status.failedCount)"
     }
     
 }

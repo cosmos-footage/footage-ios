@@ -257,10 +257,11 @@ R6 progress:
 - Split newly enqueued local outbox route NDJSON payloads into protected Application Support files while keeping metadata in `UserDefaults`.
 - Added retry/backoff metadata with `nextAttemptAt` and included interrupted `.syncing` items in pending scans for relaunch recovery.
 - Added a manual-only backup runner that prepares local route batches into the outbox without starting network upload.
+- Added a Settings opt-in/status row that stores local preference only and displays local outbox pending/failed counts.
 
 R6 remaining:
 
-- Add Settings opt-in/status UI.
+- Keep Settings opt-in disconnected from automatic upload until backend/device QA is complete.
 
 ### R7: Tests and Verification Harness
 

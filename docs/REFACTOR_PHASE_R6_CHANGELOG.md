@@ -46,6 +46,14 @@ Phase R6 prepares the disabled cloud backup pipeline for S3-style uploads withou
 - Added composition-root construction for the manual runner.
 - Kept the runner manual-only; it is not called from app launch, recording, Settings, or background tasks.
 
+## R6-6 Completed
+
+- Added `CloudBackupSettingsStore` for local opt-in preference storage.
+- Added a code-only Cloud Backup row to General Settings.
+- Added a Settings switch that stores opt-in preference locally but does not start backup or upload.
+- Added local outbox pending/failed status text to the Settings row.
+- Kept Cloud Backup and development upload disabled by default.
+
 ## Behavior
 
 - No automatic backup, restore, auth, S3 upload, or backend call path was enabled.
@@ -59,4 +67,4 @@ Phase R6 prepares the disabled cloud backup pipeline for S3-style uploads withou
 
 ## Next Step
 
-R6-6 should add Settings opt-in/status UI while keeping backup disabled by default.
+Next phase should keep the Settings opt-in disconnected from automatic upload until backend/device QA is complete.
