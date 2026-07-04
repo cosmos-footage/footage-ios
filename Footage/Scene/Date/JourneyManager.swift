@@ -17,6 +17,7 @@ class JourneyManager {
     var journeyIndex = 0
     var photoVC: PhotoCollectionVC! = nil
     let cacheManager = PHCachingImageManager()
+    private let mediaRepository: MediaRepository
     
     var journey: Journey! = nil
     var assets: [[Asset]] = [[]] // first array should remain empty - corresponds to firstcell
@@ -55,8 +56,9 @@ class JourneyManager {
         }
     }
     
-    init(journeyIndex: Int) {
+    init(journeyIndex: Int, mediaRepository: MediaRepository = RealmMediaRepository()) {
         self.journeyIndex = journeyIndex
+        self.mediaRepository = mediaRepository
         self.journey = DateViewController.journeys[journeyIndex]
         loadAssets(footsteps: self.journey.footsteps)
     }
@@ -140,19 +142,19 @@ class JourneyManager {
         let options = PHImageRequestOptions()
         options.deliveryMode = .fastFormat
         var assetsToAdd: [Asset] = []
-        let realm = try! Realm()
         let dispatchGroup = DispatchGroup()
         for phAsset in pHAssets {
             dispatchGroup.enter()
             DispatchQueue.global().async {
                 self.cacheManager.requestImageDataAndOrientation(for: phAsset, options: options) { (imageData, dataUTI, orientation, info) in
                     let imageData = imageData ?? Data()
-                    do { try realm.write {
-                        footstep.photos.append(imageData)
-                        footstep.notes.append("")
-                        }} catch { print(error) }
-                    assetsToAdd.append(Asset(photo: imageData, note: "", footstepNumber: footstepNumber))
-                    dispatchGroup.leave()
+                    DispatchQueue.main.async {
+                        do {
+                            try self.mediaRepository.appendPhoto(imageData, to: footstep)
+                        } catch { print(error) }
+                        assetsToAdd.append(Asset(photo: imageData, note: "", footstepNumber: footstepNumber))
+                        dispatchGroup.leave()
+                    }
                 }
             }
         }
@@ -169,10 +171,7 @@ class JourneyManager {
     func saveNewNote(content: String, section: Int, item: Int) {
         assets[section][item].note = content
         let footstep = journey.footsteps[bookmark[section]]
-        let realm = try! Realm()
-        do { try realm.write {
-            footstep.notes.replace(index: item, object: content)
-        }} catch { print(error) }
+        do { try mediaRepository.replaceNote(content, at: item, in: footstep) } catch { print(error) }
     }
     
     func removeAsset(section: Int, item: Int) { // TODO: 마지막까지 지웠을때 다시 defualt 이미지 띄우기
@@ -185,11 +184,7 @@ class JourneyManager {
         assets[section].remove(at: item)
         groupImages[section] = loadGroupImage(for: footstepNumber(for: section))
         let footstep = journey.footsteps[footstepNumber(for: section)]
-        let realm = try! Realm()
-        do { try realm.write {
-            footstep.photos.remove(at: item)
-            footstep.notes.remove(at: item)
-        }} catch { print(error) }
+        do { try mediaRepository.removeAsset(at: item, from: footstep) } catch { print(error) }
         if assets[section].isEmpty {
             removeSection(section: section)
         } else { photoVC.collectionView.deleteItems(at: [IndexPath(item: item, section: section)]) }
@@ -200,11 +195,7 @@ class JourneyManager {
             if let cell = photoVC.collectionView.cellForItem(at: IndexPath(item: 0, section: index)) as? GroupCell { cell.section -= 1 }
         }
         let footstep = journey.footsteps[footstepNumber(for: section)]
-        let realm = try! Realm()
-        do { try realm.write {
-            footstep.photos.removeAll() // 이거 맞음?
-            footstep.notes.removeAll()
-        }} catch { print(error) }
+        do { try mediaRepository.removeAllAssets(from: footstep) } catch { print(error) }
         assets.remove(at: section)
         bookmark.remove(at: section)
         groupImages.remove(at: section)

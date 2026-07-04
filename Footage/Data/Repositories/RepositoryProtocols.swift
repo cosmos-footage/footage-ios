@@ -71,6 +71,7 @@ protocol MediaRepository {
     func appendPhoto(_ photo: Data, to footstep: Footstep) throws
     func replaceNote(_ note: String, at index: Int, in footstep: Footstep) throws
     func removeAsset(at index: Int, from footstep: Footstep) throws
+    func removeAllAssets(from footstep: Footstep) throws
 }
 
 protocol BadgeRepository {

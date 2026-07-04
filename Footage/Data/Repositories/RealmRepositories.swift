@@ -112,6 +112,14 @@ struct RealmMediaRepository: MediaRepository {
             footstep.notes.remove(at: index)
         }
     }
+
+    func removeAllAssets(from footstep: Footstep) throws {
+        let realm = try Realm()
+        try realm.write {
+            footstep.photos.removeAll()
+            footstep.notes.removeAll()
+        }
+    }
 }
 
 struct RealmBadgeRepository: BadgeRepository {
