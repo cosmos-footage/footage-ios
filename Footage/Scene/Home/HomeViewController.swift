@@ -361,6 +361,12 @@ extension HomeViewController: CLLocationManagerDelegate, MKMapViewDelegate  {
     }
     
     func checkSpeed(lastLocation: CLLocation, newLocation: CLLocation) -> Double {
+        if let speed = DistanceCalculator().speedMetersPerSecond(from: lastLocation, to: newLocation) {
+            return speed
+        }
+
+        // Full isValid migration is deferred: LocationFilter's unavailable-speed fallback
+        // intentionally differs from this legacy helper's non-positive elapsed-time behavior.
         let timeInterval = newLocation.timestamp.timeIntervalSince(lastLocation.timestamp)
         let distanceInterval = newLocation.distance(from: lastLocation)
         return distanceInterval / timeInterval
