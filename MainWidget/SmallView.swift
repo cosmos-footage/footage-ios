@@ -8,12 +8,28 @@
 
 import SwiftUI
 
+private enum WidgetAppGroup {
+    static let suiteName = "group.footage"
+    static let isTracking = "isTracking"
+    static let distanceToday = "distanceToday"
+    static let distanceTotal = "distanceTotal"
+}
+
 struct SmallView: View {
     let selectedColor: String
     let widgetSize: CGSize
-    let isTracking = UserDefaults(suiteName: "group.footage")!.bool(forKey: "isTracking")
-    let distanceToday = UserDefaults(suiteName: "group.footage")!.double(forKey: "distanceToday")
-    let distanceTotal = UserDefaults(suiteName: "group.footage")!.double(forKey: "distanceTotal")
+    private var defaults: UserDefaults? {
+        UserDefaults(suiteName: WidgetAppGroup.suiteName)
+    }
+    private var isTracking: Bool {
+        defaults?.bool(forKey: WidgetAppGroup.isTracking) ?? false
+    }
+    private var distanceToday: Double {
+        defaults?.double(forKey: WidgetAppGroup.distanceToday) ?? 0
+    }
+    private var distanceTotal: Double {
+        defaults?.double(forKey: WidgetAppGroup.distanceTotal) ?? 0
+    }
     
     var distanceToShow: String {
         if isTracking { return String(format: "%.2f", distanceToday / 1000) + "km" }
@@ -42,12 +58,15 @@ struct SmallView: View {
 struct TopView: View {
     let selectedColor: String
     let isTracking: Bool
+    private var defaults: UserDefaults? {
+        UserDefaults(suiteName: WidgetAppGroup.suiteName)
+    }
     
     var body: some View {
         HStack(alignment: .center, spacing: 7, content: {
             Image(selectedColor).resizable()
                 .frame(width: 20, height: 32, alignment: .center)
-            let selectedCategory = UserDefaults(suiteName: "group.footage")!.string(forKey: selectedColor) ?? "노란색"
+            let selectedCategory = defaults?.string(forKey: selectedColor) ?? "노란색"
             Text(isTracking ? selectedCategory : "총")
                 .foregroundColor(.black)
                 .font(.custom("NanumBarunpen-Bold", size: 22))

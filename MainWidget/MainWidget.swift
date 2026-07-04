@@ -9,30 +9,36 @@
 import WidgetKit
 import SwiftUI
 
+private enum WidgetDefaults {
+    static let suiteName = "group.footage"
+    static let selectedColor = "selectedColor"
+    static let defaultSelectedColor = "#EADE4Cff"
+}
+
 struct MainWidgetProvider: TimelineProvider {
     func getSnapshot(in context: Context, completion: @escaping (WidgetEntry) -> Void) {
-        guard let userDefaults = UserDefaults(suiteName: "group.footage") else { return }
-        let selectedColor = userDefaults.string(forKey: "selectedColor") ?? "#EADE4Cff"
+        let userDefaults = UserDefaults(suiteName: WidgetDefaults.suiteName)
+        let selectedColor = userDefaults?.string(forKey: WidgetDefaults.selectedColor) ?? WidgetDefaults.defaultSelectedColor
         let entry = WidgetEntry(date: Date(), selectedColor: selectedColor, widgetSize: context.displaySize)
         completion(entry)
     }
     
     func getTimeline(in context: Context, completion: @escaping (Timeline<WidgetEntry>) -> Void) {
-        guard let userDefaults = UserDefaults(suiteName: "group.footage") else { return }
-        let selectedColor = userDefaults.string(forKey: "selectedColor") ?? "#EADE4Cff"
+        let userDefaults = UserDefaults(suiteName: WidgetDefaults.suiteName)
+        let selectedColor = userDefaults?.string(forKey: WidgetDefaults.selectedColor) ?? WidgetDefaults.defaultSelectedColor
         let entry = WidgetEntry(date: Date(), selectedColor: selectedColor, widgetSize: context.displaySize)
         let timeline = Timeline(entries: [entry], policy: .never)
         completion(timeline)
     }
     
     func placeholder(in context: Context) -> WidgetEntry {
-        return WidgetEntry(date: Date(), selectedColor: "#EADE4Cff", widgetSize: context.displaySize)
+        return WidgetEntry(date: Date(), selectedColor: WidgetDefaults.defaultSelectedColor, widgetSize: context.displaySize)
     }
 }
 
 struct WidgetEntry: TimelineEntry {
     let date: Date
-    var selectedColor = "#EADE4Cff"
+    var selectedColor = WidgetDefaults.defaultSelectedColor
     let widgetSize: CGSize
 }
 

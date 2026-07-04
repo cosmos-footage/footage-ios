@@ -159,28 +159,28 @@ struct RealmMigrationExportRepository: MigrationExportRepository {
 struct AppGroupWidgetStateStore: WidgetStateStore {
     private let defaults: UserDefaults
 
-    init?(suiteName: String = "group.footage") {
+    init?(suiteName: String = AppGroupWidgetStateKeys.suiteName) {
         guard let defaults = UserDefaults(suiteName: suiteName) else { return nil }
         self.defaults = defaults
     }
 
     var isTracking: Bool {
-        get { defaults.bool(forKey: "isTracking") }
-        set { defaults.set(newValue, forKey: "isTracking") }
+        get { defaults.bool(forKey: AppGroupWidgetStateKeys.isTracking) }
+        set { defaults.set(newValue, forKey: AppGroupWidgetStateKeys.isTracking) }
     }
 
     var distanceToday: Double {
-        get { defaults.double(forKey: "distanceToday") }
-        set { defaults.set(newValue, forKey: "distanceToday") }
+        get { defaults.double(forKey: AppGroupWidgetStateKeys.distanceToday) }
+        set { defaults.set(newValue, forKey: AppGroupWidgetStateKeys.distanceToday) }
     }
 
     var distanceTotal: Double {
-        get { defaults.double(forKey: "distanceTotal") }
-        set { defaults.set(newValue, forKey: "distanceTotal") }
+        get { defaults.double(forKey: AppGroupWidgetStateKeys.distanceTotal) }
+        set { defaults.set(newValue, forKey: AppGroupWidgetStateKeys.distanceTotal) }
     }
 
     var selectedColor: String? {
-        get { defaults.string(forKey: "selectedColor") }
-        set { defaults.set(newValue, forKey: "selectedColor") }
+        get { defaults.string(forKey: AppGroupWidgetStateKeys.selectedColor) }
+        set { defaults.set(newValue, forKey: AppGroupWidgetStateKeys.selectedColor) }
     }
 }
