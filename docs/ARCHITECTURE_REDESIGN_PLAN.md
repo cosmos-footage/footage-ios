@@ -219,10 +219,11 @@ R5 progress:
 - `RealmRouteRepository` still delegates to `DateManager.loadFromRealm(rangeOf:)`, so Realm schema and screen behavior are unchanged.
 - Routed `StatsViewController.viewWillAppear(_:)` monthly distance, color ranking, and place ranking reads through `DaySummaryRepository`, `ColorRepository`, and `PlaceRepository`.
 - Routed `ReportVC` monthly color/place ranking reads and month availability checks through `ColorRepository` and `PlaceRepository`.
+- Added `BadgeRepository.monthlyBadges(month:)` and routed `ReportDetailVC` monthly badge reads through it.
 
 R5 remaining:
 
-- Continue with badge/report detail reads after `BadgeRepository` exposes monthly badge lookup.
+- Continue with `LevelVC` badge reads or add read models for map and colored journey screens.
 - Defer map screens and colored journey queries until repository protocols expose the needed read models.
 
 ### R6: S3-Ready Backup Pipeline

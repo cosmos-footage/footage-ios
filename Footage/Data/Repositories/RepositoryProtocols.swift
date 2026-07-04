@@ -78,6 +78,7 @@ protocol BadgeRepository {
     func add(_ badge: Badge) throws
     func containsBadge(imageName: String) -> Bool
     func badges() -> [Badge]
+    func monthlyBadges(month: String) -> [Badge]?
 }
 
 protocol WidgetStateStore {

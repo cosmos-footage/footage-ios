@@ -134,6 +134,10 @@ struct RealmBadgeRepository: BadgeRepository {
     func badges() -> [Badge] {
         LevelManager.loadBadgeList() ?? []
     }
+
+    func monthlyBadges(month: String) -> [Badge]? {
+        LevelManager.callMonthlyBadge(month: month)
+    }
 }
 
 struct RealmMigrationExportRepository: MigrationExportRepository {

@@ -31,16 +31,17 @@ class ReportDetailVC: UIViewController {
     var badgeList: [Badge] = []
     var colorRanking: Array<(key: String, value: Double)> = []
     var placeRanking: Array<(key: String, value: Double)> = []
+    var badgeRepository: BadgeRepository = RealmBadgeRepository()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         monthLabel.text = whichMonth
         if Int(whichMonth)! >= 10 {
-            if let badgeArray = LevelManager.callMonthlyBadge(month: "2020\(whichMonth)") {
+            if let badgeArray = badgeRepository.monthlyBadges(month: "2020\(whichMonth)") {
                 badgeList = badgeArray
             } else { badgeList = [Badge(type: "", imageName: "", detail: "")] }
         } else {
-            if let badgeArray = LevelManager.callMonthlyBadge(month: "20200\(whichMonth)") {
+            if let badgeArray = badgeRepository.monthlyBadges(month: "20200\(whichMonth)") {
                 badgeList = badgeArray
             } else { badgeList = [Badge(type: "", imageName: "", detail: "")] }
         }

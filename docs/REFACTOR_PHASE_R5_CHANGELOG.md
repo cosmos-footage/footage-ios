@@ -29,6 +29,14 @@ Phase R5 starts migrating direct Realm manager reads behind repository protocols
 - Replaced direct color ranking reads used to enable/disable month navigation buttons.
 - Preserved the existing month range calculation, button state behavior, and report detail segue payloads.
 
+## R5-4 Completed
+
+- Added `monthlyBadges(month:)` to `BadgeRepository`.
+- Implemented `RealmBadgeRepository.monthlyBadges(month:)` through the existing `LevelManager.callMonthlyBadge(month:)` adapter path.
+- Added a default `BadgeRepository` dependency to `ReportDetailVC`.
+- Replaced direct monthly badge reads in `ReportDetailVC.viewDidLoad()`.
+- Preserved the existing fallback empty badge behavior when a month has no badges.
+
 ## Behavior
 
 - Existing date screen behavior was not intentionally changed.
@@ -41,4 +49,4 @@ Phase R5 starts migrating direct Realm manager reads behind repository protocols
 
 ## Next Step
 
-Next repository migration should expose monthly badge lookup before touching `ReportDetailVC`, or add read models for map and colored journey screens before migrating those views.
+Next repository migration should cover `LevelVC` badge reads, or add read models for map and colored journey screens before migrating those views.
