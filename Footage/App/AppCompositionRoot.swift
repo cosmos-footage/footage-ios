@@ -44,7 +44,8 @@ struct AppCompositionRoot {
         apiClient: CloudBackupAPIClientProtocol? = nil,
         identityRepository: DeviceIdentityRepository = LocalDeviceIdentityRepository(),
         syncOutboxRepository: SyncOutboxRepository = LocalSyncOutboxRepository(),
-        tokenStore: CloudBackupTokenStore = KeychainCloudBackupTokenStore()
+        tokenStore: CloudBackupTokenStore = KeychainCloudBackupTokenStore(),
+        payloadStager: BackupPayloadStager = FileBackedBackupPayloadStager()
     ) -> CloudBackupService {
         let configuration = makeCloudBackupConfiguration()
         return CloudBackupService(
@@ -52,7 +53,8 @@ struct AppCompositionRoot {
             apiClient: apiClient,
             identityRepository: identityRepository,
             syncOutboxRepository: syncOutboxRepository,
-            tokenStore: tokenStore
+            tokenStore: tokenStore,
+            payloadStager: payloadStager
         )
     }
 

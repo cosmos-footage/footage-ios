@@ -16,6 +16,7 @@ enum CloudBackupServiceError: Error {
     case missingOwnerOrDevice
     case missingPayload
     case missingRecordingId
+    case payloadStagingFailed
     case unsupportedItemType(SyncOutboxItemType)
 }
 
@@ -25,19 +26,22 @@ final class CloudBackupService {
     private let identityRepository: DeviceIdentityRepository
     private let syncOutboxRepository: SyncOutboxRepository
     private let tokenStore: CloudBackupTokenStore
+    private let payloadStager: BackupPayloadStager
 
     init(
         configuration: CloudBackupConfiguration = CloudBackupConfiguration(),
         apiClient: CloudBackupAPIClientProtocol? = nil,
         identityRepository: DeviceIdentityRepository = LocalDeviceIdentityRepository(),
         syncOutboxRepository: SyncOutboxRepository = LocalSyncOutboxRepository(),
-        tokenStore: CloudBackupTokenStore = KeychainCloudBackupTokenStore()
+        tokenStore: CloudBackupTokenStore = KeychainCloudBackupTokenStore(),
+        payloadStager: BackupPayloadStager = FileBackedBackupPayloadStager()
     ) {
         self.configuration = configuration
         self.apiClient = apiClient ?? CloudBackupAPIClient(configuration: configuration)
         self.identityRepository = identityRepository
         self.syncOutboxRepository = syncOutboxRepository
         self.tokenStore = tokenStore
+        self.payloadStager = payloadStager
     }
 
     func bootstrapInstallation(completion: @escaping (Result<BootstrapResponse, Error>) -> Void) {
@@ -171,15 +175,21 @@ final class CloudBackupService {
             }
 
             let checksum = checksumSha256Base64(for: data)
+            let stagedPayload = try payloadStager.stagePayload(
+                data,
+                contentType: item.payload.contentType,
+                checksumSha256: checksum,
+                compression: .none
+            )
             let presignRequest = PresignUploadRequest(
                 ownerId: ownerId,
                 deviceId: deviceId,
                 recordingId: recordingId,
                 syncBatchId: item.syncBatch.syncBatchId.rawValue,
                 objectType: item.type.rawValue,
-                contentType: item.payload.contentType,
-                contentLength: data.count,
-                checksumSha256: checksum
+                contentType: stagedPayload.contentType,
+                contentLength: stagedPayload.contentLength,
+                checksumSha256: stagedPayload.checksumSha256 ?? checksum
             )
 
             CloudBackupLogger.info("presign requested")
@@ -194,7 +204,7 @@ final class CloudBackupService {
                     ownerId: ownerId,
                     deviceId: deviceId,
                     recordingId: recordingId,
-                    checksum: checksum,
+                    stagedPayload: stagedPayload,
                     data: data,
                     bearerToken: bearerToken,
                     completion: completion
@@ -211,7 +221,7 @@ final class CloudBackupService {
         ownerId: String,
         deviceId: String,
         recordingId: String,
-        checksum: String,
+        stagedPayload: StagedBackupPayloadMetadata,
         data: Data,
         bearerToken: String,
         completion: @escaping (Result<Void, Error>) -> Void
@@ -222,7 +232,7 @@ final class CloudBackupService {
             apiClient.uploadDataToPresignedURL(
                 data: data,
                 response: presignResponse,
-                contentType: item.payload.contentType
+                contentType: stagedPayload.contentType
             ) { [weak self] uploadResult in
                 self?.handleUploadResult(
                     uploadResult,
@@ -231,13 +241,13 @@ final class CloudBackupService {
                     ownerId: ownerId,
                     deviceId: deviceId,
                     recordingId: recordingId,
-                    checksum: checksum,
-                    dataLength: data.count,
+                    stagedPayload: stagedPayload,
                     bearerToken: bearerToken,
                     completion: completion
                 )
             }
         case .failure(let error):
+            cleanupStagedPayload(at: stagedPayload.localFileURL)
             fail(itemId: item.id, error: error, completion: completion)
         }
     }
@@ -249,8 +259,7 @@ final class CloudBackupService {
         ownerId: String,
         deviceId: String,
         recordingId: String,
-        checksum: String,
-        dataLength: Int,
+        stagedPayload: StagedBackupPayloadMetadata,
         bearerToken: String,
         completion: @escaping (Result<Void, Error>) -> Void
     ) {
@@ -264,8 +273,8 @@ final class CloudBackupService {
                 recordingId: recordingId,
                 syncBatchId: item.syncBatch.syncBatchId.rawValue,
                 objectKey: presignResponse.objectKey,
-                checksumSha256: checksum,
-                contentLength: dataLength
+                checksumSha256: stagedPayload.checksumSha256 ?? "",
+                contentLength: stagedPayload.contentLength
             )
             apiClient.completeUpload(
                 completeRequest,
@@ -279,13 +288,13 @@ final class CloudBackupService {
                     deviceId: deviceId,
                     recordingId: recordingId,
                     objectKey: presignResponse.objectKey,
-                    checksum: checksum,
-                    dataLength: dataLength,
+                    stagedPayload: stagedPayload,
                     bearerToken: bearerToken,
                     completion: completion
                 )
             }
         case .failure(let error):
+            cleanupStagedPayload(at: stagedPayload.localFileURL)
             fail(itemId: item.id, error: error, completion: completion)
         }
     }
@@ -297,8 +306,7 @@ final class CloudBackupService {
         deviceId: String,
         recordingId: String,
         objectKey: String,
-        checksum: String,
-        dataLength: Int,
+        stagedPayload: StagedBackupPayloadMetadata,
         bearerToken: String,
         completion: @escaping (Result<Void, Error>) -> Void
     ) {
@@ -323,8 +331,8 @@ final class CloudBackupService {
                             SyncBatchRequest.Recording.UploadedObject(
                                 objectType: item.type.rawValue,
                                 objectKey: objectKey,
-                                checksumSha256: checksum,
-                                contentLength: dataLength
+                                checksumSha256: stagedPayload.checksumSha256 ?? "",
+                                contentLength: stagedPayload.contentLength
                             )
                         ]
                     )
@@ -335,9 +343,11 @@ final class CloudBackupService {
                 bearerToken: bearerToken,
                 idempotencyKey: item.syncBatch.idempotencyKey
             ) { [weak self] syncResult in
+                self?.cleanupStagedPayload(at: stagedPayload.localFileURL)
                 self?.handleSyncBatchResult(syncResult, itemId: item.id, completion: completion)
             }
         case .failure(let error):
+            cleanupStagedPayload(at: stagedPayload.localFileURL)
             fail(itemId: item.id, error: error, completion: completion)
         }
     }
@@ -377,5 +387,13 @@ final class CloudBackupService {
 
     private func checksumSha256Base64(for data: Data) -> String {
         Data(SHA256.hash(data: data)).base64EncodedString()
+    }
+
+    private func cleanupStagedPayload(at localFileURL: URL) {
+        do {
+            try payloadStager.removeStagedPayload(at: localFileURL)
+        } catch {
+            CloudBackupLogger.failure(operation: "cleanup staged payload")
+        }
     }
 }

@@ -230,7 +230,7 @@ R5 remaining:
 
 ### R6: S3-Ready Backup Pipeline
 
-Status: pending.
+Status: started.
 
 Tasks:
 
@@ -246,6 +246,20 @@ Exit criteria:
 - One manual batch can be prepared without automatic upload.
 - No AWS credentials in app.
 - No sensitive logging.
+
+R6 progress:
+
+- Added Keychain token storage for the anonymous device token.
+- Added file-backed backup payload staging under Application Support with backup exclusion and file protection.
+- Routed `CloudBackupService` upload preparation through `BackupPayloadStager` while keeping Cloud Backup and development upload disabled by default.
+- Staged payload files are treated as transient and cleaned up after upload/register success or failure paths.
+
+R6 remaining:
+
+- Add gzip compression for route NDJSON before production upload is enabled.
+- Split outbox payload metadata from raw NDJSON storage.
+- Add retry/backoff and idempotency recovery metadata.
+- Add a manual-only backup runner and Settings opt-in/status UI.
 
 ### R7: Tests and Verification Harness
 
