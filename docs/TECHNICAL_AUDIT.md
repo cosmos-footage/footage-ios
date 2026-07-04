@@ -1429,10 +1429,45 @@ Smallest proposed next fixes:
 3. Replace `UIApplication.shared.windows` lookups with scene-local window access.
 4. Replace static location authorization checks with `CLLocationManager.authorizationStatus` instance usage where appropriate.
 
+## iOS 18 Warning Modernization Audit
+
+Follow-up date: 2026-07-04.
+
+Commands run:
+
+```sh
+git status --short
+rg -n "SKPayment|SKStoreReviewController|applicationIconBadgeNumber|UIApplication\\.shared\\.windows|authorizationStatus\\(\\)|#available\\(iOS 14|@available|StoreKit" Footage MainWidget
+scripts/phase1-build-baseline.sh
+git diff --check
+```
+
+Implementation result:
+
+- `Settings_DonateVC` now uses StoreKit 2 `Product.products(for:)`, `Product.purchase()`, verification handling, and `Transaction.finish()`.
+- App badge clearing now uses `UNUserNotificationCenter.setBadgeCount(0)`.
+- Home alert dot visibility now uses delivered notification state rather than deprecated app badge reads.
+- `UIApplication.shared.windows` call sites were replaced with `view.window` or `SceneDelegate.window`.
+- Static `CLLocationManager.authorizationStatus()` call sites were replaced with instance `authorizationStatus`.
+- Review prompt now uses `AppStore.requestReview(in:)`.
+- Obsolete `#available(iOS 14.0, *)` widget reload guards were removed because the deployment baseline is iOS 18.0.
+
+Validation result:
+
+- `scripts/phase1-build-baseline.sh` succeeded after these changes.
+- The second validation run emitted no app-source warnings for the replaced APIs.
+- Realm/RealmSwift generated dependency warnings remain external to app source and should not be patched directly in `Pods/`.
+
+Smallest proposed next fixes:
+
+1. Add StoreKit 2 purchase-result UI states for pending, cancelled, and failed purchases.
+2. Add tests around notification badge/alert-dot behavior after the UI is further decoupled.
+3. Continue generated dependency warning tracking through dependency updates rather than direct Pod source edits.
+
 ## Recommended Immediate Next Steps
 
 1. Keep `scripts/phase1-build-baseline.sh` as the repeatable Debug and Release simulator baseline for app and widget.
 2. Do not update CocoaPods tooling unless a concrete build or install issue requires it; the dependency baseline now passes with CocoaPods 1.10.0.
-3. Address iOS 18 deprecation warnings in small patches, starting with StoreKit 1 donation flow.
-4. Add tests for outbox state transitions, idempotency key generation, NDJSON serialization, and API client request construction.
-5. Add secure token storage and explicit opt-in UI before enabling any real cloud backup.
+3. Add tests for outbox state transitions, idempotency key generation, NDJSON serialization, API client request construction, and StoreKit 2 purchase-result handling.
+4. Add secure token storage and explicit opt-in UI before enabling any real cloud backup.
+5. Track remaining Realm/RealmSwift generated warnings through dependency updates.

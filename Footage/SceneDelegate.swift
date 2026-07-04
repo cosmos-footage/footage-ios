@@ -56,9 +56,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Release any resources associated with this scene that can be re-created the next time the scene connects.
         // The scene may re-connect later, as its session was not neccessarily discarded (see `application:didDiscardSceneSessions` instead).
         UserDefaults(suiteName: "group.footage")?.set(false, forKey: "isTracking")
-        if #available(iOS 14.0, *) {
-            WidgetCenter.shared.reloadAllTimelines()
-        }
+        WidgetCenter.shared.reloadAllTimelines()
     }
     
     func sceneDidBecomeActive(_ scene: UIScene) {
@@ -82,8 +80,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if userState == "hasPassword" || userState == "hasBioId"  {
             let storyBoard = UIStoryboard(name: "Main", bundle: nil)
             let passwordVC = storyBoard.instantiateViewController(withIdentifier: "PasswordVC") as! PasswordVC
-            let keyWindow = UIApplication.shared.windows.filter {$0.isKeyWindow}.first
-            if var topController = keyWindow?.rootViewController {
+            if var topController = window?.rootViewController {
                 while let presentedViewController = topController.presentedViewController {
                     topController = presentedViewController
                 }
@@ -129,8 +126,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 
             }
         }
-        if #available(iOS 14.0, *) {
-            WidgetCenter.shared.reloadAllTimelines()
-        }
+        WidgetCenter.shared.reloadAllTimelines()
     }
 }

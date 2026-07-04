@@ -9,6 +9,7 @@
 import UIKit
 import StoreKit
 
+@MainActor
 class Settings_DonateVC: UIViewController {
     
     @IBOutlet var buttons: [UIButton]!
@@ -17,11 +18,15 @@ class Settings_DonateVC: UIViewController {
     @IBOutlet weak var message: UILabel!
     
     let productIDs = ["co.el.iap.bike", "co.el.iap.coffee", "co.el.iap.rice"]
+    private var purchaseTask: Task<Void, Never>?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         progressView.layer.cornerRadius = 10
-        SKPaymentQueue.default().add(self)
+    }
+
+    deinit {
+        purchaseTask?.cancel()
     }
 
     @IBAction func backButtonPressed(_ sender: UIButton) {
@@ -29,49 +34,47 @@ class Settings_DonateVC: UIViewController {
     }
     
     @IBAction func requestPurchase(_ sender: UIButton) {
-        if SKPaymentQueue.canMakePayments() {
-            let paymentRequest = SKMutablePayment()
-            paymentRequest.productIdentifier = productIDs[sender.tag]
-            switch sender.tag {
-            case 0: message.text = "자전거를 대여하는 중입니다"
-            case 1: message.text = "커피를 내리는 중입니다"
-            case 2: message.text = "따뜻한 밥을 짓는 중입니다"
-            default: return
+        guard productIDs.indices.contains(sender.tag), AppStore.canMakePayments else { return }
+
+        switch sender.tag {
+        case 0: message.text = "자전거를 대여하는 중입니다"
+        case 1: message.text = "커피를 내리는 중입니다"
+        case 2: message.text = "따뜻한 밥을 짓는 중입니다"
+        default: return
+        }
+
+        setPurchaseInProgress(true)
+        let productID = productIDs[sender.tag]
+        purchaseTask?.cancel()
+        purchaseTask = Task { [weak self] in
+            do {
+                guard let product = try await Product.products(for: [productID]).first else {
+                    self?.finishPurchase()
+                    return
+                }
+
+                let result = try await product.purchase()
+                if case .success(let verification) = result,
+                   case .verified(let transaction) = verification {
+                    await transaction.finish()
+                }
+            } catch {
+                // Keep purchase errors local to the UI; do not collect analytics or send logs.
             }
-            SKPaymentQueue.default().add(paymentRequest)
+
+            self?.finishPurchase()
         }
     }
-}
-
-extension Settings_DonateVC: SKPaymentTransactionObserver {
     
-    func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
-        for transaction in transactions {
-            switch transaction.transactionState {
-            case .purchasing:
-                progressView.isHidden = false
-                indicator.startAnimating()
-                for button in buttons { button.isUserInteractionEnabled = false }
-            default:
-                queue.finishTransaction(transaction)
-                indicator.stopAnimating()
-                progressView.isHidden = true
-                for button in buttons { button.isUserInteractionEnabled = true }
-            }
+    private func setPurchaseInProgress(_ isInProgress: Bool) {
+        progressView.isHidden = !isInProgress
+        isInProgress ? indicator.startAnimating() : indicator.stopAnimating()
+        for button in buttons {
+            button.isUserInteractionEnabled = !isInProgress
         }
     }
-    
-}
 
-//extension Settings_DonateVC: SKProductsRequestDelegate {
-//
-//    func productsRequest(_ request: SKProductsRequest, didReceive response: SKProductsResponse) {
-//        let product = response.products[0]
-//        let payment = SKPayment(product: product)
-//        SKPaymentQueue.default().add(payment)
-//    }
-//
-//}
-//        let productRequest = SKProductsRequest(productIdentifiers: .init(arrayLiteral: productID))
-//        productRequest.delegate = self
-//        productRequest.start()
+    private func finishPurchase() {
+        setPurchaseInProgress(false)
+    }
+}

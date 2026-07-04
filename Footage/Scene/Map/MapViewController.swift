@@ -28,7 +28,7 @@ class MapViewController: UIViewController {
             }
         }
     }
-    var authStatus: CLAuthorizationStatus { CLLocationManager.authorizationStatus() }
+    var authStatus: CLAuthorizationStatus { locationManager.authorizationStatus }
     
     override func viewDidLoad() {
         M.mapVC = self

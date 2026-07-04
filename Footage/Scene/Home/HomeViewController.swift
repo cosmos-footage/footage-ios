@@ -45,9 +45,8 @@ class HomeViewController: UIViewController {
     }
     @IBAction func questionCirclePressed(_ sender: UIButton) {
         exampleImageView.isHidden = false
-        let keyWindow = UIApplication.shared.windows.filter {$0.isKeyWindow}.first
-        keyWindow?.addSubview(exampleImageView)
-        keyWindow?.bringSubviewToFront(exampleImageView)
+        view.window?.addSubview(exampleImageView)
+        view.window?.bringSubviewToFront(exampleImageView)
     }
     @IBAction func extendClosePressed(_ sender: Any) {
         extendedStartButtonView.isHidden = true
@@ -99,12 +98,7 @@ class HomeViewController: UIViewController {
         configureInitialMapView()
         setExampleImageView()
         alwaysOnSwitch.addTarget(self, action: #selector(self.switchChanged(_:)), for: .valueChanged)
-        if UIApplication.shared.applicationIconBadgeNumber == 0 {
-            alertDot.isHidden = true
-        } else {
-            alertDot.isHidden = false
-            view.bringSubviewToFront(alertDot)
-        }
+        refreshAlertDotVisibility()
         if HomeViewController.recordingStateStore.isTracking {
             startTracking()
         }
@@ -141,9 +135,9 @@ class HomeViewController: UIViewController {
         HomeViewController.recordingStateStore.isTracking = true
         HomeViewController.distanceToday = DateManager.loadDistance(total: false)
         HomeViewController.currentStartButtonImage = #imageLiteral(resourceName: "stopButton")
-        UIApplication.shared.applicationIconBadgeNumber = 0
+        clearApplicationBadge()
         alertDot.isHidden = true
-        let status = CLLocationManager.authorizationStatus()
+        let status = HomeViewController.locationManager.authorizationStatus
         if status == .notDetermined || status == .denied {
             alertForAuthorization()
         } else {
@@ -185,8 +179,8 @@ extension HomeViewController: CLLocationManagerDelegate, MKMapViewDelegate  {
     
     func configureInitialMapView() {
         var coordinate: CLLocationCoordinate2D? = nil
-        if CLLocationManager.authorizationStatus() == .authorizedAlways ||
-            CLLocationManager.authorizationStatus() == .authorizedWhenInUse {
+        if HomeViewController.locationManager.authorizationStatus == .authorizedAlways ||
+            HomeViewController.locationManager.authorizationStatus == .authorizedWhenInUse {
             while HomeViewController.locationManager.location == nil {
                 HomeViewController.locationManager.requestLocation()
             }
@@ -568,7 +562,9 @@ extension HomeViewController {
     func checkUpdateInHB() { // 홈버튼 누를때 확인하는 것
         lauchingCount = UserDefaults.standard.integer(forKey: "launchingCount")
         if lauchingCount ?? 0 >= 5 {
-            SKStoreReviewController.requestReview()
+            if let windowScene = view.window?.windowScene {
+                AppStore.requestReview(in: windowScene)
+            }
             UserDefaults.standard.set(0, forKey: "launchingCount")
         } else {
             UserDefaults.standard.set((lauchingCount ?? 0) + 1, forKey: "launchingCount")
@@ -609,7 +605,7 @@ extension HomeViewController {
     @objc func switchChanged(_ sender: UISwitch) {
         if sender == alwaysOnSwitch {
             if sender.isOn {
-                let status = CLLocationManager.authorizationStatus()
+                let status = HomeViewController.locationManager.authorizationStatus
                 if status != .authorizedAlways {
                     HomeViewController.locationManager.requestAlwaysAuthorization()
                     self.alwaysOnSwitch.setOn(false, animated: true)
@@ -620,6 +616,22 @@ extension HomeViewController {
                 UserDefaults.standard.set(false, forKey: "alwaysOn")
             }
         }
+    }
+
+    private func refreshAlertDotVisibility() {
+        UNUserNotificationCenter.current().getDeliveredNotifications { [weak self] notifications in
+            DispatchQueue.main.async {
+                guard let self = self else { return }
+                self.alertDot.isHidden = notifications.isEmpty
+                if !notifications.isEmpty {
+                    self.view.bringSubviewToFront(self.alertDot)
+                }
+            }
+        }
+    }
+
+    private func clearApplicationBadge() {
+        UNUserNotificationCenter.current().setBadgeCount(0)
     }
 }
 

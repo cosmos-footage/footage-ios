@@ -248,11 +248,30 @@ Validation:
 
 Follow-up warnings exposed by iOS 18:
 
-- StoreKit 1 donation flow uses APIs deprecated/no longer supported in iOS 18.
-- `UIApplication.shared.applicationIconBadgeNumber` is deprecated.
-- `UIApplication.shared.windows` is deprecated.
-- Static `CLLocationManager.authorizationStatus()` usage is deprecated.
+- StoreKit 1 donation flow used APIs deprecated/no longer supported in iOS 18. This has been replaced with StoreKit 2 `Product.purchase`.
+- `UIApplication.shared.applicationIconBadgeNumber` was replaced with `UNUserNotificationCenter.setBadgeCount`.
+- `UIApplication.shared.windows` uses were replaced with scene-local `window` access.
+- Static `CLLocationManager.authorizationStatus()` usage was replaced with instance `authorizationStatus`.
 - Realm/RealmSwift Pods still emit generated dependency warnings.
+
+## iOS 18 Warning Modernization
+
+Status: completed for app source.
+
+Changes:
+
+- Replaced `Settings_DonateVC` StoreKit 1 payment queue flow with StoreKit 2 product loading and purchase.
+- Replaced app badge clearing with `UNUserNotificationCenter.setBadgeCount`.
+- Replaced app badge visibility check with delivered-notification based alert dot refresh.
+- Replaced deprecated `UIApplication.shared.windows` lookups with controller/scene-local windows.
+- Replaced static CoreLocation authorization checks with `CLLocationManager.authorizationStatus` instance access.
+- Replaced deprecated review prompt with `AppStore.requestReview(in:)`.
+- Removed obsolete iOS 14 availability checks now that the minimum baseline is iOS 18.
+
+Validation:
+
+- `rg` found no remaining app-source uses of the deprecated APIs that triggered the iOS 18 warnings.
+- `scripts/phase1-build-baseline.sh` succeeded after the changes.
 
 ## Phase 6: Restore
 
