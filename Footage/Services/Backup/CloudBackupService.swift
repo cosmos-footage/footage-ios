@@ -165,10 +165,7 @@ final class CloudBackupService {
                 throw CloudBackupServiceError.missingOwnerOrDevice
             }
 
-            guard let ndjson = item.payload.ndjson,
-                  let data = ndjson.data(using: .utf8) else {
-                throw CloudBackupServiceError.missingPayload
-            }
+            let data = try payloadData(for: item.payload)
 
             guard let recordingId = item.payload.recordingIds.first?.rawValue else {
                 throw CloudBackupServiceError.missingRecordingId
@@ -394,6 +391,19 @@ final class CloudBackupService {
 
     private func checksumSha256Base64(for data: Data) -> String {
         Data(SHA256.hash(data: data)).base64EncodedString()
+    }
+
+    private func payloadData(for payload: SyncOutboxPayload) throws -> Data {
+        if let ndjson = payload.ndjson,
+           let data = ndjson.data(using: .utf8) {
+            return data
+        }
+
+        if let localPayloadFilePath = payload.localPayloadFilePath {
+            return try Data(contentsOf: URL(fileURLWithPath: localPayloadFilePath))
+        }
+
+        throw CloudBackupServiceError.missingPayload
     }
 
     private func cleanupStagedPayload(at localFileURL: URL) {

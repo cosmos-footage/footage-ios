@@ -23,6 +23,14 @@ Phase R6 prepares the disabled cloud backup pipeline for S3-style uploads withou
 - Changed route NDJSON upload preparation to stage `application/x-ndjson+gzip`.
 - Calculated upload checksum and content length from the compressed staged file.
 
+## R6-3 Completed
+
+- Added `localPayloadFilePath` and `payloadContentLength` metadata to `SyncOutboxPayload`.
+- Added `LocalSyncOutboxPayloadStore` for protected Application Support payload files.
+- Updated new local outbox enqueue paths to move raw NDJSON out of `UserDefaults`.
+- Kept legacy `ndjson` payload compatibility in `CloudBackupService`.
+- Updated backup upload preparation to read payload bytes from either legacy inline NDJSON or the new local payload file.
+
 ## Behavior
 
 - No automatic backup, restore, auth, S3 upload, or backend call path was enabled.
@@ -36,4 +44,4 @@ Phase R6 prepares the disabled cloud backup pipeline for S3-style uploads withou
 
 ## Next Step
 
-R6-3 should split outbox payload metadata from raw NDJSON storage and keep large route payload bytes out of `UserDefaults`.
+R6-4 should add retry/backoff metadata and relaunch recovery for `.syncing` outbox items.

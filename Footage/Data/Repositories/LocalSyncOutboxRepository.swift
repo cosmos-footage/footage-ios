@@ -10,6 +10,7 @@ import Foundation
 enum LocalSyncOutboxError: Error {
     case itemNotFound(String)
     case itemIsNotFailed(String)
+    case payloadEncodingFailed(String)
 }
 
 struct LocalSyncOutboxRepository: SyncOutboxRepository {
@@ -24,10 +25,16 @@ struct LocalSyncOutboxRepository: SyncOutboxRepository {
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
     private let batchBuilder: LocalSyncBatchBuilder
+    private let payloadStore: LocalSyncOutboxPayloadStore
 
-    init(defaults: UserDefaults = .standard, batchBuilder: LocalSyncBatchBuilder = LocalSyncBatchBuilder()) {
+    init(
+        defaults: UserDefaults = .standard,
+        batchBuilder: LocalSyncBatchBuilder = LocalSyncBatchBuilder(),
+        payloadStore: LocalSyncOutboxPayloadStore = LocalSyncOutboxPayloadStore()
+    ) {
         self.defaults = defaults
         self.batchBuilder = batchBuilder
+        self.payloadStore = payloadStore
     }
 
     func enqueue(_ draft: SyncOutboxDraft) throws {
@@ -52,19 +59,21 @@ struct LocalSyncOutboxRepository: SyncOutboxRepository {
     }
 
     func enqueue(_ item: SyncOutboxItem) throws {
+        let preparedItem = try externalizePayloadIfNeeded(item)
         var items = outboxItems()
-        if let index = items.firstIndex(where: { $0.id == item.id }) {
-            items[index] = item
+        if let index = items.firstIndex(where: { $0.id == preparedItem.id }) {
+            items[index] = preparedItem
         } else {
-            items.append(item)
+            items.append(preparedItem)
         }
         try save(items)
         defaults.set(Date(), forKey: Key.lastPreparedAt)
     }
 
     func enqueue(_ items: [SyncOutboxItem]) throws {
+        let preparedItems = try items.map { try externalizePayloadIfNeeded($0) }
         var currentItems = outboxItems()
-        for item in items {
+        for item in preparedItems {
             if let index = currentItems.firstIndex(where: { $0.id == item.id }) {
                 currentItems[index] = item
             } else {
@@ -73,7 +82,7 @@ struct LocalSyncOutboxRepository: SyncOutboxRepository {
         }
         try save(currentItems)
 
-        if !items.isEmpty {
+        if !preparedItems.isEmpty {
             defaults.set(Date(), forKey: Key.lastPreparedAt)
         }
     }
@@ -168,6 +177,24 @@ struct LocalSyncOutboxRepository: SyncOutboxRepository {
         defaults.set(data, forKey: Key.items)
     }
 
+    private func externalizePayloadIfNeeded(_ item: SyncOutboxItem) throws -> SyncOutboxItem {
+        guard let ndjson = item.payload.ndjson else {
+            return item
+        }
+
+        guard let data = ndjson.data(using: .utf8) else {
+            throw LocalSyncOutboxError.payloadEncodingFailed(item.id)
+        }
+
+        let fileURL = try payloadStore.writePayload(data, itemId: item.id)
+        var preparedItem = item
+        preparedItem.payload.ndjson = nil
+        preparedItem.payload.localPayloadFilePath = fileURL.path
+        preparedItem.payload.payloadContentLength = data.count
+        preparedItem.updatedAt = Date()
+        return preparedItem
+    }
+
     private func updateItem(itemId: String, mutate: (inout SyncOutboxItem) -> Void) throws {
         var items = outboxItems()
         guard let index = items.firstIndex(where: { $0.id == itemId }) else {
@@ -176,5 +203,85 @@ struct LocalSyncOutboxRepository: SyncOutboxRepository {
 
         mutate(&items[index])
         try save(items)
+    }
+}
+
+struct LocalSyncOutboxPayloadStore {
+    private let fileManager: FileManager
+    private let rootDirectory: URL?
+    private let directoryName: String
+
+    init(
+        rootDirectory: URL? = nil,
+        directoryName: String = "PrivateSyncOutboxPayloads",
+        fileManager: FileManager = .default
+    ) {
+        self.rootDirectory = rootDirectory
+        self.directoryName = directoryName
+        self.fileManager = fileManager
+    }
+
+    func writePayload(_ data: Data, itemId: String) throws -> URL {
+        let directoryURL = try prepareDirectory()
+        let fileURL = directoryURL
+            .appendingPathComponent(safeFileName(for: itemId))
+            .appendingPathExtension("ndjson")
+
+        try data.write(
+            to: fileURL,
+            options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication]
+        )
+        try applyFileProtection(to: fileURL)
+        try excludeFromDeviceBackup(fileURL)
+        return fileURL
+    }
+
+    private func prepareDirectory() throws -> URL {
+        let directoryURL = try payloadDirectoryURL()
+        if !fileManager.fileExists(atPath: directoryURL.path) {
+            try fileManager.createDirectory(
+                at: directoryURL,
+                withIntermediateDirectories: true
+            )
+        }
+        try applyFileProtection(to: directoryURL)
+        try excludeFromDeviceBackup(directoryURL)
+        return directoryURL
+    }
+
+    private func payloadDirectoryURL() throws -> URL {
+        if let rootDirectory = rootDirectory {
+            return rootDirectory.appendingPathComponent(directoryName, isDirectory: true)
+        }
+
+        let applicationSupportURL = try fileManager.url(
+            for: .applicationSupportDirectory,
+            in: .userDomainMask,
+            appropriateFor: nil,
+            create: true
+        )
+        return applicationSupportURL.appendingPathComponent(directoryName, isDirectory: true)
+    }
+
+    private func safeFileName(for itemId: String) -> String {
+        itemId.map { character in
+            character.isLetter || character.isNumber || character == "-" || character == "_" ? character : "_"
+        }
+        .map(String.init)
+        .joined()
+    }
+
+    private func applyFileProtection(to url: URL) throws {
+        try fileManager.setAttributes(
+            [.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication],
+            ofItemAtPath: url.path
+        )
+    }
+
+    private func excludeFromDeviceBackup(_ url: URL) throws {
+        var mutableURL = url
+        var resourceValues = URLResourceValues()
+        resourceValues.isExcludedFromBackup = true
+        try mutableURL.setResourceValues(resourceValues)
     }
 }

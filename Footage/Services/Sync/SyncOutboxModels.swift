@@ -89,6 +89,8 @@ struct SyncOutboxPayload: Codable, Equatable {
     var contentType: String
     var isCompressed: Bool
     var ndjson: String?
+    var localPayloadFilePath: String?
+    var payloadContentLength: Int?
 
     init(
         localDate: String? = nil,
@@ -96,7 +98,9 @@ struct SyncOutboxPayload: Codable, Equatable {
         routePointCount: Int = 0,
         contentType: String = "application/x-ndjson",
         isCompressed: Bool = false,
-        ndjson: String? = nil
+        ndjson: String? = nil,
+        localPayloadFilePath: String? = nil,
+        payloadContentLength: Int? = nil
     ) {
         self.localDate = localDate
         self.recordingIds = recordingIds
@@ -104,6 +108,8 @@ struct SyncOutboxPayload: Codable, Equatable {
         self.contentType = contentType
         self.isCompressed = isCompressed
         self.ndjson = ndjson
+        self.localPayloadFilePath = localPayloadFilePath
+        self.payloadContentLength = payloadContentLength
     }
 }
 
