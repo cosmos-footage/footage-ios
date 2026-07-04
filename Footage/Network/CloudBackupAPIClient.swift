@@ -44,6 +44,17 @@ protocol CloudBackupAPIClientProtocol {
         idempotencyKey: IdempotencyKey,
         completion: @escaping (Result<SyncBatchResponse, Error>) -> Void
     )
+    func requestRestoreManifest(
+        ownerId: OwnerID,
+        deviceId: DeviceID,
+        since: Date?,
+        bearerToken: String,
+        completion: @escaping (Result<RestoreManifestResponse, Error>) -> Void
+    )
+    func downloadData(
+        from url: URL,
+        completion: @escaping (Result<Data, Error>) -> Void
+    )
 }
 
 final class CloudBackupAPIClient: CloudBackupAPIClientProtocol {
@@ -159,6 +170,63 @@ final class CloudBackupAPIClient: CloudBackupAPIClientProtocol {
         )
     }
 
+    func requestRestoreManifest(
+        ownerId: OwnerID,
+        deviceId: DeviceID,
+        since: Date?,
+        bearerToken: String,
+        completion: @escaping (Result<RestoreManifestResponse, Error>) -> Void
+    ) {
+        var queryItems = [
+            URLQueryItem(name: "ownerId", value: ownerId.rawValue),
+            URLQueryItem(name: "deviceId", value: deviceId.rawValue)
+        ]
+
+        if let since = since {
+            let formatter = ISO8601DateFormatter()
+            queryItems.append(URLQueryItem(name: "since", value: formatter.string(from: since)))
+        }
+
+        sendGet(
+            path: "/v1/restore/manifest",
+            queryItems: queryItems,
+            bearerToken: bearerToken,
+            completion: completion
+        )
+    }
+
+    func downloadData(
+        from url: URL,
+        completion: @escaping (Result<Data, Error>) -> Void
+    ) {
+        var request = URLRequest(url: url, timeoutInterval: configuration.requestTimeout)
+        request.httpMethod = "GET"
+
+        session.dataTask(with: request) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+
+            guard let httpResponse = response as? HTTPURLResponse else {
+                completion(.failure(CloudBackupAPIError.invalidResponse))
+                return
+            }
+
+            guard (200...299).contains(httpResponse.statusCode) else {
+                completion(.failure(CloudBackupAPIError.httpStatus(httpResponse.statusCode)))
+                return
+            }
+
+            guard let data = data else {
+                completion(.failure(CloudBackupAPIError.missingData))
+                return
+            }
+
+            completion(.success(data))
+        }.resume()
+    }
+
     private func send<RequestBody: Encodable, ResponseBody: Decodable>(
         path: String,
         method: String,
@@ -185,6 +253,61 @@ final class CloudBackupAPIClient: CloudBackupAPIClientProtocol {
         } catch {
             completion(.failure(error))
             return
+        }
+
+        session.dataTask(with: request) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+
+            guard let httpResponse = response as? HTTPURLResponse else {
+                completion(.failure(CloudBackupAPIError.invalidResponse))
+                return
+            }
+
+            guard (200...299).contains(httpResponse.statusCode) else {
+                completion(.failure(CloudBackupAPIError.httpStatus(httpResponse.statusCode)))
+                return
+            }
+
+            guard let data = data else {
+                completion(.failure(CloudBackupAPIError.missingData))
+                return
+            }
+
+            do {
+                completion(.success(try self.decoder.decode(ResponseBody.self, from: data)))
+            } catch {
+                completion(.failure(CloudBackupAPIError.decodingFailed(error)))
+            }
+        }.resume()
+    }
+
+    private func sendGet<ResponseBody: Decodable>(
+        path: String,
+        queryItems: [URLQueryItem],
+        bearerToken: String? = nil,
+        completion: @escaping (Result<ResponseBody, Error>) -> Void
+    ) {
+        guard var components = URLComponents(url: configuration.baseURL.appendingPathComponent(path), resolvingAgainstBaseURL: false) else {
+            completion(.failure(CloudBackupAPIError.invalidResponse))
+            return
+        }
+
+        components.queryItems = queryItems
+
+        guard let url = components.url else {
+            completion(.failure(CloudBackupAPIError.invalidResponse))
+            return
+        }
+
+        var request = URLRequest(url: url, timeoutInterval: configuration.requestTimeout)
+        request.httpMethod = "GET"
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+
+        if let bearerToken = bearerToken {
+            request.setValue("Bearer \(bearerToken)", forHTTPHeaderField: "Authorization")
         }
 
         session.dataTask(with: request) { data, response, error in

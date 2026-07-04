@@ -1464,10 +1464,51 @@ Smallest proposed next fixes:
 2. Add tests around notification badge/alert-dot behavior after the UI is further decoupled.
 3. Continue generated dependency warning tracking through dependency updates rather than direct Pod source edits.
 
+## Phase 6 Restore Scaffold Audit
+
+Phase 6 date: 2026-07-04.
+
+Commands run:
+
+```sh
+git status --short
+xcodebuild -list -workspace footage.xcworkspace
+scripts/phase1-build-baseline.sh
+```
+
+Results:
+
+- Initial `git status --short` showed only the existing Xcode user state file.
+- `xcodebuild -list -workspace footage.xcworkspace` succeeded.
+- `scripts/phase1-build-baseline.sh` succeeded with exit code 0.
+
+Implementation result:
+
+- Added restore preview models and status types.
+- Added a restore service scaffold.
+- Added plain NDJSON route point parser.
+- Added duplicate detection scaffold.
+- Added preview-only restore import repository.
+- Extended `CloudBackupAPIClient` with restore manifest GET and private data download helpers.
+
+Safety result:
+
+- Restore is not enabled or invoked automatically.
+- Restore does not mutate Realm.
+- Default conflict policy is `skipExisting`.
+- Destructive replacement throws and is not implemented.
+- No AWS credentials, Auth requirement, raw coordinate logging, token logging, or full private URL logging was added.
+
+Known limitations:
+
+- Gzip route object parsing is not implemented.
+- Duplicate detection cannot be production-grade until stable point IDs are persisted locally.
+- Real additive import needs a reviewed Realm migration/import plan and explicit user confirmation UX.
+
 ## Recommended Immediate Next Steps
 
 1. Keep `scripts/phase1-build-baseline.sh` as the repeatable Debug and Release simulator baseline for app and widget.
 2. Do not update CocoaPods tooling unless a concrete build or install issue requires it; the dependency baseline now passes with CocoaPods 1.10.0.
-3. Add tests for outbox state transitions, idempotency key generation, NDJSON serialization, API client request construction, and StoreKit 2 purchase-result handling.
-4. Add secure token storage and explicit opt-in UI before enabling any real cloud backup.
+3. Add tests for outbox state transitions, idempotency key generation, NDJSON serialization, restore parsing, API client request construction, and StoreKit 2 purchase-result handling.
+4. Add secure token storage and explicit opt-in UI before enabling any real cloud backup or restore.
 5. Track remaining Realm/RealmSwift generated warnings through dependency updates.

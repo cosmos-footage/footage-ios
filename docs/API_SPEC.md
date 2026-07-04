@@ -256,6 +256,12 @@ Response:
 }
 ```
 
+Phase 6 iOS scaffold note:
+
+- The restore client reads `downloadUrl` values from this manifest directly.
+- Plain `application/x-ndjson` parsing is scaffolded first.
+- Gzip restore parsing remains future work and should preserve the same privacy rule: do not log route object contents or full private URLs.
+
 ## POST /v1/auth/link
 
 Links an external auth subject to an existing owner.

@@ -340,6 +340,37 @@ Upload handling:
 - It refuses to run uploads unless both cloud backup and development upload flags are enabled and a bearer token is explicitly supplied.
 - No AWS access key or secret key exists in the app model.
 
+## Phase 6 Implemented Restore Scaffold
+
+Phase 6 adds restore preview models without mutating Realm:
+
+- `RestoreStatus`
+- `RestoreConflictPolicy`
+- `RestoreImportPlan`
+- `RestorePreview`
+- `RestoreImportResult`
+
+Default conflict policy:
+
+```text
+skipExisting
+```
+
+`RestoreImportPlan` defaults to requiring user confirmation and does not permit import automatically. The current local repository returns preview plans only; `importData` throws until an explicit additive import path is implemented.
+
+Restore parsing:
+
+- Plain NDJSON route points are parsed into `RoutePointDraft`.
+- Gzip route object parsing is deferred.
+- Duplicate detection is scaffolded by `recordingId + pointId`, with timestamp/rounded coordinate fallback available internally only.
+- Duplicate detection must not log coordinate values.
+
+Restore safety:
+
+- No existing local route, photo, note, summary, or Realm object is deleted.
+- No local record is overwritten by default.
+- Destructive replacement remains disabled even when explicitly requested until a reviewed migration/import path exists.
+
 ## Server Model
 
 ### owners

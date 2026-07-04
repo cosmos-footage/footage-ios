@@ -275,21 +275,31 @@ Validation:
 
 ## Phase 6: Restore
 
+Status: completed for non-destructive preview scaffolding.
+
 Goal: let a user restore cloud-backed data after reinstall or device change.
 
 Tasks:
 
-- Fetch restore manifest.
-- Download route batches through server-authorized URLs.
-- Import into local repository using stable IDs and idempotency.
-- Handle existing local data without destructive overwrite.
-- Restore summaries and media metadata; restore photos only if enabled.
+- Added `RestoreService` scaffold for manifest fetch, private route object download, parsing, and preview plan creation.
+- Added `RestoreImportPlan`, `RestoreConflictPolicy`, and `RestoreStatus`.
+- Added plain NDJSON route point parser returning `RoutePointDraft`.
+- Added duplicate detection scaffold by `recordingId + pointId`.
+- Added preview-only import repository that does not mutate Realm.
+- Deferred gzip parsing, media restore, summary restore, and real additive Realm import.
 
 Acceptance criteria:
 
 - Reinstall restore can rebuild route history.
 - Duplicate route points are not created on repeated restore.
 - User can inspect restore status and failures.
+
+Phase 6 completion notes:
+
+- `scripts/phase1-build-baseline.sh` succeeded after Phase 6 changes.
+- Restore is not automatic and has no visible UI.
+- Restore cannot overwrite or delete local data by default.
+- Real restore remains blocked on explicit UX, additive import implementation, persisted stable point IDs, gzip/file staging, and privacy review.
 
 ## Phase 7: Auth Linking
 
