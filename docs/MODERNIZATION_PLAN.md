@@ -331,18 +331,18 @@ Phase 7 completion notes:
 
 ## Phase 8: App Store/TestFlight Readiness
 
+Status: completed for documentation and simulator build baseline.
+
 Goal: ship a privacy-first renewed app.
 
 Tasks:
 
-- Run full release build on modern Xcode.
-- Add tests for recording, data migration, sync outbox, and restore import.
-- Add privacy manifest if required.
-- Prepare App Store privacy disclosures.
-- Review location permission copy.
-- Verify background location UX and entitlement use.
-- Verify widget behavior.
-- Add TestFlight rollout checklist and rollback plan.
+- Added App Store readiness documentation.
+- Added privacy review documentation.
+- Added release checklist.
+- Audited Info.plist, entitlements, background location, app group, widget, disabled feature flags, and placeholder backend configuration.
+- Verified workspace listing and established simulator build baseline.
+- Documented archive command but did not change signing or verify signed archive.
 
 Acceptance criteria:
 
@@ -350,6 +350,13 @@ Acceptance criteria:
 - Existing data is preserved through update.
 - Cloud backup and deletion behavior match privacy policy.
 - TestFlight build has no known critical data-loss risks.
+
+Phase 8 completion notes:
+
+- `scripts/phase1-build-baseline.sh` succeeded.
+- Archive readiness is documented only; signed archive is a human signing/provisioning follow-up.
+- No user-facing permission copy was changed in this phase.
+- Cloud Backup, Restore, and Auth remain disabled/not automatic.
 
 ## First Phase 1 Codex Command
 

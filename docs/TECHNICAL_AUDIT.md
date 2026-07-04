@@ -1544,6 +1544,41 @@ Known limitations:
 - Cognito adapter is placeholder-only.
 - Secure token storage remains future work.
 
+## Phase 8 App Store Readiness Audit
+
+Phase 8 date: 2026-07-04.
+
+Commands run:
+
+```sh
+git status --short
+find . -maxdepth 4 \( -name 'Info.plist' -o -name '*.entitlements' -o -name 'PrivacyInfo.xcprivacy' -o -name 'Podfile' -o -name '*.xcworkspace' -o -name '*.xcodeproj' \) -print | sort
+plutil -p Footage/Resource/Info.plist
+plutil -p MainWidget/Info.plist
+plutil -p Entitlements/footage.entitlements
+plutil -p Entitlements/MainWidgetExtension.entitlements
+rg -n "CloudBackupConfiguration|isCloudBackupEnabled|isDevelopmentUploadEnabled|RestoreService|AuthLinkingService|footage-cloud-backup|AWS|SECRET|TOKEN|Bearer|NSLocation|NSPhoto|NSCamera|UIBackgroundModes|group\\.footage" Footage MainWidget Entitlements docs/API_SPEC.md docs/MODERNIZATION_PLAN.md
+xcodebuild -list -workspace footage.xcworkspace
+scripts/phase1-build-baseline.sh
+```
+
+Results:
+
+- Info.plist includes location always/when-in-use, photo library, Face ID, and background location declarations.
+- Entitlements preserve app group `group.footage`.
+- Pod privacy manifests exist for Realm/RealmSwift under `Pods/`.
+- Cloud backup defaults remain disabled.
+- Restore is not automatic.
+- Auth is not required.
+- Workspace listing succeeded.
+- `scripts/phase1-build-baseline.sh` succeeded.
+
+Release readiness result:
+
+- Simulator build baseline is ready.
+- Signed archive readiness is documented but not verified because signing/provisioning was intentionally not changed.
+- No user-facing permission copy was changed in Phase 8.
+
 ## Recommended Immediate Next Steps
 
 1. Keep `scripts/phase1-build-baseline.sh` as the repeatable Debug and Release simulator baseline for app and widget.
