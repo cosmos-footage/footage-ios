@@ -9,6 +9,9 @@ class StatsViewController: UIViewController {
     var firstColor: String = ""
     var colorRank: Array<(key: String, value: Double)> = []
     var placeRank: Array<(key: String, value: Double)> = []
+    var daySummaryRepository: DaySummaryRepository = RealmDaySummaryRepository()
+    var colorRepository: ColorRepository = RealmColorRepository()
+    var placeRepository: PlaceRepository = RealmPlaceRepository()
     
     @IBOutlet weak var currentBadge: UIImageView!
     @IBOutlet weak var formLastView: UIView!
@@ -37,15 +40,15 @@ class StatsViewController: UIViewController {
     @IBOutlet weak var secondDot: UILabel!
     
     override func viewWillAppear(_ animated: Bool) {
-        let monthlyDistance = DateManager.loadMonthlyDistance()
+        let monthlyDistance = daySummaryRepository.loadMonthlyDistance()
         self.totalDistance.setUpdateBlock { (value, label) in
             label.text = String(format: "%.f", value)
         }
         self.totalDistance.counter.timingFunction = EFTimingFunction.easeOut(easingRate: 7)
         self.totalDistance.countFrom(0, to: CGFloat(monthlyDistance / 1000), withDuration: 5)
         let days = DateConverter.lastMondayToday()
-        colorRank = ColorManager.getRankingDistance(startDate: days.0, endDate: days.1)
-        placeRank = PlaceManager.getRankingDistance(startDate: days.0, endDate: days.1)
+        colorRank = colorRepository.rankingDistance(startDate: days.0, endDate: days.1)
+        placeRank = placeRepository.rankingDistance(startDate: days.0, endDate: days.1)
         if !colorRank.isEmpty {
             firstDot.isHidden = false
             secondDot.isHidden = false

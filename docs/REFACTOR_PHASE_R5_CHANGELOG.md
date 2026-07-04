@@ -16,6 +16,12 @@ Phase R5 starts migrating direct Realm manager reads behind repository protocols
   - default -> `year`
 - Preserved `DateViewController.journeys`, snapshot creation, storyboard instantiation, and segue behavior.
 
+## R5-2 Completed
+
+- Added default `DaySummaryRepository`, `ColorRepository`, and `PlaceRepository` dependencies to `StatsViewController`.
+- Replaced direct `DateManager.loadMonthlyDistance()`, `ColorManager.getRankingDistance(...)`, and `PlaceManager.getRankingDistance(...)` calls in `viewWillAppear(_:)`.
+- Preserved the existing weekly date range, ranking arrays, image selection, segue payloads, and storyboard creation.
+
 ## Behavior
 
 - Existing date screen behavior was not intentionally changed.
@@ -28,4 +34,4 @@ Phase R5 starts migrating direct Realm manager reads behind repository protocols
 
 ## Next Step
 
-R5-2 should migrate a similarly small read-only stats screen slice using the existing repository protocols.
+R5-3 should migrate a similarly small read-only report screen slice using the existing ranking repository methods.
