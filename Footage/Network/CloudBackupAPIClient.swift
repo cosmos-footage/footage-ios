@@ -51,6 +51,12 @@ protocol CloudBackupAPIClientProtocol {
         bearerToken: String,
         completion: @escaping (Result<RestoreManifestResponse, Error>) -> Void
     )
+    func linkAuth(
+        _ request: AuthLinkRequest,
+        bearerToken: String,
+        idempotencyKey: IdempotencyKey,
+        completion: @escaping (Result<AuthLinkResponse, Error>) -> Void
+    )
     func downloadData(
         from url: URL,
         completion: @escaping (Result<Data, Error>) -> Void
@@ -225,6 +231,22 @@ final class CloudBackupAPIClient: CloudBackupAPIClientProtocol {
 
             completion(.success(data))
         }.resume()
+    }
+
+    func linkAuth(
+        _ request: AuthLinkRequest,
+        bearerToken: String,
+        idempotencyKey: IdempotencyKey,
+        completion: @escaping (Result<AuthLinkResponse, Error>) -> Void
+    ) {
+        send(
+            path: "/v1/auth/link",
+            method: "POST",
+            body: request,
+            bearerToken: bearerToken,
+            idempotencyKey: idempotencyKey,
+            completion: completion
+        )
     }
 
     private func send<RequestBody: Encodable, ResponseBody: Decodable>(

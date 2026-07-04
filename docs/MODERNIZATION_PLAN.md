@@ -303,20 +303,31 @@ Phase 6 completion notes:
 
 ## Phase 7: Auth Linking
 
+Status: completed for scaffold.
+
 Goal: link anonymous data to a real account without changing ownership IDs.
 
 Tasks:
 
-- Add Sign in with Apple or Cognito adapter.
-- Call `POST /v1/auth/link`.
-- Keep `ownerId` stable and attach nullable `authUserId`.
-- Add account status handling and server-to-server notification planning for Apple.
+- Added `AuthProvider`, `AuthIdentity`, and `AuthLinkState`.
+- Added provider adapter protocol plus Apple and Cognito placeholder adapters.
+- Added `AuthLinkingService` scaffold for `POST /v1/auth/link`.
+- Added local auth identity metadata store without raw token persistence.
+- Preserved existing anonymous `ownerId` and rejects owner mismatch responses.
+- Did not add Sign in with Apple capability, login UI, required login, or account-gated recording.
 
 Acceptance criteria:
 
 - Anonymous data remains under the same `ownerId` after login.
 - Logout does not delete local data.
 - Account deletion flow is explicit and privacy-reviewed.
+
+Phase 7 completion notes:
+
+- `scripts/phase1-build-baseline.sh` succeeded after Phase 7 changes.
+- Login is not required after this phase.
+- Recording remains local-first and available without auth.
+- Production auth remains blocked on Sign in with Apple/Cognito UI, entitlements/capability review, secure token handling, server behavior, and privacy copy.
 
 ## Phase 8: App Store/TestFlight Readiness
 

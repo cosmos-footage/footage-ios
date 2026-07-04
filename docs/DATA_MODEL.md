@@ -371,6 +371,42 @@ Restore safety:
 - No local record is overwritten by default.
 - Destructive replacement remains disabled even when explicitly requested until a reviewed migration/import path exists.
 
+## Phase 7 Implemented Auth Linking Scaffold
+
+Phase 7 adds local auth-linking models without requiring login:
+
+- `AuthProvider`
+- `AuthLinkState`
+- `AuthIdentity`
+- `AuthProviderCredential`
+
+`AuthProvider` values:
+
+- `apple`
+- `cognito`
+- `email`
+- `unknown`
+
+`AuthLinkState` values:
+
+- `anonymous`
+- `linking`
+- `linked`
+- `failed`
+- `unavailable`
+
+Ownership rule:
+
+- Existing anonymous `ownerId` remains the durable owner.
+- Auth linking must attach provider identity to that owner.
+- A returned auth response with a different `ownerId` is rejected.
+- Local data is not deleted, reassigned, or made account-gated.
+
+Storage rule:
+
+- `LocalAuthIdentityStore` stores linked identity metadata and state.
+- It does not store raw provider tokens or bearer tokens.
+
 ## Server Model
 
 ### owners

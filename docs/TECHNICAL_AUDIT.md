@@ -1505,10 +1505,49 @@ Known limitations:
 - Duplicate detection cannot be production-grade until stable point IDs are persisted locally.
 - Real additive import needs a reviewed Realm migration/import plan and explicit user confirmation UX.
 
+## Phase 7 Auth Linking Scaffold Audit
+
+Phase 7 date: 2026-07-04.
+
+Commands run:
+
+```sh
+git status --short
+xcodebuild -list -workspace footage.xcworkspace
+scripts/phase1-build-baseline.sh
+```
+
+Results:
+
+- `xcodebuild -list -workspace footage.xcworkspace` succeeded.
+- `scripts/phase1-build-baseline.sh` succeeded with exit code 0.
+
+Implementation result:
+
+- Added auth provider, identity, and link state models.
+- Added provider adapter protocol and Apple/Cognito placeholders.
+- Added `AuthLinkingService`.
+- Extended `CloudBackupAPIClient` with auth link request support.
+
+Safety result:
+
+- Login is not required.
+- Recording is not account-gated.
+- Existing anonymous `ownerId` is preserved.
+- Auth link responses with mismatched `ownerId` are rejected.
+- Raw provider tokens, bearer tokens, email values, locations, and presigned URLs are not logged.
+- No Sign in with Apple capability, entitlement, signing, bundle identifier, Realm migration, or widget source change was made.
+
+Known limitations:
+
+- Apple Sign in adapter is unavailable until entitlement/capability and UI review.
+- Cognito adapter is placeholder-only.
+- Secure token storage remains future work.
+
 ## Recommended Immediate Next Steps
 
 1. Keep `scripts/phase1-build-baseline.sh` as the repeatable Debug and Release simulator baseline for app and widget.
 2. Do not update CocoaPods tooling unless a concrete build or install issue requires it; the dependency baseline now passes with CocoaPods 1.10.0.
-3. Add tests for outbox state transitions, idempotency key generation, NDJSON serialization, restore parsing, API client request construction, and StoreKit 2 purchase-result handling.
-4. Add secure token storage and explicit opt-in UI before enabling any real cloud backup or restore.
+3. Add tests for outbox state transitions, idempotency key generation, NDJSON serialization, restore parsing, auth linking owner preservation, API client request construction, and StoreKit 2 purchase-result handling.
+4. Add secure token storage and explicit opt-in UI before enabling any real cloud backup, restore, or auth linking.
 5. Track remaining Realm/RealmSwift generated warnings through dependency updates.

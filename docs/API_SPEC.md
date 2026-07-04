@@ -266,6 +266,11 @@ Phase 6 iOS scaffold note:
 
 Links an external auth subject to an existing owner.
 
+Auth linking rule:
+
+- The server response must preserve the submitted `ownerId`.
+- Clients should reject a response that returns a different owner because that could strand existing anonymous local data.
+
 Headers:
 
 ```text
