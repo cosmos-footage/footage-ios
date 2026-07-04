@@ -21,6 +21,15 @@ struct RealmRouteRepository: RouteRepository {
         DateManager.loadFromRealm(rangeOf: rangeOf)
     }
 
+    func allFootsteps() -> [Footstep] {
+        let realm = try! Realm()
+        return Array(realm.objects(Footstep.self))
+    }
+
+    func footstepsWithAssets() -> [Footstep] {
+        allFootsteps().filter { !$0.notes.isEmpty }
+    }
+
     func calculateDistance(from: Footstep, to: Footstep) -> Double {
         DateManager.calculateDistance(from: from, to: to)
     }

@@ -222,10 +222,10 @@ R5 progress:
 - Added `BadgeRepository.monthlyBadges(month:)` and routed `ReportDetailVC` monthly badge reads through it.
 - Added `BadgeRepository.badge(imageName:)` and routed `LevelVC` current/list badge reads through `BadgeRepository`.
 - Added `ColorRepository.footsteps(hex:from:to:)` and routed `ColoredJourneyVC` colored route reads through it.
+- Added `RouteRepository.allFootsteps()` and `RouteRepository.footstepsWithAssets()`, then routed `MapViewController` map footstep reads through `RouteRepository`.
 
 R5 remaining:
 
-- Add read models for map screens before migrating those views.
 - Defer heavier `LocationUpdate` and badge-awarding write migrations until side-effect ordering is documented.
 
 ### R6: S3-Ready Backup Pipeline

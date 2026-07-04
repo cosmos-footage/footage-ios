@@ -53,6 +53,14 @@ Phase R5 starts migrating direct Realm manager reads behind repository protocols
 - Replaced direct colored route reads in `ColoredJourneyVC.configureMap()`.
 - Preserved the existing Realm `List<Footstep>` route rendering behavior.
 
+## R5-7 Completed
+
+- Added `allFootsteps()` and `footstepsWithAssets()` to `RouteRepository`.
+- Implemented both methods in `RealmRouteRepository` using the existing Realm `Footstep` objects.
+- Added a default `RouteRepository` dependency to `MapViewController`.
+- Replaced direct Realm footstep reads in `MapViewController.viewDidAppear(_:)` and `initializeMapView()`.
+- Preserved existing annotation, overlay, table reload, and authorization behavior.
+
 ## Behavior
 
 - Existing date screen behavior was not intentionally changed.
@@ -65,4 +73,4 @@ Phase R5 starts migrating direct Realm manager reads behind repository protocols
 
 ## Next Step
 
-Next repository migration should add read models for map screens before migrating those views.
+Next migration should defer heavier `LocationUpdate` and badge-awarding write paths until side-effect ordering is documented and covered by tests.

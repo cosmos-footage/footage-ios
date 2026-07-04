@@ -12,6 +12,8 @@ protocol RouteRepository {
     func loadTodayData()
     func update(footstep: Footstep, distance: Double) throws
     func loadJourneys(rangeOf: String) -> [Journey]
+    func allFootsteps() -> [Footstep]
+    func footstepsWithAssets() -> [Footstep]
     func calculateDistance(from: Footstep, to: Footstep) -> Double
 }
 

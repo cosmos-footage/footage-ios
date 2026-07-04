@@ -8,7 +8,6 @@
 
 import UIKit
 import MapKit
-import RealmSwift
 
 class MapViewController: UIViewController {
     
@@ -19,6 +18,7 @@ class MapViewController: UIViewController {
     var overlayButton = UIButton()
     var preventTableUpdate = false // to prevent table from reloading when collectionview is showing / view is resizing
     var currentLocation = CLLocationCoordinate2D(latitude: 36.4800984, longitude: 127.2802807)
+    var routeRepository: RouteRepository = RealmRouteRepository()
     var footstepsWithAssets: [Footstep] = []
     var allFootsteps: [Footstep] = [] {
         didSet {
@@ -45,12 +45,11 @@ class MapViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         if authStatus == .authorizedAlways || authStatus == .authorizedWhenInUse {
-            let realm = try! Realm()
-            footstepsWithAssets = Array(realm.objects(Footstep.self)).filter({(footstep) -> Bool in !footstep.notes.isEmpty })
+            footstepsWithAssets = routeRepository.footstepsWithAssets()
             mapView.removeAnnotations(mapView.annotations)
             mapView.removeOverlays(mapView.overlays)
             if overlayOn {
-                allFootsteps = Array(realm.objects(Footstep.self)) // automatic overlay
+                allFootsteps = routeRepository.allFootsteps() // automatic overlay
                 let annotations = footstepsWithAssets.map { (footstep) -> NearbyAnnotation in
                     return NearbyAnnotation(footstep: footstep, distance: 0)
                 }
@@ -79,8 +78,7 @@ class MapViewController: UIViewController {
         let camera = MKMapCamera(lookingAtCenter: currentLocation, fromDistance: CLLocationDistance(exactly: 500000)!, pitch: 0, heading: CLLocationDirection(exactly: 0)!)
         mapView.setCamera(camera, animated: false)
         
-        let realm = try! Realm()
-        footstepsWithAssets = Array(realm.objects(Footstep.self)).filter({(footstep) -> Bool in !footstep.notes.isEmpty })
+        footstepsWithAssets = routeRepository.footstepsWithAssets()
         M.tableVC.allFootsteps = footstepsWithAssets
         mapView.register(NearbyAnnotationView.self, forAnnotationViewWithReuseIdentifier: NearbyAnnotationView.reuseIdentifier)
         mapView.register(AppleClusterAnnotationView.self, forAnnotationViewWithReuseIdentifier: MKMapViewDefaultClusterAnnotationViewReuseIdentifier)
