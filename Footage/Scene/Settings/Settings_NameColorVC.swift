@@ -57,7 +57,7 @@ class Settings_NameColorVC: UIViewController {
             let youSureAlert = UIAlertController.init(title: "주의!", message: "월간리포트에서는 카테고리의 이름이 아닌 발자취의 색깔에 따라 거리가 합산됩니다.", preferredStyle:  .alert)
             let realOk =  UIAlertAction.init(title: "수정", style: .default) { (action) in
                 labelname.text = userInput
-                UserDefaults(suiteName: "group.footage")!.set(labelname.text, forKey: hexCode)
+                UserDefaults(suiteName: "group.footage")?.set(labelname.text, forKey: hexCode)
             }
             let actuallyNo = UIAlertAction.init(title: "취소", style: .cancel) { (action) in
                 print(action)

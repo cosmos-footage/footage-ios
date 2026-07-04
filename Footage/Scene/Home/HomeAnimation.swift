@@ -145,12 +145,13 @@ class HomeAnimation {
         homeVC.MainButton.restorationIdentifier = pressedButtonClass.name
         pressedbutton.restorationIdentifier = mainButtonClass.name
         
-        homeVC.selectedButtonLabel.text = UserDefaults(suiteName: "group.footage")!.string(forKey:pressedButtonClass.color)
+        let widgetDefaults = UserDefaults(suiteName: "group.footage")
+        homeVC.selectedButtonLabel.text = widgetDefaults?.string(forKey:pressedButtonClass.color)
         
         homeVC.mainMap.tintColor = UIColor(hex: pressedButtonClass.color)
         HomeViewController.selectedColor = pressedButtonClass.color
         
-        UserDefaults(suiteName: "group.footage")!.set(pressedButtonClass.color, forKey: "selectedColor")
+        widgetDefaults?.set(pressedButtonClass.color, forKey: "selectedColor")
         
     }
     

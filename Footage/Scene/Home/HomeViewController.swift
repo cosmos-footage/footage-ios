@@ -152,13 +152,6 @@ class HomeViewController: UIViewController {
             HomeAnimation.homeStartAnimation(self)
             HomeViewController.selectedColor = Buttons(className: MainButton.restorationIdentifier!).color
             trackMapView()
-            
-            let center = UNUserNotificationCenter.current()
-            center.getPendingNotificationRequests(completionHandler: { requests in
-                for request in requests {
-                    print(request)
-                }
-            })
         }
     }
     
@@ -551,7 +544,6 @@ extension HomeViewController {
                     guard let categoryName = UserDefaults.standard.string(forKey: hex) else { continue }
                     widgetUD.set(categoryName, forKey: hex)
                 }
-                UserDefaults(suiteName: "group.footage")!.set("#EADE4Cff", forKey: "selectedColor")
                 
             }
         }
@@ -599,7 +591,7 @@ extension HomeViewController {
         UserDefaults.standard.setValue(true, forKey: "etcPush")
         UserDefaults.standard.setValue(10, forKey: "everydayPushHour")
         UserDefaults.standard.setValue(30, forKey: "everydayPushMinute")
-        UserDefaults(suiteName: "group.footage")!.setValue("#EADE4Cff", forKey: "selectedColor")
+        UserDefaults(suiteName: "group.footage")?.setValue("#EADE4Cff", forKey: "selectedColor")
     }
     
     @objc func switchChanged(_ sender: UISwitch) {
