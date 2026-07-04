@@ -388,7 +388,7 @@ Phase 9 completion notes:
 - `xcodebuild -list -workspace footage.xcworkspace` succeeded.
 - `scripts/phase1-build-baseline.sh` succeeded with exit code 0.
 - Phase 9 originally found no automated XCTest target or `.xctestplan`; Refactor Phase R7 has since added a `FootageTests` XCTest target for pure service coverage.
-- `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` succeeded after R7.
+- `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` succeeded after R7 with 15 passing tests.
 - Signed archive was not run because signing/provisioning was intentionally not changed.
 - Recommendation is No-Go for production App Store release today, and Go for continued internal TestFlight preparation after human signing, device QA, widget QA, StoreKit validation, and privacy metadata review.
 

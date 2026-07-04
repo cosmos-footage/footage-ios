@@ -8,7 +8,7 @@ Date: 2026-07-04.
 - `scripts/phase1-build-baseline.sh` succeeds with exit code 0.
 - The baseline script runs `pod install`, lists the workspace, then builds the `footage` and `MainWidgetExtension` schemes for Debug and Release with `CODE_SIGNING_ALLOWED=NO`.
 - Refactor Phase R7 added a `FootageTests` XCTest target for pure service coverage.
-- `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` succeeds.
+- `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` succeeds with 15 passing tests.
 - Signed archive was not run because signing and provisioning were intentionally not changed during renewal.
 
 ## Current Feature Status
@@ -58,7 +58,7 @@ Scaffold-only:
 - Cloud Backup requires explicit opt-in UI, secure token storage, backend deployment, gzip/file staging, tests, and privacy review before enabling.
 - Restore requires explicit user confirmation UX, additive import implementation, stable persisted point IDs, tests, and rollback notes before enabling.
 - Auth requires Sign in with Apple/Cognito UI, capability review, secure token handling, server verification, and privacy copy before enabling.
-- Test coverage is still early and currently covers only `DistanceCalculator`, `LocationFilter`, and `RoutePointNDJSONSerializer`.
+- Test coverage is still early and currently covers selected recording utilities, sync outbox behavior, cloud backup request construction, restore duplicate detection, and auth owner mismatch handling.
 
 ## Known Privacy Risks
 

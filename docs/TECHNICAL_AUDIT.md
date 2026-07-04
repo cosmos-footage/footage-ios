@@ -1609,8 +1609,8 @@ Validation results:
 - `xcodebuild -list -workspace footage.xcworkspace` succeeded.
 - `scripts/phase1-build-baseline.sh` succeeded with exit code 0.
 - Phase 9 originally found no automated XCTest target or `.xctestplan`.
-- Refactor Phase R7 has since added a `FootageTests` XCTest target and pure service tests for `DistanceCalculator`, `LocationFilter`, and `RoutePointNDJSONSerializer`.
-- `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` succeeded after R7.
+- Refactor Phase R7 has since added a `FootageTests` XCTest target and pure service tests for recording utilities, sync outbox behavior, cloud backup request construction, restore duplicate detection, and auth owner mismatch handling.
+- `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` succeeded after R7 with 15 passing tests.
 - Signed archive was not run because signing/provisioning was intentionally not changed.
 
 Unsafe default findings:

@@ -100,6 +100,10 @@
 		C0D700010000000000000001 /* DistanceCalculatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D700040000000000000001 /* DistanceCalculatorTests.swift */; };
 		C0D700020000000000000001 /* LocationFilterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D700050000000000000001 /* LocationFilterTests.swift */; };
 		C0D700030000000000000001 /* RoutePointNDJSONSerializerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D700060000000000000001 /* RoutePointNDJSONSerializerTests.swift */; };
+		C0D710010000000000000001 /* LocalSyncOutboxRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D710050000000000000001 /* LocalSyncOutboxRepositoryTests.swift */; };
+		C0D710020000000000000001 /* RestoreDuplicateDetectorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D710060000000000000001 /* RestoreDuplicateDetectorTests.swift */; };
+		C0D710030000000000000001 /* AuthLinkingServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D710070000000000000001 /* AuthLinkingServiceTests.swift */; };
+		C0D710040000000000000001 /* CloudBackupAPIClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D710080000000000000001 /* CloudBackupAPIClientTests.swift */; };
 		AF41067D59E2F77A2AFBFEBA /* Pods_MainWidgetExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A69CECC0AB4D13F1B42D43E5 /* Pods_MainWidgetExtension.framework */; };
 		B911617D249A1E2300EFC75F /* MapCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B911617C249A1E2300EFC75F /* MapCell.xib */; };
 		B911617F249A36C600EFC75F /* JourneyAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B911617E249A36C600EFC75F /* JourneyAnimation.swift */; };
@@ -279,6 +283,10 @@
 		C0D700050000000000000001 /* LocationFilterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationFilterTests.swift; sourceTree = "<group>"; };
 		C0D700060000000000000001 /* RoutePointNDJSONSerializerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutePointNDJSONSerializerTests.swift; sourceTree = "<group>"; };
 		C0D700070000000000000001 /* FootageTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FootageTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C0D710050000000000000001 /* LocalSyncOutboxRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalSyncOutboxRepositoryTests.swift; sourceTree = "<group>"; };
+		C0D710060000000000000001 /* RestoreDuplicateDetectorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestoreDuplicateDetectorTests.swift; sourceTree = "<group>"; };
+		C0D710070000000000000001 /* AuthLinkingServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthLinkingServiceTests.swift; sourceTree = "<group>"; };
+		C0D710080000000000000001 /* CloudBackupAPIClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupAPIClientTests.swift; sourceTree = "<group>"; };
 		8D56ABB957378A50C8E81335 /* Pods_footage.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_footage.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A69CECC0AB4D13F1B42D43E5 /* Pods_MainWidgetExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MainWidgetExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B62ECEFF6FF5C8333D8221B6 /* Pods-footage.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-footage.debug.xcconfig"; path = "Target Support Files/Pods-footage/Pods-footage.debug.xcconfig"; sourceTree = "<group>"; };
@@ -540,6 +548,10 @@
 				C0D700040000000000000001 /* DistanceCalculatorTests.swift */,
 				C0D700050000000000000001 /* LocationFilterTests.swift */,
 				C0D700060000000000000001 /* RoutePointNDJSONSerializerTests.swift */,
+				C0D710050000000000000001 /* LocalSyncOutboxRepositoryTests.swift */,
+				C0D710060000000000000001 /* RestoreDuplicateDetectorTests.swift */,
+				C0D710070000000000000001 /* AuthLinkingServiceTests.swift */,
+				C0D710080000000000000001 /* CloudBackupAPIClientTests.swift */,
 			);
 			path = FootageTests;
 			sourceTree = "<group>";
@@ -1158,6 +1170,10 @@
 				C0D700010000000000000001 /* DistanceCalculatorTests.swift in Sources */,
 				C0D700020000000000000001 /* LocationFilterTests.swift in Sources */,
 				C0D700030000000000000001 /* RoutePointNDJSONSerializerTests.swift in Sources */,
+				C0D710010000000000000001 /* LocalSyncOutboxRepositoryTests.swift in Sources */,
+				C0D710020000000000000001 /* RestoreDuplicateDetectorTests.swift in Sources */,
+				C0D710030000000000000001 /* AuthLinkingServiceTests.swift in Sources */,
+				C0D710040000000000000001 /* CloudBackupAPIClientTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

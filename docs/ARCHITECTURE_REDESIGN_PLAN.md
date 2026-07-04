@@ -265,7 +265,7 @@ R6 remaining:
 
 ### R7: Tests and Verification Harness
 
-Status: started.
+Status: completed for the initial refactor verification harness.
 
 Tasks:
 
@@ -280,16 +280,15 @@ Exit criteria:
 R7 progress:
 
 - Added a `FootageTests` XCTest target and wired it into the shared `footage` scheme.
-- Added pure service tests for `DistanceCalculator`, `LocationFilter`, and `RoutePointNDJSONSerializer`.
+- Added pure service tests for `DistanceCalculator`, `LocationFilter`, `RoutePointNDJSONSerializer`, `LocalSyncOutboxRepository`, `CloudBackupAPIClient`, `RestoreDuplicateDetector`, and `AuthLinkingService`.
 - Added test target framework search paths needed for the app module's CocoaPods Swift dependencies.
-- `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` succeeded.
+- `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` succeeded with 15 passing tests.
+- `scripts/phase1-build-baseline.sh` succeeded after the test harness expansion.
 
-R7 remaining:
+R7 follow-up:
 
-- Add outbox retry/backoff tests.
-- Add Cloud Backup API request construction tests.
-- Add restore duplicate detection tests.
-- Add auth owner mismatch tests.
+- Consider adding a dedicated `.xctestplan`.
+- Add integration-style tests after R8 development backend configuration exists.
 
 ### R8: Backend/S3 Integration
 
