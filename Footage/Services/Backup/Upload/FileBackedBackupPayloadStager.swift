@@ -6,9 +6,10 @@
 //
 
 import Foundation
+import Compression
 
 enum FileBackedBackupPayloadStagerError: Error {
-    case gzipCompressionUnsupported
+    case compressionFailed
     case stagedFileOutsidePrivateDirectory
 }
 
@@ -33,8 +34,12 @@ final class FileBackedBackupPayloadStager: BackupPayloadStager {
         checksumSha256: String? = nil,
         compression: BackupPayloadCompression = .none
     ) throws -> StagedBackupPayloadMetadata {
-        guard compression == .none else {
-            throw FileBackedBackupPayloadStagerError.gzipCompressionUnsupported
+        let payloadData: Data
+        switch compression {
+        case .none:
+            payloadData = data
+        case .gzip:
+            payloadData = try GzipPayloadCompressor.compress(data)
         }
 
         let directoryURL = try prepareStagingDirectory()
@@ -42,7 +47,7 @@ final class FileBackedBackupPayloadStager: BackupPayloadStager {
             .appendingPathComponent(UUID().uuidString)
             .appendingPathExtension("payload")
 
-        try data.write(
+        try payloadData.write(
             to: fileURL,
             options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication]
         )
@@ -52,7 +57,7 @@ final class FileBackedBackupPayloadStager: BackupPayloadStager {
         return StagedBackupPayloadMetadata(
             localFileURL: fileURL,
             contentType: contentType,
-            contentLength: data.count,
+            contentLength: payloadData.count,
             checksumSha256: checksumSha256,
             compression: compression
         )
@@ -123,5 +128,85 @@ final class FileBackedBackupPayloadStager: BackupPayloadStager {
         let filePath = url.standardizedFileURL.path
 
         return filePath.hasPrefix(directoryPath)
+    }
+}
+
+private enum GzipPayloadCompressor {
+    private static let gzipHeader = Data([0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff])
+    private static let emptyZlibPayload = Data([0x78, 0x9c, 0x03, 0x00, 0x00, 0x00, 0x00, 0x01])
+
+    static func compress(_ data: Data) throws -> Data {
+        let zlibData = data.isEmpty ? emptyZlibPayload : try zlibCompress(data)
+        guard zlibData.count >= 6 else {
+            throw FileBackedBackupPayloadStagerError.compressionFailed
+        }
+
+        var gzipData = gzipHeader
+        gzipData.append(zlibData.dropFirst(2).dropLast(4))
+        appendLittleEndian(crc32(data), to: &gzipData)
+        appendLittleEndian(UInt32(truncatingIfNeeded: data.count), to: &gzipData)
+        return gzipData
+    }
+
+    private static func zlibCompress(_ data: Data) throws -> Data {
+        let destinationCapacity = data.count + max(64, ((data.count / 16_384) + 1) * 5 + 64)
+        var destination = [UInt8](repeating: 0, count: destinationCapacity)
+
+        let encodedSize = data.withUnsafeBytes { sourceBuffer -> Int in
+            guard let source = sourceBuffer.bindMemory(to: UInt8.self).baseAddress else {
+                return 0
+            }
+
+            return destination.withUnsafeMutableBufferPointer { destinationBuffer -> Int in
+                guard let destinationBase = destinationBuffer.baseAddress else {
+                    return 0
+                }
+
+                return compression_encode_buffer(
+                    destinationBase,
+                    destinationBuffer.count,
+                    source,
+                    data.count,
+                    nil,
+                    COMPRESSION_ZLIB
+                )
+            }
+        }
+
+        guard encodedSize > 0 else {
+            throw FileBackedBackupPayloadStagerError.compressionFailed
+        }
+
+        return Data(destination.prefix(encodedSize))
+    }
+
+    private static func crc32(_ data: Data) -> UInt32 {
+        var crc: UInt32 = 0xffffffff
+        data.withUnsafeBytes { buffer in
+            for byte in buffer.bindMemory(to: UInt8.self) {
+                let index = Int((crc ^ UInt32(byte)) & 0xff)
+                crc = (crc >> 8) ^ crc32Table[index]
+            }
+        }
+        return crc ^ 0xffffffff
+    }
+
+    private static let crc32Table: [UInt32] = (0..<256).map { value in
+        var crc = UInt32(value)
+        for _ in 0..<8 {
+            if crc & 1 == 1 {
+                crc = (crc >> 1) ^ 0xedb88320
+            } else {
+                crc >>= 1
+            }
+        }
+        return crc
+    }
+
+    private static func appendLittleEndian(_ value: UInt32, to data: inout Data) {
+        var littleEndianValue = value.littleEndian
+        withUnsafeBytes(of: &littleEndianValue) { bytes in
+            data.append(contentsOf: bytes)
+        }
     }
 }

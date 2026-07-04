@@ -9,7 +9,7 @@ import Foundation
 
 enum BackupPayloadCompression: Equatable {
     case none
-    case gzipUnsupported
+    case gzip
 }
 
 struct StagedBackupPayloadMetadata: Equatable {

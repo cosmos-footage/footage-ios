@@ -62,7 +62,7 @@ final class CloudBackupService {
             ),
             capabilities: BootstrapRequest.Capabilities(
                 schemaVersion: configuration.schemaVersion,
-                supportsGzip: false,
+                supportsGzip: true,
                 supportsRestore: true
             )
         )
@@ -174,13 +174,14 @@ final class CloudBackupService {
                 throw CloudBackupServiceError.missingRecordingId
             }
 
-            let checksum = checksumSha256Base64(for: data)
             let stagedPayload = try payloadStager.stagePayload(
                 data,
-                contentType: item.payload.contentType,
-                checksumSha256: checksum,
-                compression: .none
+                contentType: "application/x-ndjson+gzip",
+                checksumSha256: nil,
+                compression: .gzip
             )
+            let uploadData = try Data(contentsOf: stagedPayload.localFileURL)
+            let checksum = checksumSha256Base64(for: uploadData)
             let presignRequest = PresignUploadRequest(
                 ownerId: ownerId,
                 deviceId: deviceId,
@@ -189,7 +190,7 @@ final class CloudBackupService {
                 objectType: item.type.rawValue,
                 contentType: stagedPayload.contentType,
                 contentLength: stagedPayload.contentLength,
-                checksumSha256: stagedPayload.checksumSha256 ?? checksum
+                checksumSha256: checksum
             )
 
             CloudBackupLogger.info("presign requested")
@@ -205,7 +206,8 @@ final class CloudBackupService {
                     deviceId: deviceId,
                     recordingId: recordingId,
                     stagedPayload: stagedPayload,
-                    data: data,
+                    checksum: checksum,
+                    data: uploadData,
                     bearerToken: bearerToken,
                     completion: completion
                 )
@@ -222,6 +224,7 @@ final class CloudBackupService {
         deviceId: String,
         recordingId: String,
         stagedPayload: StagedBackupPayloadMetadata,
+        checksum: String,
         data: Data,
         bearerToken: String,
         completion: @escaping (Result<Void, Error>) -> Void
@@ -242,6 +245,7 @@ final class CloudBackupService {
                     deviceId: deviceId,
                     recordingId: recordingId,
                     stagedPayload: stagedPayload,
+                    checksum: checksum,
                     bearerToken: bearerToken,
                     completion: completion
                 )
@@ -260,6 +264,7 @@ final class CloudBackupService {
         deviceId: String,
         recordingId: String,
         stagedPayload: StagedBackupPayloadMetadata,
+        checksum: String,
         bearerToken: String,
         completion: @escaping (Result<Void, Error>) -> Void
     ) {
@@ -273,7 +278,7 @@ final class CloudBackupService {
                 recordingId: recordingId,
                 syncBatchId: item.syncBatch.syncBatchId.rawValue,
                 objectKey: presignResponse.objectKey,
-                checksumSha256: stagedPayload.checksumSha256 ?? "",
+                checksumSha256: checksum,
                 contentLength: stagedPayload.contentLength
             )
             apiClient.completeUpload(
@@ -289,6 +294,7 @@ final class CloudBackupService {
                     recordingId: recordingId,
                     objectKey: presignResponse.objectKey,
                     stagedPayload: stagedPayload,
+                    checksum: checksum,
                     bearerToken: bearerToken,
                     completion: completion
                 )
@@ -307,6 +313,7 @@ final class CloudBackupService {
         recordingId: String,
         objectKey: String,
         stagedPayload: StagedBackupPayloadMetadata,
+        checksum: String,
         bearerToken: String,
         completion: @escaping (Result<Void, Error>) -> Void
     ) {
@@ -331,7 +338,7 @@ final class CloudBackupService {
                             SyncBatchRequest.Recording.UploadedObject(
                                 objectType: item.type.rawValue,
                                 objectKey: objectKey,
-                                checksumSha256: stagedPayload.checksumSha256 ?? "",
+                                checksumSha256: checksum,
                                 contentLength: stagedPayload.contentLength
                             )
                         ]

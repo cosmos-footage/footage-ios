@@ -253,10 +253,10 @@ R6 progress:
 - Added file-backed backup payload staging under Application Support with backup exclusion and file protection.
 - Routed `CloudBackupService` upload preparation through `BackupPayloadStager` while keeping Cloud Backup and development upload disabled by default.
 - Staged payload files are treated as transient and cleaned up after upload/register success or failure paths.
+- Added gzip compression for route NDJSON staging and calculate checksum/content length from the compressed staged payload.
 
 R6 remaining:
 
-- Add gzip compression for route NDJSON before production upload is enabled.
 - Split outbox payload metadata from raw NDJSON storage.
 - Add retry/backoff and idempotency recovery metadata.
 - Add a manual-only backup runner and Settings opt-in/status UI.

@@ -15,6 +15,14 @@ Phase R6 prepares the disabled cloud backup pipeline for S3-style uploads withou
 - Cleaned up staged payload files on presign failure, upload failure, upload-complete failure, and after sync batch registration callback.
 - Added composition-root construction for the payload stager.
 
+## R6-2 Completed
+
+- Added gzip compression support to `FileBackedBackupPayloadStager`.
+- Built gzip payloads with a gzip header, deflate payload, CRC32, and original-size trailer.
+- Updated bootstrap capabilities to advertise gzip support when Cloud Backup is explicitly enabled.
+- Changed route NDJSON upload preparation to stage `application/x-ndjson+gzip`.
+- Calculated upload checksum and content length from the compressed staged file.
+
 ## Behavior
 
 - No automatic backup, restore, auth, S3 upload, or backend call path was enabled.
@@ -28,4 +36,4 @@ Phase R6 prepares the disabled cloud backup pipeline for S3-style uploads withou
 
 ## Next Step
 
-R6-2 should add gzip compression for route NDJSON staging and compute checksum/content length over the compressed payload.
+R6-3 should split outbox payload metadata from raw NDJSON storage and keep large route payload bytes out of `UserDefaults`.
