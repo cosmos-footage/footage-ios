@@ -86,6 +86,28 @@ struct AppCompositionRoot {
         )
     }
 
+    func makeRecordingUseCase(
+        routeRepository: RouteRepository = RealmRouteRepository(),
+        colorRepository: ColorRepository = RealmColorRepository(),
+        placeRepository: PlaceRepository = RealmPlaceRepository(),
+        widgetStateWriter: RecordingWidgetStateWriting = RecordingStateStore(),
+        selectedColorProvider: @escaping () -> String,
+        isAlwaysOnProvider: @escaping () -> Bool,
+        alwaysOnCountProvider: @escaping () -> Int,
+        alwaysOnCountSetter: @escaping (Int) -> Void
+    ) -> RecordingUseCase {
+        return RecordingService(
+            routeRepository: routeRepository,
+            colorRepository: colorRepository,
+            placeRepository: placeRepository,
+            widgetStateWriter: widgetStateWriter,
+            selectedColorProvider: selectedColorProvider,
+            isAlwaysOnProvider: isAlwaysOnProvider,
+            alwaysOnCountProvider: alwaysOnCountProvider,
+            alwaysOnCountSetter: alwaysOnCountSetter
+        )
+    }
+
     private func makeCloudBackupConfiguration(
         isCloudBackupEnabled: Bool,
         isDevelopmentUploadEnabled: Bool

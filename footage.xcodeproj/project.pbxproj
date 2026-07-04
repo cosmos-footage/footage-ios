@@ -68,6 +68,8 @@
 		C0D3B0020000000000000001 /* LocationFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3B0060000000000000001 /* LocationFilter.swift */; };
 		C0D3B0030000000000000001 /* RecordingStateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3B0070000000000000001 /* RecordingStateStore.swift */; };
 		C0D3B0040000000000000001 /* RecordingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3B0080000000000000001 /* RecordingService.swift */; };
+		C0D510010000000000000001 /* RecordingUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D510030000000000000001 /* RecordingUseCase.swift */; };
+		C0D510020000000000000001 /* RecordingWidgetStateWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D510040000000000000001 /* RecordingWidgetStateWriter.swift */; };
 		C0D3C0010000000000000001 /* SyncOutboxModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3C0040000000000000001 /* SyncOutboxModels.swift */; };
 		C0D3C0020000000000000001 /* RoutePointNDJSONSerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3C0050000000000000001 /* RoutePointNDJSONSerializer.swift */; };
 		C0D3C0030000000000000001 /* LocalSyncBatchBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3C0060000000000000001 /* LocalSyncBatchBuilder.swift */; };
@@ -232,6 +234,8 @@
 		C0D3B0060000000000000001 /* LocationFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationFilter.swift; sourceTree = "<group>"; };
 		C0D3B0070000000000000001 /* RecordingStateStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingStateStore.swift; sourceTree = "<group>"; };
 		C0D3B0080000000000000001 /* RecordingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingService.swift; sourceTree = "<group>"; };
+		C0D510030000000000000001 /* RecordingUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingUseCase.swift; sourceTree = "<group>"; };
+		C0D510040000000000000001 /* RecordingWidgetStateWriter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingWidgetStateWriter.swift; sourceTree = "<group>"; };
 		C0D3C0040000000000000001 /* SyncOutboxModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncOutboxModels.swift; sourceTree = "<group>"; };
 		C0D3C0050000000000000001 /* RoutePointNDJSONSerializer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutePointNDJSONSerializer.swift; sourceTree = "<group>"; };
 		C0D3C0060000000000000001 /* LocalSyncBatchBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalSyncBatchBuilder.swift; sourceTree = "<group>"; };
@@ -512,6 +516,8 @@
 				C0D3B0060000000000000001 /* LocationFilter.swift */,
 				C0D3B0070000000000000001 /* RecordingStateStore.swift */,
 				C0D3B0080000000000000001 /* RecordingService.swift */,
+				C0D510030000000000000001 /* RecordingUseCase.swift */,
+				C0D510040000000000000001 /* RecordingWidgetStateWriter.swift */,
 			);
 			path = Recording;
 			sourceTree = "<group>";
@@ -971,6 +977,8 @@
 				C0D3B0020000000000000001 /* LocationFilter.swift in Sources */,
 				C0D3B0030000000000000001 /* RecordingStateStore.swift in Sources */,
 				C0D3B0040000000000000001 /* RecordingService.swift in Sources */,
+				C0D510010000000000000001 /* RecordingUseCase.swift in Sources */,
+				C0D510020000000000000001 /* RecordingWidgetStateWriter.swift in Sources */,
 				C0D3C0010000000000000001 /* SyncOutboxModels.swift in Sources */,
 				C0D3C0020000000000000001 /* RoutePointNDJSONSerializer.swift in Sources */,
 				C0D3C0030000000000000001 /* LocalSyncBatchBuilder.swift in Sources */,

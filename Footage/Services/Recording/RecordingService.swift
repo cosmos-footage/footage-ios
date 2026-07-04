@@ -21,7 +21,7 @@ final class RecordingService: NSObject {
     private let routeRepository: RouteRepository
     private let colorRepository: ColorRepository
     private let placeRepository: PlaceRepository
-    private let stateStore: RecordingStateStore
+    private let widgetStateWriter: RecordingWidgetStateWriting
     private let selectedColorProvider: () -> String
     private let isAlwaysOnProvider: () -> Bool
     private let alwaysOnCountProvider: () -> Int
@@ -41,7 +41,7 @@ final class RecordingService: NSObject {
         routeRepository: RouteRepository = RealmRouteRepository(),
         colorRepository: ColorRepository = RealmColorRepository(),
         placeRepository: PlaceRepository = RealmPlaceRepository(),
-        stateStore: RecordingStateStore = RecordingStateStore(),
+        widgetStateWriter: RecordingWidgetStateWriting = RecordingStateStore(),
         selectedColorProvider: @escaping () -> String,
         isAlwaysOnProvider: @escaping () -> Bool,
         alwaysOnCountProvider: @escaping () -> Int,
@@ -53,7 +53,7 @@ final class RecordingService: NSObject {
         self.routeRepository = routeRepository
         self.colorRepository = colorRepository
         self.placeRepository = placeRepository
-        self.stateStore = stateStore
+        self.widgetStateWriter = widgetStateWriter
         self.selectedColorProvider = selectedColorProvider
         self.isAlwaysOnProvider = isAlwaysOnProvider
         self.alwaysOnCountProvider = alwaysOnCountProvider
@@ -63,14 +63,14 @@ final class RecordingService: NSObject {
     }
 
     func startRecording() {
-        stateStore.isTracking = true
+        widgetStateWriter.isTracking = true
         configureLocationManager()
         locationManager.startUpdatingLocation()
         delegate?.recordingService(self, didChangeTracking: true)
     }
 
     func stopRecording() {
-        stateStore.isTracking = false
+        widgetStateWriter.isTracking = false
         locationManager.stopUpdatingLocation()
         setAsStart = true
         pendingStartLocation = nil
@@ -136,8 +136,7 @@ final class RecordingService: NSObject {
 
         let distance = distanceCalculator.distanceMeters(from: previousLocation, to: location)
         persist(location: location, distance: distance, setAsStart: false)
-        stateStore.distanceToday += distance
-        stateStore.distanceTotal += distance
+        widgetStateWriter.addDistance(distance)
         delegate?.recordingService(self, didAccept: location, distanceMeters: distance, setAsStart: false)
     }
 

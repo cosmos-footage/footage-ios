@@ -168,7 +168,7 @@ R3 progress:
 
 ### R4: Recording Use Case Extraction
 
-Status: pending.
+Status: started.
 
 Tasks:
 
@@ -181,6 +181,21 @@ Exit criteria:
 - Start/stop recording behavior unchanged.
 - Local writes remain first.
 - Outbox enqueue can be added after local persistence succeeds.
+
+R4 progress:
+
+- Added a `RecordingUseCase` protocol and made `RecordingService` conform to it.
+- Added a `RecordingWidgetStateWriting` abstraction so recording state/distance updates can target app group widget state through a boundary instead of a concrete store.
+- Updated `RecordingService` to depend on `RecordingWidgetStateWriting`.
+- Added `AppCompositionRoot.makeRecordingUseCase(...)` as the construction point for future Home screen migration.
+- Existing `HomeViewController` runtime flow is intentionally not wired to the new use case yet; this preserves current recording behavior while the boundary is reviewed.
+- `scripts/phase1-build-baseline.sh` succeeded after the R4 boundary changes.
+
+R4 remaining:
+
+- Migrate `HomeViewController` start/stop handling through `RecordingUseCase` behind a small parity commit.
+- Migrate live location persistence only after route write, stats, badge, map, and widget side-effect order is verified.
+- Add outbox enqueue only after local Realm persistence succeeds.
 
 ### R5: Realm Repository Migration
 
