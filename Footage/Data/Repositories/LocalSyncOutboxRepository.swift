@@ -93,7 +93,18 @@ struct LocalSyncOutboxRepository: SyncOutboxRepository {
     }
 
     func pendingItems() -> [SyncOutboxItem] {
-        outboxItems().filter { $0.status == .pending }
+        let now = Date()
+        return outboxItems().filter { item in
+            guard item.status == .pending || item.status == .syncing else {
+                return false
+            }
+
+            guard let nextAttemptAt = item.nextAttemptAt else {
+                return true
+            }
+
+            return nextAttemptAt <= now
+        }
     }
 
     func failedItems() -> [SyncOutboxItem] {
@@ -105,6 +116,7 @@ struct LocalSyncOutboxRepository: SyncOutboxRepository {
             item.status = .syncing
             item.attemptCount += 1
             item.updatedAt = Date()
+            item.nextAttemptAt = nil
             item.lastErrorMessage = nil
         }
     }
@@ -113,6 +125,7 @@ struct LocalSyncOutboxRepository: SyncOutboxRepository {
         try updateItem(itemId: itemId) { item in
             item.status = .synced
             item.updatedAt = Date()
+            item.nextAttemptAt = nil
             item.lastErrorMessage = nil
         }
     }
@@ -122,6 +135,7 @@ struct LocalSyncOutboxRepository: SyncOutboxRepository {
         try updateItem(itemId: itemId) { item in
             item.status = .failed
             item.updatedAt = Date()
+            item.nextAttemptAt = nextAttemptDate(afterAttempts: item.attemptCount)
             item.lastErrorMessage = errorMessage
         }
     }
@@ -137,6 +151,7 @@ struct LocalSyncOutboxRepository: SyncOutboxRepository {
 
         items[index].status = .pending
         items[index].updatedAt = Date()
+        items[index].nextAttemptAt = nil
         items[index].lastErrorMessage = nil
         try save(items)
     }
@@ -203,6 +218,12 @@ struct LocalSyncOutboxRepository: SyncOutboxRepository {
 
         mutate(&items[index])
         try save(items)
+    }
+
+    private func nextAttemptDate(afterAttempts attemptCount: Int) -> Date {
+        let clampedAttempts = max(1, min(attemptCount, 6))
+        let delay = TimeInterval(60 * (1 << (clampedAttempts - 1)))
+        return Date().addingTimeInterval(min(delay, 3_600))
     }
 }
 

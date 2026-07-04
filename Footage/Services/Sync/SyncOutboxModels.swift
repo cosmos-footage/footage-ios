@@ -120,6 +120,7 @@ struct SyncOutboxItem: Codable, Equatable {
     var status: SyncOutboxItemStatus
     var payload: SyncOutboxPayload
     var attemptCount: Int
+    var nextAttemptAt: Date?
     var createdAt: Date
     var updatedAt: Date
     var lastErrorMessage: String?
@@ -131,6 +132,7 @@ struct SyncOutboxItem: Codable, Equatable {
         status: SyncOutboxItemStatus = .pending,
         payload: SyncOutboxPayload,
         attemptCount: Int = 0,
+        nextAttemptAt: Date? = nil,
         createdAt: Date = Date(),
         updatedAt: Date = Date(),
         lastErrorMessage: String? = nil
@@ -147,6 +149,7 @@ struct SyncOutboxItem: Codable, Equatable {
         self.status = status
         self.payload = payload
         self.attemptCount = attemptCount
+        self.nextAttemptAt = nextAttemptAt
         self.createdAt = createdAt
         self.updatedAt = updatedAt
         self.lastErrorMessage = lastErrorMessage

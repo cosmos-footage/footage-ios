@@ -31,6 +31,13 @@ Phase R6 prepares the disabled cloud backup pipeline for S3-style uploads withou
 - Kept legacy `ndjson` payload compatibility in `CloudBackupService`.
 - Updated backup upload preparation to read payload bytes from either legacy inline NDJSON or the new local payload file.
 
+## R6-4 Completed
+
+- Added `nextAttemptAt` to `SyncOutboxItem`.
+- Added exponential retry delay metadata when marking items failed.
+- Cleared retry metadata when items move to `.syncing`, `.synced`, or manual retry.
+- Included interrupted `.syncing` items in pending scans so a later manual backup run can recover them after relaunch.
+
 ## Behavior
 
 - No automatic backup, restore, auth, S3 upload, or backend call path was enabled.
@@ -44,4 +51,4 @@ Phase R6 prepares the disabled cloud backup pipeline for S3-style uploads withou
 
 ## Next Step
 
-R6-4 should add retry/backoff metadata and relaunch recovery for `.syncing` outbox items.
+R6-5 should add a manual-only backup runner and Settings opt-in/status UI while keeping backup disabled by default.

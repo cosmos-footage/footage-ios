@@ -255,10 +255,10 @@ R6 progress:
 - Staged payload files are treated as transient and cleaned up after upload/register success or failure paths.
 - Added gzip compression for route NDJSON staging and calculate checksum/content length from the compressed staged payload.
 - Split newly enqueued local outbox route NDJSON payloads into protected Application Support files while keeping metadata in `UserDefaults`.
+- Added retry/backoff metadata with `nextAttemptAt` and included interrupted `.syncing` items in pending scans for relaunch recovery.
 
 R6 remaining:
 
-- Add retry/backoff and idempotency recovery metadata.
 - Add a manual-only backup runner and Settings opt-in/status UI.
 
 ### R7: Tests and Verification Harness
