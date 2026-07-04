@@ -17,7 +17,7 @@ class HomeAnimation {
     
     //MARK- homeStartAnimation
     
-    static func homeStartAnimation(_ homeVC: HomeViewController) {
+    @MainActor static func homeStartAnimation(_ homeVC: HomeViewController) {
         // start button pressed
         
         UIView.animate(withDuration: 1, animations: {
@@ -78,7 +78,7 @@ class HomeAnimation {
     }
     //MARK- homeStopAnimation
     
-    static func homeStopAnimation(_ homeVC: HomeViewController) {
+    @MainActor static func homeStopAnimation(_ homeVC: HomeViewController) {
         
         UIView.animate(withDuration: 1, animations: {
             homeVC.startButton.alpha = 0

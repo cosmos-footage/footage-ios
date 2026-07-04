@@ -151,6 +151,7 @@ extension PasswordVC {
                     switch laContext.biometryType {
                     case .faceID: localizedReason = "Unlock using Face ID"; print("FaceId support")
                     case .touchID: localizedReason = "Unlock using Touch ID"; print("TouchId support")
+                    case .opticID: localizedReason = "Unlock using Optic ID"; print("OpticId support")
                     case .none: print("No Biometric support")
                     @unknown default:
                         fatalError()

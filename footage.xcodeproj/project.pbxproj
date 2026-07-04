@@ -962,7 +962,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = B62ECEFF6FF5C8333D8221B6 /* Pods-footage.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Entitlements/footage.entitlements;
 				CODE_SIGN_STYLE = Automatic;
@@ -986,7 +986,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D2CCB6D4199D83BB62272983 /* Pods-footage.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = "$(inherited)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Entitlements/footage.entitlements;
 				CODE_SIGN_STYLE = Automatic;
