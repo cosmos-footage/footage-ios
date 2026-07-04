@@ -123,7 +123,7 @@ Secondary user:
 ### Build Modernization
 
 - Build with modern Xcode and the current App Store SDK requirement.
-- Keep deployment target explicit. Proposed destination after audit: iOS 17+ for the renewed app, while Phase 0/1 should preserve the current app target at iOS 13 and widget target at iOS 14 until compatibility is measured.
+- Keep deployment target explicit. The renewed baseline is iOS 18.0 for the app, widget, project, and generated Pods settings.
 - Preserve `MainWidgetExtension`.
 - Preserve entitlements and app group unless a migration plan covers both app and widget.
 - Remove brittle architecture settings only after a baseline is captured.
