@@ -265,7 +265,7 @@ R6 remaining:
 
 ### R7: Tests and Verification Harness
 
-Status: pending.
+Status: started.
 
 Tasks:
 
@@ -274,8 +274,22 @@ Tasks:
 
 Exit criteria:
 
-- Tests run locally.
+- Unit tests run locally.
 - Baseline build remains green.
+
+R7 progress:
+
+- Added a `FootageTests` XCTest target and wired it into the shared `footage` scheme.
+- Added pure service tests for `DistanceCalculator`, `LocationFilter`, and `RoutePointNDJSONSerializer`.
+- Added test target framework search paths needed for the app module's CocoaPods Swift dependencies.
+- `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` succeeded.
+
+R7 remaining:
+
+- Add outbox retry/backoff tests.
+- Add Cloud Backup API request construction tests.
+- Add restore duplicate detection tests.
+- Add auth owner mismatch tests.
 
 ### R8: Backend/S3 Integration
 

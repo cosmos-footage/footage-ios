@@ -14,9 +14,10 @@ Date: 2026-07-04.
 
 - Run `xcodebuild -list -workspace footage.xcworkspace`.
 - Run `scripts/phase1-build-baseline.sh`.
+- Run `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO`.
 - Run signed archive after provisioning review.
 - Inspect warnings; generated Realm/RealmSwift warnings are tracked separately.
-- Confirm no automated XCTest target or `.xctestplan` has been added without running it.
+- Confirm any new XCTest target or `.xctestplan` has been run and its result is documented.
 
 ## Manual QA Checks
 
