@@ -77,6 +77,8 @@
 		C0D3D0040000000000000001 /* CloudBackupAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3D0090000000000000001 /* CloudBackupAPIClient.swift */; };
 		C0D3D0050000000000000001 /* CloudBackupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3D0100000000000000001 /* CloudBackupService.swift */; };
 		C0D410010000000000000001 /* CloudBackupTokenStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D410020000000000000001 /* CloudBackupTokenStore.swift */; };
+		C0D500010000000000000001 /* BackupPayloadStager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D500030000000000000001 /* BackupPayloadStager.swift */; };
+		C0D500020000000000000001 /* FileBackedBackupPayloadStager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D500040000000000000001 /* FileBackedBackupPayloadStager.swift */; };
 		C0D3E0010000000000000001 /* RestoreModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3E0060000000000000001 /* RestoreModels.swift */; };
 		C0D3E0020000000000000001 /* RoutePointRestoreParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3E0070000000000000001 /* RoutePointRestoreParser.swift */; };
 		C0D3E0030000000000000001 /* RestoreDuplicateDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3E0080000000000000001 /* RestoreDuplicateDetector.swift */; };
@@ -239,6 +241,8 @@
 		C0D3D0090000000000000001 /* CloudBackupAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupAPIClient.swift; sourceTree = "<group>"; };
 		C0D3D0100000000000000001 /* CloudBackupService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupService.swift; sourceTree = "<group>"; };
 		C0D410020000000000000001 /* CloudBackupTokenStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudBackupTokenStore.swift; sourceTree = "<group>"; };
+		C0D500030000000000000001 /* BackupPayloadStager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupPayloadStager.swift; sourceTree = "<group>"; };
+		C0D500040000000000000001 /* FileBackedBackupPayloadStager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileBackedBackupPayloadStager.swift; sourceTree = "<group>"; };
 		C0D3E0060000000000000001 /* RestoreModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestoreModels.swift; sourceTree = "<group>"; };
 		C0D3E0070000000000000001 /* RoutePointRestoreParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutePointRestoreParser.swift; sourceTree = "<group>"; };
 		C0D3E0080000000000000001 /* RestoreDuplicateDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestoreDuplicateDetector.swift; sourceTree = "<group>"; };
@@ -535,8 +539,18 @@
 				C0D3D0060000000000000001 /* CloudBackupConfiguration.swift */,
 				C0D3D0070000000000000001 /* CloudBackupLogger.swift */,
 				C0D3D0100000000000000001 /* CloudBackupService.swift */,
+				C0D500050000000000000001 /* Upload */,
 			);
 			path = Backup;
+			sourceTree = "<group>";
+		};
+		C0D500050000000000000001 /* Upload */ = {
+			isa = PBXGroup;
+			children = (
+				C0D500030000000000000001 /* BackupPayloadStager.swift */,
+				C0D500040000000000000001 /* FileBackedBackupPayloadStager.swift */,
+			);
+			path = Upload;
 			sourceTree = "<group>";
 		};
 		C0D410030000000000000001 /* Security */ = {
@@ -966,6 +980,8 @@
 				C0D3D0040000000000000001 /* CloudBackupAPIClient.swift in Sources */,
 				C0D3D0050000000000000001 /* CloudBackupService.swift in Sources */,
 				C0D410010000000000000001 /* CloudBackupTokenStore.swift in Sources */,
+				C0D500010000000000000001 /* BackupPayloadStager.swift in Sources */,
+				C0D500020000000000000001 /* FileBackedBackupPayloadStager.swift in Sources */,
 				C0D3E0010000000000000001 /* RestoreModels.swift in Sources */,
 				C0D3E0020000000000000001 /* RoutePointRestoreParser.swift in Sources */,
 				C0D3E0030000000000000001 /* RestoreDuplicateDetector.swift in Sources */,
