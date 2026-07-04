@@ -22,6 +22,7 @@ class DateViewController: UIViewController {
     static var journeys: [Journey] = []
     
     var dataSource: UICollectionViewDiffableDataSource<Section, MapCell>! = nil
+    var routeRepository: RouteRepository = RealmRouteRepository()
     
     static let badgeElementKind = "badge-element-kind"
     enum Section {
@@ -148,17 +149,14 @@ extension DateViewController {
         DateViewController.journeys = []
         var snapshot = NSDiffableDataSourceSnapshot<Section, MapCell>()
         var cellArray: [MapCell] = []
+        let rangeKey: String
         switch range {
-        case 0: for journey in DateManager.loadFromRealm(rangeOf: "day") {
-            DateViewController.journeys.append(journey)
+        case 0: rangeKey = "day"
+        case 1: rangeKey = "month"
+        default: rangeKey = "year"
         }
-        case 1: for journey in DateManager.loadFromRealm(rangeOf: "month") {
+        for journey in routeRepository.loadJourneys(rangeOf: rangeKey) {
             DateViewController.journeys.append(journey)
-        }
-        // case 2
-        default: for journey in DateManager.loadFromRealm(rangeOf: "year") {
-            DateViewController.journeys.append(journey)
-        }
         }
         
         if !DateViewController.journeys.isEmpty {

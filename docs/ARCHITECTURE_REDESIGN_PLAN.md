@@ -199,7 +199,7 @@ R4 remaining:
 
 ### R5: Realm Repository Migration
 
-Status: pending.
+Status: started.
 
 Tasks:
 
@@ -211,6 +211,17 @@ Exit criteria:
 
 - Legacy managers become adapters or thin facades.
 - Screens still read existing Realm data.
+
+R5 progress:
+
+- Routed `DateViewController.loadWithRange(_:)` through `RouteRepository.loadJourneys(rangeOf:)`.
+- Preserved the existing `DateViewController.journeys` static storage and the exact day/month/year range keys.
+- `RealmRouteRepository` still delegates to `DateManager.loadFromRealm(rangeOf:)`, so Realm schema and screen behavior are unchanged.
+
+R5 remaining:
+
+- Continue with read-only stats screens that already match `DaySummaryRepository`, `ColorRepository`, and `PlaceRepository`.
+- Defer map screens and colored journey queries until repository protocols expose the needed read models.
 
 ### R6: S3-Ready Backup Pipeline
 
