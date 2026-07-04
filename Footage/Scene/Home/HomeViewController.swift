@@ -60,14 +60,15 @@ class HomeViewController: UIViewController {
     }
     
     /// 2. For MapKit
+    private static let recordingStateStore = RecordingStateStore()
     static var distanceToday: Double = 0 {
         didSet {
-            UserDefaults(suiteName: "group.footage")?.set(distanceToday, forKey: "distanceToday")
+            recordingStateStore.distanceToday = distanceToday
         }
     }
     static var distanceTotal: Double = 0 {
         didSet {
-            UserDefaults(suiteName: "group.footage")?.set(distanceTotal, forKey: "distanceTotal")
+            recordingStateStore.distanceTotal = distanceTotal
         }
     }
     static let locationManager = CLLocationManager()
@@ -104,10 +105,8 @@ class HomeViewController: UIViewController {
             alertDot.isHidden = false
             view.bringSubviewToFront(alertDot)
         }
-        if let isTracking = UserDefaults(suiteName: "group.footage")?.bool(forKey: "isTracking") {
-            if isTracking {
-                startTracking()
-            }
+        if HomeViewController.recordingStateStore.isTracking {
+            startTracking()
         }
     }
     
@@ -139,7 +138,7 @@ class HomeViewController: UIViewController {
     }
     
     func startTracking() {
-        UserDefaults(suiteName: "group.footage")?.set(true, forKey: "isTracking")
+        HomeViewController.recordingStateStore.isTracking = true
         HomeViewController.distanceToday = DateManager.loadDistance(total: false)
         HomeViewController.currentStartButtonImage = #imageLiteral(resourceName: "stopButton")
         UIApplication.shared.applicationIconBadgeNumber = 0
@@ -170,7 +169,7 @@ class HomeViewController: UIViewController {
     }
     
     func stopTracking() {
-        UserDefaults(suiteName: "group.footage")?.set(false, forKey: "isTracking")
+        HomeViewController.recordingStateStore.isTracking = false
         locationTimer?.invalidate() // stop location request
         HomeViewController.locationManager.stopUpdatingLocation()
         HomeViewController.currentStartButtonImage = #imageLiteral(resourceName: "startButton")

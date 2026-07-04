@@ -37,6 +37,22 @@ protocol SyncOutboxRepository {
     func enqueue(_ draft: SyncOutboxDraft) throws
     func pendingBatches() -> [SyncOutboxDraft]
     func update(_ draft: SyncOutboxDraft) throws
+    func enqueue(_ item: SyncOutboxItem) throws
+    func enqueue(_ items: [SyncOutboxItem]) throws
+    func outboxItems() -> [SyncOutboxItem]
+    func pendingItems() -> [SyncOutboxItem]
+    func failedItems() -> [SyncOutboxItem]
+    func markSyncing(itemId: String) throws
+    func markSynced(itemId: String) throws
+    func markFailed(itemId: String, errorMessage: String) throws
+    func retryFailed(itemId: String) throws
+    func prepareRoutePointBatches(
+        from export: MigrationExportDraft,
+        ownerId: OwnerID?,
+        deviceId: DeviceID?,
+        configuration: SyncBatchConfiguration
+    ) throws -> [SyncOutboxItem]
+    func localBackupStatus() -> LocalBackupStatus
 }
 
 protocol ColorRepository {
