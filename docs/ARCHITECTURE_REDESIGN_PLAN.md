@@ -145,7 +145,7 @@ Exit criteria:
 
 ### R3: Composition Root and Feature Flags
 
-Status: pending.
+Status: started.
 
 Tasks:
 
@@ -157,6 +157,14 @@ Exit criteria:
 
 - Existing UI flow still creates screens normally.
 - No automatic backup/restore/auth behavior.
+
+R3 progress:
+
+- Added `FeatureFlags`, `AppEnvironment`, and `AppCompositionRoot`.
+- Default flags keep Cloud Backup, Restore, Auth, and development upload disabled.
+- Composition root constructs existing scaffold services only; it is not wired into app launch yet.
+- Added a Keychain-backed cloud backup token store as inert production-prep scaffolding.
+- Added a local notification scheduling service wrapper without migrating call sites.
 
 ### R4: Recording Use Case Extraction
 
