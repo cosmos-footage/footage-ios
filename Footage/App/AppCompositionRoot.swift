@@ -43,14 +43,16 @@ struct AppCompositionRoot {
     func makeCloudBackupService(
         apiClient: CloudBackupAPIClientProtocol? = nil,
         identityRepository: DeviceIdentityRepository = LocalDeviceIdentityRepository(),
-        syncOutboxRepository: SyncOutboxRepository = LocalSyncOutboxRepository()
+        syncOutboxRepository: SyncOutboxRepository = LocalSyncOutboxRepository(),
+        tokenStore: CloudBackupTokenStore = KeychainCloudBackupTokenStore()
     ) -> CloudBackupService {
         let configuration = makeCloudBackupConfiguration()
         return CloudBackupService(
             configuration: configuration,
             apiClient: apiClient,
             identityRepository: identityRepository,
-            syncOutboxRepository: syncOutboxRepository
+            syncOutboxRepository: syncOutboxRepository,
+            tokenStore: tokenStore
         )
     }
 

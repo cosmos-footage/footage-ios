@@ -24,17 +24,20 @@ final class CloudBackupService {
     private let apiClient: CloudBackupAPIClientProtocol
     private let identityRepository: DeviceIdentityRepository
     private let syncOutboxRepository: SyncOutboxRepository
+    private let tokenStore: CloudBackupTokenStore
 
     init(
         configuration: CloudBackupConfiguration = CloudBackupConfiguration(),
         apiClient: CloudBackupAPIClientProtocol? = nil,
         identityRepository: DeviceIdentityRepository = LocalDeviceIdentityRepository(),
-        syncOutboxRepository: SyncOutboxRepository = LocalSyncOutboxRepository()
+        syncOutboxRepository: SyncOutboxRepository = LocalSyncOutboxRepository(),
+        tokenStore: CloudBackupTokenStore = KeychainCloudBackupTokenStore()
     ) {
         self.configuration = configuration
         self.apiClient = apiClient ?? CloudBackupAPIClient(configuration: configuration)
         self.identityRepository = identityRepository
         self.syncOutboxRepository = syncOutboxRepository
+        self.tokenStore = tokenStore
     }
 
     func bootstrapInstallation(completion: @escaping (Result<BootstrapResponse, Error>) -> Void) {
@@ -61,15 +64,24 @@ final class CloudBackupService {
         )
 
         CloudBackupLogger.info("bootstrap requested")
-        apiClient.bootstrapInstallation(request) { [identityRepository] result in
+        apiClient.bootstrapInstallation(request) { [identityRepository, tokenStore] result in
             switch result {
             case .success(let response):
-                identityRepository.save(
-                    ownerId: OwnerID(rawValue: response.ownerId),
-                    deviceId: DeviceID(rawValue: response.deviceId)
-                )
-                CloudBackupLogger.info("bootstrap succeeded")
-                completion(.success(response))
+                do {
+                    identityRepository.save(
+                        ownerId: OwnerID(rawValue: response.ownerId),
+                        deviceId: DeviceID(rawValue: response.deviceId)
+                    )
+                    try tokenStore.saveAnonymousDeviceToken(
+                        response.anonymousDeviceToken,
+                        expiresAt: response.tokenExpiresAt
+                    )
+                    CloudBackupLogger.info("bootstrap succeeded")
+                    completion(.success(response))
+                } catch {
+                    CloudBackupLogger.failure(operation: "persist bootstrap identity")
+                    completion(.failure(error))
+                }
             case .failure:
                 CloudBackupLogger.failure(operation: "bootstrap")
                 completion(result)
