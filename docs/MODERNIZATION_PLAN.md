@@ -358,6 +358,39 @@ Phase 8 completion notes:
 - No user-facing permission copy was changed in this phase.
 - Cloud Backup, Restore, and Auth remain disabled/not automatic.
 
+## Phase 9: Final Hardening and Release Candidate Preparation
+
+Status: completed for release candidate baseline documentation and minimal hardening.
+
+Goal: reduce release risk and define Go/No-Go status without adding major features.
+
+Tasks:
+
+- Re-ran repository status, recent log, docs/server file inventory, workspace listing, and established simulator build baseline.
+- Audited unsafe defaults for cloud backup, development upload, restore, auth, placeholder backend configuration, tokens, AWS credentials, presigned URL logging, raw coordinate logging, App Group force unwraps, and destructive restore defaults.
+- Reviewed TODO/FIXME comments and categorized remaining work as follow-up rather than broad cleanup.
+- Removed debug printing of pending notification request objects from the recording start path.
+- Guarded app-side App Group `UserDefaults` accesses touched in home/settings code.
+- Added `docs/RC_STATUS.md` and `docs/PHASE9_CHANGELOG.md`.
+
+Acceptance criteria:
+
+- Release candidate status is documented.
+- Unsafe defaults are audited.
+- Cloud Backup remains disabled by default.
+- Restore remains non-automatic and non-destructive by default.
+- Auth remains optional.
+- Existing local data is not destructively migrated.
+- Build/list result is documented.
+
+Phase 9 completion notes:
+
+- `xcodebuild -list -workspace footage.xcworkspace` succeeded.
+- `scripts/phase1-build-baseline.sh` succeeded with exit code 0.
+- No automated XCTest target or `.xctestplan` was found.
+- Signed archive was not run because signing/provisioning was intentionally not changed.
+- Recommendation is No-Go for production App Store release today, and Go for continued internal TestFlight preparation after human signing, device QA, widget QA, StoreKit validation, and privacy metadata review.
+
 ## First Phase 1 Codex Command
 
 Use this after selecting full Xcode on the machine:

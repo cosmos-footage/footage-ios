@@ -1579,6 +1579,70 @@ Release readiness result:
 - Signed archive readiness is documented but not verified because signing/provisioning was intentionally not changed.
 - No user-facing permission copy was changed in Phase 8.
 
+## Phase 9 Final Hardening and Release Candidate Audit
+
+Phase 9 date: 2026-07-04.
+
+Commands run:
+
+```sh
+git status --short
+git log --oneline -10
+find docs -maxdepth 1 -type f | sort
+find server -maxdepth 1 -type f | sort
+rg -n "CloudBackupConfiguration|isCloudBackupEnabled|isDevelopmentUploadEnabled|RestoreService|AuthLinkingService|automatic|destructive|replaceExisting|deleteExisting|baseURL|footage-cloud-backup|UserDefaults\\(suiteName: \\\"group\\.footage\\\"\\)!|UserDefaults\\(suiteName: AppGroup\\.identifier\\)!" Footage MainWidget docs/API_SPEC.md docs/DATA_MODEL.md docs/MODERNIZATION_PLAN.md docs/PRIVACY_REVIEW.md docs/APP_STORE_READINESS.md
+rg -n "AWS_ACCESS_KEY|AWS_SECRET|secret|token|Bearer|presigned|latitude|longitude|print\\(|debugPrint\\(|NSLog" Footage MainWidget server docs scripts
+rg -n "TODO|FIXME" Footage MainWidget server docs scripts
+rg -n "isCloudBackupEnabled|isDevelopmentUploadEnabled|baseURL|skipExisting|replaceExisting|AuthLinkingService|RestoreConflictPolicy|Bearer|Authorization|print\\(" Footage/Services Footage/Data Footage/Domain
+find . -maxdepth 4 \( -name '*Tests*' -o -name '*.xctestplan' \) -print | sort
+rg -n "test|xctest|XCTest|xctestplan" footage.xcodeproj Footage MainWidget Podfile docs scripts
+xcodebuild -list -workspace footage.xcworkspace
+scripts/phase1-build-baseline.sh
+git diff --stat
+git diff --name-only
+git diff --check
+git status --short
+```
+
+Validation results:
+
+- `xcodebuild -list -workspace footage.xcworkspace` succeeded.
+- `scripts/phase1-build-baseline.sh` succeeded with exit code 0.
+- No automated XCTest target or `.xctestplan` was found.
+- Signed archive was not run because signing/provisioning was intentionally not changed.
+
+Unsafe default findings:
+
+- `CloudBackupConfiguration.isCloudBackupEnabled` defaults to `false`.
+- `CloudBackupConfiguration.isDevelopmentUploadEnabled` defaults to `false`.
+- Restore preview defaults to `skipExisting` and destructive import throws.
+- Auth linking is disabled unless cloud configuration is explicitly enabled and a bearer token is supplied.
+- No AWS access key, AWS secret key, hardcoded bearer token, raw coordinate logging, or full presigned URL logging was found.
+- The disabled scaffold still uses the placeholder `https://footage-cloud-backup.invalid` base URL. This is safe while disabled and should be replaced by environment configuration before production cloud enablement.
+- App-side App Group `UserDefaults` force unwraps touched in Phase 9 were guarded.
+- Widget App Group force unwraps remain in `MainWidget/SmallView.swift`; they are documented as a follow-up because widget source was not modified in this phase.
+
+Hardening changes:
+
+- Removed debug printing of pending notification request objects from `HomeViewController.startTracking()`.
+- Guarded app-side App Group `UserDefaults` writes/reads in touched home/settings code.
+
+TODO/FIXME summary:
+
+- Build: no blocking TODO found.
+- Recording: `SceneDelegate.swift` has a legacy started-before TODO; recording UX was not changed.
+- Data migration: Journey photo/note manager TODOs remain around async/loading/removal behavior.
+- Sync outbox: test coverage follow-up remains.
+- Cloud backup: secure token storage, backend endpoint configuration, gzip/file staging, and tests remain blockers.
+- Restore: additive import, stable point IDs, explicit UX, gzip/file staging, and tests remain blockers.
+- Auth: provider UI/capability review, secure token handling, and server validation remain blockers.
+- Privacy/App Store: privacy metadata, background location review copy, physical-device QA, widget QA, and StoreKit validation remain blockers.
+
+Release candidate result:
+
+- No-Go for production App Store release today.
+- Go for continued internal TestFlight preparation after signing/provisioning, physical-device background location QA, widget QA, StoreKit validation, and App Store privacy metadata review are completed.
+
 ## Recommended Immediate Next Steps
 
 1. Keep `scripts/phase1-build-baseline.sh` as the repeatable Debug and Release simulator baseline for app and widget.

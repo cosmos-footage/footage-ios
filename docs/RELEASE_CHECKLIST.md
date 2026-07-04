@@ -16,6 +16,7 @@ Date: 2026-07-04.
 - Run `scripts/phase1-build-baseline.sh`.
 - Run signed archive after provisioning review.
 - Inspect warnings; generated Realm/RealmSwift warnings are tracked separately.
+- Confirm no automated XCTest target or `.xctestplan` has been added without running it.
 
 ## Manual QA Checks
 
@@ -43,6 +44,7 @@ Date: 2026-07-04.
 - Widget color/category reflects app group state.
 - Widget start/stop URL opens app and toggles tracking.
 - Widget distance values are reasonable.
+- Review remaining widget App Group `UserDefaults` force unwraps before external release.
 
 ## Data Migration QA
 
@@ -82,3 +84,8 @@ Date: 2026-07-04.
 - Preserve previous known-good build.
 - Keep Realm backup/export plan before any future migration.
 - Disable rollout on location, widget, or data-loss regression.
+
+## Release Candidate Gate
+
+- Production App Store release remains No-Go until signed archive/provisioning, physical-device background location QA, widget QA, StoreKit validation, App Store privacy metadata, and final review copy are complete.
+- Internal TestFlight preparation may continue after the signed archive is verified and the manual QA checklist passes.
