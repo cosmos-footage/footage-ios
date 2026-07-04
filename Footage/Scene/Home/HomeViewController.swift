@@ -376,23 +376,13 @@ extension HomeViewController: CLLocationManagerDelegate, MKMapViewDelegate  {
     
     func noti_recordStoppedBySpeed() {
         if UserDefaults.standard.bool(forKey: "etcPush") {
-            let content = UNMutableNotificationContent()
-            content.title = "속도 제한 초과"
-            content.body = "발자취를 남긴다는 건, 주위를 온전히 담아낼 수 있어야 한다는 것."
-            content.badge = 1
-            content.sound = UNNotificationSound.default
             alertDot.isHidden = false
             alertDot.alpha = 0
             view.bringSubviewToFront(alertDot)
             UIView.animate(withDuration: 1) {
                 self.alertDot.alpha = 1
             }
-            let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
-            let randomIdentifier = UUID().uuidString
-            let request = UNNotificationRequest(identifier: randomIdentifier, content: content, trigger: trigger)
-            
-            // 3
-            UNUserNotificationCenter.current().add(request) { error in
+            UserNotificationSchedulingService().scheduleRecordingStoppedBySpeed { error in
                 if error != nil {
                     print("something went wrong")
                 }
@@ -408,24 +398,13 @@ extension HomeViewController: CLLocationManagerDelegate, MKMapViewDelegate  {
     
     func noti_recordStoppedByNoSpeed() {
         if UserDefaults.standard.bool(forKey: "etcPush") {
-            let content = UNMutableNotificationContent()
-            content.title = "기록 중지"
-            content.body = "어딘가에 머물러 짙은 발자취를 남기시나보군요. 잠시 기록을 중단하겠습니다."
-            content.badge = 1
-            content.sound = UNNotificationSound.default
             alertDot.isHidden = false
             alertDot.alpha = 0
             view.bringSubviewToFront(alertDot)
             UIView.animate(withDuration: 1) {
                 self.alertDot.alpha = 1
             }
-            
-            let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
-            let randomIdentifier = UUID().uuidString
-            let request = UNNotificationRequest(identifier: randomIdentifier, content: content, trigger: trigger)
-            
-            // 3
-            UNUserNotificationCenter.current().add(request) { error in
+            UserNotificationSchedulingService().scheduleRecordingStoppedByNoSpeed { error in
                 if error != nil {
                     print("something went wrong")
                 }

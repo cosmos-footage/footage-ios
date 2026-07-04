@@ -144,8 +144,7 @@ extension Settings_GeneralVC: UITableViewDelegate, UITableViewDataSource {
 extension Settings_GeneralVC: UNUserNotificationCenterDelegate{
     
     static func registerNoti() {
-        let center = UNUserNotificationCenter.current()
-        center.requestAuthorization(options: [.alert, .badge, .sound]) { (granted, error) in
+        UserNotificationSchedulingService().requestAuthorization { granted, error in
             if granted {
                 print(granted)
             } else {
@@ -155,59 +154,18 @@ extension Settings_GeneralVC: UNUserNotificationCenterDelegate{
     }
     
     static func noti_everydayAlert() {
-
-        // 1
-        var dateComponents = DateComponents()
-        if  UserDefaults.standard.object(forKey: "everydayPushHour") != nil {
-            dateComponents.hour = UserDefaults.standard.integer(forKey: "everydayPushHour")
-            dateComponents.minute = UserDefaults.standard.integer(forKey: "everydayPushMinute")
-        } else { // 이거 혹시 업데이트하는 사람들 userdefault값 없이 00시 00분에 울릴까봐 해놨어:)
-            dateComponents.hour = 10
-            dateComponents.minute = 30
-        }
-        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
-
-        // 2
-        let content = UNMutableNotificationContent()
-        content.body = "오늘도 세상에 당신의 발자취를 남겨볼까요?"
-        content.badge = 1
-        content.sound = UNNotificationSound.default
-
-        let randomIdentifier = UUID().uuidString
-        let request = UNNotificationRequest(identifier: randomIdentifier, content: content, trigger: trigger)
-
-        // 3
-        UNUserNotificationCenter.current().add(request) { error in
-          if error != nil {
-            print("something went wrong")
-          }
+        UserNotificationSchedulingService().scheduleEverydayAlert { error in
+            if error != nil {
+                print("something went wrong")
+            }
         }
     }
     
     static func noti_everyMonthAlert() {
-
-        // 1
-        var dateComponents = DateComponents()
-        dateComponents.day = 1
-        dateComponents.hour = 00
-        dateComponents.minute = 00
-        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
-
-        // 2
-        let content = UNMutableNotificationContent()
-        content.title = "새로운 달의 시작이에요."
-        content.body = "월간 리포트가 초기화되었습니다. 지난 달 기록은 '지난 기록 보기'에 잘 보관되었습니다:-)"
-        content.badge = 1
-        content.sound = UNNotificationSound.default
-
-        let randomIdentifier = UUID().uuidString
-        let request = UNNotificationRequest(identifier: randomIdentifier, content: content, trigger: trigger)
-
-        // 3
-        UNUserNotificationCenter.current().add(request) { error in
-          if error != nil {
-            print("something went wrong")
-          }
+        UserNotificationSchedulingService().scheduleEveryMonthAlert { error in
+            if error != nil {
+                print("something went wrong")
+            }
         }
     }
     
