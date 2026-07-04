@@ -17,6 +17,7 @@ class LevelVC: UIViewController {
     var todayBadge: Badge! = nil
     var statsVC: StatsViewController! = nil
     var isTest = true
+    var badgeRepository: BadgeRepository = RealmBadgeRepository()
 
     @IBOutlet weak var badgeDetail: UILabel!
     @IBOutlet weak var todayBadgeImageView: UIImageView!
@@ -28,7 +29,7 @@ class LevelVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         if let todayBadgeImageName = UserDefaults.standard.string(forKey: "todayBadge") {
-            if let todayBadge = LevelManager.loadTodayBadge(imageName: todayBadgeImageName) {
+            if let todayBadge = badgeRepository.badge(imageName: todayBadgeImageName) {
                 self.todayBadge = todayBadge
                 todayBadgeImageView.image =  UIImage(named: todayBadgeImageName)
                 badgeDetail.text = "\"\(todayBadge.detail)\""
@@ -37,7 +38,8 @@ class LevelVC: UIViewController {
             todayBadgeImageView.image = UIImage(named: "")
             badgeDetail.text = ""
         }
-        if let badgeArray = LevelManager.loadBadgeList() {
+        let badgeArray = badgeRepository.badges()
+        if !badgeArray.isEmpty {
             badgeList = badgeArray
         } else { badgeList = [Badge(type: "", imageName: "", detail: "")] }
         collectionView.dataSource = self

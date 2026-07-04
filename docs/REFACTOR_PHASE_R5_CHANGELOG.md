@@ -37,6 +37,14 @@ Phase R5 starts migrating direct Realm manager reads behind repository protocols
 - Replaced direct monthly badge reads in `ReportDetailVC.viewDidLoad()`.
 - Preserved the existing fallback empty badge behavior when a month has no badges.
 
+## R5-5 Completed
+
+- Added `badge(imageName:)` to `BadgeRepository`.
+- Implemented `RealmBadgeRepository.badge(imageName:)` through the existing `LevelManager.loadTodayBadge(imageName:)` adapter path.
+- Added a default `BadgeRepository` dependency to `LevelVC`.
+- Replaced direct current-badge and badge-list reads in `LevelVC.viewDidLoad()`.
+- Preserved the existing empty badge fallback behavior.
+
 ## Behavior
 
 - Existing date screen behavior was not intentionally changed.
@@ -49,4 +57,4 @@ Phase R5 starts migrating direct Realm manager reads behind repository protocols
 
 ## Next Step
 
-Next repository migration should cover `LevelVC` badge reads, or add read models for map and colored journey screens before migrating those views.
+Next repository migration should add read models for map and colored journey screens before migrating those views.

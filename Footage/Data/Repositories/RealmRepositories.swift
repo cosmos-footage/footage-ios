@@ -127,6 +127,10 @@ struct RealmBadgeRepository: BadgeRepository {
         LevelManager.appendBadge(badge: badge)
     }
 
+    func badge(imageName: String) -> Badge? {
+        LevelManager.loadTodayBadge(imageName: imageName)
+    }
+
     func containsBadge(imageName: String) -> Bool {
         LevelManager.checkBadge(badgeName: imageName)
     }
