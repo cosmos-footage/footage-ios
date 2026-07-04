@@ -1035,9 +1035,9 @@ Identifiers and signing-sensitive settings:
 
 Deployment targets:
 
-- Project: iOS 13.0
-- App target: iOS 13.0
-- Widget target: iOS 14.0
+- Project: iOS 18.0
+- App target: iOS 18.0
+- Widget target: iOS 18.0
 
 Swift:
 
@@ -1052,11 +1052,11 @@ Build phases include CocoaPods script phases:
 
 `Podfile`:
 
-- Platform: iOS 13.0.
+- Platform: iOS 18.0.
 - `use_frameworks!` for app and widget.
 - App target pods: `EFCountingLabel ~> 6.0`, `RealmSwift ~> 20.0`.
 - Widget target pods: `EFCountingLabel ~> 6.0`, `RealmSwift ~> 20.0`.
-- Post-install sets generated Pods deployment target to iOS 13.0.
+- Post-install sets generated Pods deployment target to iOS 18.0.
 - Post-install still excludes `arm64` for watch simulator and Apple TV simulator.
 - The stale iPhone simulator `arm64` exclusion was removed to allow modern Apple Silicon iOS simulator builds.
 
@@ -1218,10 +1218,221 @@ Likely Phase 1/2 focus:
 - `armv7`, static authorization APIs, app extension restrictions, and storyboard custom class/module issues should be reviewed after preserving the build baseline.
 - Widget extension includes RealmSwift dependency through Pods even though inspected widget UI primarily uses app group UserDefaults; do not remove until build and target membership are reviewed.
 
+## Phase 3 Recording Extraction Audit
+
+Phase 3 date: 2026-07-04.
+
+Commands run:
+
+```sh
+git status --short
+rg -n "CLLocationManager|didUpdateLocations|startTracking|stopTracking|checkForMovement|isValid|LocationUpdate\\.processNewLocation|UserDefaults\\(suiteName|isTracking|distanceToday|distanceTotal|selectedColor|group\\.footage" Footage/Scene/Home/HomeViewController.swift Footage/Scene/Stats Footage/Data/Repositories MainWidget
+rg --files Footage | rg "(Footage/Scene/Home/HomeViewController.swift|Footage/Scene/Stats|Footage/Data|Footage/Domain|Footage/Services|Model)"
+nl -ba Footage/Scene/Home/HomeViewController.swift | sed -n '1,210p'
+nl -ba Footage/Scene/Home/HomeViewController.swift | sed -n '210,390p'
+nl -ba Footage/Scene/Home/HomeViewController.swift | sed -n '520,630p'
+nl -ba Footage/Scene/Stats/LocationUpdate.swift | sed -n '1,240p'
+xcodebuild -list -workspace footage.xcworkspace
+scripts/phase1-build-baseline.sh
+```
+
+Results:
+
+- Initial `git status --short` showed only the existing Xcode user state file modified before Phase 3 edits.
+- Static inspection succeeded and confirmed the current live recording path remains `HomeViewController` -> `LocationUpdate` -> `DateManager`/stats managers.
+- Sandboxed `xcodebuild -list -workspace footage.xcworkspace` failed with `xcodebuild: error: 'footage.xcworkspace' is not a workspace file.` The surrounding diagnostics showed CoreSimulator/log/cache access failures, so the likely cause was sandboxed Xcode user-directory access rather than workspace corruption.
+- Approved `xcodebuild -list -workspace footage.xcworkspace` succeeded and listed the workspace schemes.
+- `scripts/phase1-build-baseline.sh` succeeded with exit code 0. The script runs `pod install`, workspace listing, and Debug/Release simulator builds for both `footage` and `MainWidgetExtension` with `CODE_SIGNING_ALLOWED=NO`.
+
+Implementation result:
+
+- Added `Footage/Services/Recording/DistanceCalculator.swift`.
+- Added `Footage/Services/Recording/LocationFilter.swift`.
+- Added `Footage/Services/Recording/RecordingStateStore.swift`.
+- Added `Footage/Services/Recording/RecordingService.swift`.
+- Registered the new files with the main app target.
+- Routed existing `HomeViewController` widget tracking and distance writes through `RecordingStateStore` while preserving the existing keys.
+
+Likely cause of remaining coupling:
+
+- `HomeViewController.locationManager(_:didUpdateLocations:)` still coordinates filtering, Realm writes, map polyline rendering, badge/place checks, notifications, and UI state in one method. Moving all of it at once would be a broad behavior change.
+
+Smallest proposed next fixes:
+
+1. Replace `HomeViewController.checkSpeed` and distance calculations with `DistanceCalculator`.
+2. Replace `HomeViewController.isValid` decision logic with `LocationFilter` while preserving the existing counters and UserDefaults side effects.
+3. After parity is verified, move `LocationUpdate.processNewLocation` orchestration into `RecordingService`.
+4. Keep map rendering and UI animation in `HomeViewController` until recording persistence is independently stable.
+
+## Phase 4 Local Sync Outbox Audit
+
+Phase 4 date: 2026-07-04.
+
+Commands run:
+
+```sh
+git status --short
+sed -n '1,260p' /Users/nyeok/.codex/attachments/9af4893a-5a04-4063-ab9d-29e81af9f4c3/pasted-text.txt
+sed -n '1,220p' AGENTS.md
+sed -n '1,260p' Footage/Data/Repositories/LocalSyncOutboxRepository.swift
+sed -n '1,220p' Footage/Services/Sync/SyncOutboxDraft.swift
+sed -n '1,220p' Footage/Data/Repositories/RepositoryProtocols.swift
+sed -n '1,220p' Footage/Domain/Identifiers.swift
+sed -n '1,220p' Footage/Data/Migration/MigrationExportModels.swift
+sed -n '1,220p' Footage/Domain/RecordingDrafts.swift
+sed -n '1,240p' docs/DATA_MODEL.md
+rg -n "SyncOutbox|SyncStatus|syncBatch|outbox|Idempotency|idempotency" Footage docs
+xcodebuild -list -workspace footage.xcworkspace
+scripts/phase1-build-baseline.sh
+```
+
+Results:
+
+- Initial `git status --short` showed Phase 3 changes still pending plus the existing Xcode user state file.
+- Static inspection confirmed the Phase 2 outbox was a minimal `SyncOutboxDraft` UserDefaults store.
+- `xcodebuild -list -workspace footage.xcworkspace` succeeded with approved Xcode access.
+- `scripts/phase1-build-baseline.sh` succeeded with exit code 0 after Phase 4 changes.
+
+Implementation result:
+
+- Added `Footage/Services/Sync/SyncOutboxModels.swift`.
+- Added `Footage/Services/Sync/RoutePointNDJSONSerializer.swift`.
+- Added `Footage/Services/Sync/LocalSyncBatchBuilder.swift`.
+- Extended `Footage/Data/Repositories/RepositoryProtocols.swift`.
+- Extended `Footage/Data/Repositories/LocalSyncOutboxRepository.swift`.
+- Registered the new files with the main app target.
+
+Data safety:
+
+- No existing Realm object class or field was changed.
+- No Realm migration was added.
+- No route/photo/note data is deleted, moved, uploaded, or rewritten.
+- Outbox state is local Codable data in `UserDefaults`, separate from the existing Realm route hierarchy.
+
+Known limitation:
+
+- Route-point IDs generated for NDJSON are deterministic from installation, local date, timestamp, and sequence for preparation safety, but they are not yet persisted back onto Realm `Footstep` objects. A later additive migration should persist stable point IDs before production cloud backup.
+- NDJSON currently exists as an in-memory/local Codable payload string. Gzip compression, file persistence, checksums, object keys, upload, and server metadata are intentionally deferred.
+
+Smallest proposed next fixes:
+
+1. Wire local outbox preparation after local route writes without changing recording UX.
+2. Add lightweight tests around `LocalSyncOutboxRepository` state transitions and NDJSON serialization.
+3. Persist stable recording and point identifiers through an additive migration only after backup/export rollback is ready.
+4. Add cloud backup bootstrap only after explicit opt-in UI and privacy review.
+
+## Phase 5 Cloud Backup Client Audit
+
+Phase 5 date: 2026-07-04.
+
+Commands run:
+
+```sh
+git status --short
+sed -n '1,280p' /Users/nyeok/.codex/attachments/b681c48f-45cf-4ef6-8b75-1dec1ad342d6/pasted-text.txt
+sed -n '1,220p' AGENTS.md
+sed -n '1,240p' docs/API_SPEC.md
+sed -n '240,380p' docs/API_SPEC.md
+sed -n '1,260p' Footage/Services/Sync/SyncOutboxModels.swift
+sed -n '1,260p' Footage/Data/Repositories/LocalSyncOutboxRepository.swift
+rg -n "URLSession|Network|APIClient|Backup|Cloud|token|Bearer|URLRequest|presign|upload" Footage docs/API_SPEC.md docs/MODERNIZATION_PLAN.md
+xcodebuild -list -workspace footage.xcworkspace
+scripts/phase1-build-baseline.sh
+```
+
+Results:
+
+- Initial `git status --short` showed Phase 3 and Phase 4 changes still pending plus the existing Xcode user state file.
+- Static inspection confirmed there was no existing app network/API client surface.
+- `xcodebuild -list -workspace footage.xcworkspace` succeeded with approved Xcode access.
+- The first `scripts/phase1-build-baseline.sh` run failed with exit code 65 due to a Swift closure capture compile error in the new API client.
+- After changing `decoder.decode(...)` to `self.decoder.decode(...)`, `scripts/phase1-build-baseline.sh` succeeded with exit code 0.
+
+Implementation result:
+
+- Added `Footage/Services/Backup/CloudBackupConfiguration.swift`.
+- Added `Footage/Services/Backup/CloudBackupLogger.swift`.
+- Added `Footage/Services/Backup/CloudBackupService.swift`.
+- Added `Footage/Network/CloudBackupAPIClient.swift`.
+- Added `Footage/Network/DTO/CloudBackupDTOs.swift`.
+- Registered the new files with the main app target.
+
+Safety result:
+
+- Cloud backup defaults to disabled.
+- A second `isDevelopmentUploadEnabled` flag must also be enabled before uploads can run through `CloudBackupService`.
+- No app launch, recording, widget, or UI code invokes cloud backup.
+- No AWS access key, AWS secret key, AWS SDK, public S3 URL, Auth flow, signing change, bundle identifier change, entitlement change, Pod removal, Storyboard change, asset deletion, widget target change, Realm schema change, or destructive migration was added.
+- `anonymousDeviceToken` is not persisted; secure storage remains future work.
+
+Privacy logging result:
+
+- Debug logging is limited to operation names and coarse status.
+- The scaffold does not log raw latitude/longitude, notes, photos, bearer tokens, anonymous device tokens, presigned URLs, object keys, or AWS credentials.
+
+Known limitations:
+
+- Real cloud backup cannot safely be enabled until opt-in UI, secure token storage, backend endpoint configuration, gzip/file staging, tests, and privacy review are complete.
+- The outbox currently stores NDJSON payload strings locally; production backup should use file-backed staging with gzip and checksums.
+- Route point IDs are still not persisted into Realm objects.
+
+Smallest proposed next fixes:
+
+1. Add tests for `CloudBackupAPIClient` request construction with a mock `URLProtocol`.
+2. Add secure token storage before persisting `anonymousDeviceToken`.
+3. Add explicit opt-in backup UI and privacy copy.
+4. Add local file-backed gzip staging before enabling real uploads.
+
+## iOS 18 Baseline Audit
+
+Baseline update date: 2026-07-04.
+
+Commands run:
+
+```sh
+git status --short
+rg -n "IPHONEOS_DEPLOYMENT_TARGET|platform :ios|deployment target|iOS 13|iOS 14|iOS 18|MinimumOSVersion" Podfile footage.xcodeproj/project.pbxproj Footage MainWidget docs
+sed -n '1,160p' Podfile
+xcodebuild -list -workspace footage.xcworkspace
+scripts/phase1-build-baseline.sh
+git diff --check
+```
+
+Implementation result:
+
+- `Podfile` platform is now iOS 18.0.
+- `Podfile` post-install generated Pods deployment target is now iOS 18.0.
+- Project Debug and Release deployment targets are now iOS 18.0.
+- Main app Debug and Release deployment targets are now iOS 18.0.
+- Widget extension Debug and Release deployment targets are now iOS 18.0.
+- `Podfile.lock` changed only by `PODFILE CHECKSUM`.
+- No signing setting, bundle identifier, entitlement, app group, Storyboard, asset, Realm model, or widget source file was changed for the iOS 18 baseline.
+
+Validation result:
+
+- `xcodebuild -list -workspace footage.xcworkspace` succeeded.
+- `scripts/phase1-build-baseline.sh` succeeded with exit code 0 after `pod install`, workspace listing, and Debug/Release simulator builds for app and widget.
+
+New or more visible warnings after setting iOS 18.0:
+
+- `Settings_DonateVC` uses StoreKit 1 APIs deprecated/no longer supported in iOS 18: `SKPaymentQueue`, `SKPaymentTransaction`, `SKPaymentTransactionObserver`, `SKMutablePayment`, and `finishTransaction`.
+- `HomeViewController` uses `UIApplication.shared.applicationIconBadgeNumber`, deprecated in iOS 17.
+- `HomeViewController`, `FL_LetsStartVC`, and `SceneDelegate` use `UIApplication.shared.windows`, deprecated in iOS 15.
+- `HomeViewController` and `MapViewController` use static `CLLocationManager.authorizationStatus()`, deprecated in iOS 14.
+- `HomeViewController` uses `SKStoreReviewController.requestReview()`, deprecated in favor of scene-based/AppStore review APIs.
+- Realm/RealmSwift generated Pods still emit duplicate-library, Sendable conformance, and C++ designated initializer ordering warnings.
+
+Smallest proposed next fixes:
+
+1. Replace StoreKit 1 donation code with StoreKit 2 behind an iOS 18-safe purchase service.
+2. Replace badge count writes with `UNUserNotificationCenter.setBadgeCount`.
+3. Replace `UIApplication.shared.windows` lookups with scene-local window access.
+4. Replace static location authorization checks with `CLLocationManager.authorizationStatus` instance usage where appropriate.
+
 ## Recommended Immediate Next Steps
 
 1. Keep `scripts/phase1-build-baseline.sh` as the repeatable Debug and Release simulator baseline for app and widget.
 2. Do not update CocoaPods tooling unless a concrete build or install issue requires it; the dependency baseline now passes with CocoaPods 1.10.0.
-3. Review `UIRequiredDeviceCapabilities = armv7` after preserving the dependency baseline.
-4. Add repository protocols around existing Realm read/write surfaces without schema changes.
-5. Add an additive identity/sync schema proposal before touching Realm migrations.
+3. Address iOS 18 deprecation warnings in small patches, starting with StoreKit 1 donation flow.
+4. Add tests for outbox state transitions, idempotency key generation, NDJSON serialization, and API client request construction.
+5. Add secure token storage and explicit opt-in UI before enabling any real cloud backup.

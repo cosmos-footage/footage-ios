@@ -15,6 +15,7 @@ Common requirements:
 - The app never receives AWS credentials.
 - Presigned URLs are short-lived.
 - Server verifies owner/device scope for every object key.
+- Phase 5 iOS scaffolding keeps cloud backup disabled by default and may use `application/x-ndjson` only as a development-only local scaffold. Production route batches should use `application/x-ndjson+gzip`.
 
 Common identifiers:
 

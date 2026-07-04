@@ -27,7 +27,7 @@ Current finding:
 - `pod install` restored `Pods/Pods.xcodeproj` and `Pods/Manifest.lock`.
 - Workspace listing succeeds. Available schemes are `EFCountingLabel`, `footage`, `MainWidgetExtension`, `Pods-footage`, `Pods-MainWidgetExtension`, `Realm`, `RealmSwift`, and `WidgetColorSelection`.
 - The first successful Debug simulator build command is `xcodebuild -workspace footage.xcworkspace -scheme footage -configuration Debug -destination generic/platform=iOS\ Simulator -derivedDataPath build/DerivedData CODE_SIGNING_ALLOWED=NO -quiet build`.
-- Two minimal Pods build-setting fixes were needed: set generated Pods deployment target to iOS 13.0 and remove the stale iPhone simulator `arm64` exclusion. No app source, signing, bundle identifiers, entitlements, data models, Storyboards, assets, or widget source files were changed.
+- Two minimal Pods build-setting fixes were needed during Phase 1: set generated Pods deployment target to iOS 13.0 and remove the stale iPhone simulator `arm64` exclusion. The renewal baseline has since been raised to iOS 18.0 across the app, widget, project, and generated Pods settings.
 - Follow-up warning cleanup removed the CocoaPods `ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES` override warning and the `LABiometryType.opticID` exhaustiveness warning.
 - Follow-up Interface Builder cleanup added a reuse identifier to an otherwise unused empty `Date.storyboard` prototype cell and removed the Date storyboard reuse identifier warning.
 - `scripts/phase1-build-baseline.sh` now captures the repeatable Phase 1 local baseline: `pod install`, workspace scheme listing, main app Debug simulator build, and widget extension Debug simulator build.
@@ -58,7 +58,7 @@ Tasks:
 - Before changing dependency versions, document current versions, candidate target versions, expected build impact, and rollback notes.
 - Consider CocoaPods tooling third if still needed; dependency builds now pass with CocoaPods 1.10.0.
 - Keep Realm local-only during modernization. Do not adopt Realm Device Sync; the planned private backup service should remain separate from Realm's deprecated sync service.
-- Review deployment target strategy. Keep existing app iOS 13/widget iOS 14 until measured; propose renewed target iOS 17+ after baseline.
+- Deployment target strategy is now set to iOS 18.0 across the app, widget, project, and generated Pods settings.
 - Keep the iPhone simulator `arm64` exclusion removed for generated Pods targets; it blocks Xcode 26.6 Apple Silicon simulator builds.
 - Review `UIRequiredDeviceCapabilities = armv7` after baseline.
 - Check RealmSwift modern compatibility options: current CocoaPods version, latest CocoaPods-compatible version, and SPM option.
@@ -111,7 +111,13 @@ Phase 2 completion notes:
 - New repository protocols and adapters are available for the next call-site migration phase.
 - `installationId` is local-only and is intentionally separate from future `ownerId` and `deviceId`.
 
-## Phase 3: SwiftUI Renewal Shell
+## Current Sequence Adjustment
+
+The active renewal sequence now moves recording engine extraction before SwiftUI shell work. This keeps the highest-risk local-first route recording path testable before changing app navigation or screen structure. SwiftUI shell work is deferred until recording and sync boundaries are stable.
+
+## Deferred UI Renewal: SwiftUI Renewal Shell
+
+Status: deferred.
 
 Goal: introduce modern navigation without rewriting all existing screens.
 
@@ -129,19 +135,21 @@ Acceptance criteria:
 - Existing route rendering and recording remain available.
 - No data migration is required to view existing journeys.
 
-## Phase 4: Local-First Recording Stabilization
+## Phase 3: Recording Engine Extraction
+
+Status: completed for scaffolding.
 
 Goal: extract recording from `HomeViewController` and make it testable.
 
 Tasks:
 
-- Introduce `RecordingService`.
-- Introduce `LocationFilter` for speed, distance, accuracy, and timestamp rules.
-- Use the newest `CLLocation` in delegate batches.
-- Guard zero/negative timestamp intervals.
-- Move distance calculation and local write orchestration out of the view controller.
-- Add a local `SyncOutbox` abstraction but keep network disabled by default.
-- Preserve App Group widget updates.
+- Added `RecordingService` scaffold with delegate callbacks and repository-backed persistence path for future migration.
+- Added `LocationFilter` for speed, distance, no-speed, and always-on warmup decisions.
+- Added `DistanceCalculator` with guarded elapsed-time speed calculation.
+- Added `RecordingStateStore` around existing app group widget keys.
+- Routed the smallest safe `HomeViewController` state writes through `RecordingStateStore`.
+- Deferred live `CLLocationManagerDelegate` migration to a later small patch because the current method also coordinates UI animation, notifications, map rendering, and Realm write sequencing.
+- Preserved App Group widget keys and current live recording behavior.
 
 Acceptance criteria:
 
@@ -150,19 +158,59 @@ Acceptance criteria:
 - Existing distance and route rendering behavior is preserved or intentionally adjusted.
 - Filtering rules are unit tested.
 
+Phase 3 completion notes:
+
+- No Realm schema, destructive migration, network call, S3 upload, auth flow, widget file, Storyboard, asset, signing, bundle identifier, entitlement, or Pod removal was introduced.
+- `scripts/phase1-build-baseline.sh` succeeded after Phase 3 changes.
+- Next step is a focused live call-site migration: use `DistanceCalculator` and `LocationFilter` from `HomeViewController` while preserving current output, then migrate persistence orchestration into `RecordingService` after parity is verified.
+
+## Phase 4: Local Sync Outbox
+
+Status: completed for local-only implementation.
+
+Goal: prepare local route data for future backup without adding networking or changing user-facing behavior.
+
+Tasks:
+
+- Added local outbox item and batch models: `SyncOutboxItem`, `SyncOutboxItemType`, `SyncOutboxItemStatus`, `SyncBatchDraft`, `SyncBatchConfiguration`, `IdempotencyKey`, and `LocalBackupStatus`.
+- Extended `SyncOutboxRepository` with enqueue/list/status transition methods.
+- Extended `LocalSyncOutboxRepository` to persist item-based outbox state in `UserDefaults`.
+- Added deterministic local idempotency key generation using `installationId`, `syncBatchId`, and schema version.
+- Added route-point NDJSON serialization scaffolding for future `points.ndjson.gz`.
+- Added local batch creation from `MigrationExportDraft`, grouped by day and chunked by configurable max point count.
+- Kept gzip compression, file persistence, checksums, object keys, backend API calls, S3 upload, Auth, and visible UI out of scope.
+
+Acceptance criteria:
+
+- Local outbox items can be enqueued, listed, marked syncing/synced/failed, and retried.
+- Existing Realm data is not migrated or deleted.
+- Existing recording UX is not intentionally changed.
+- No cloud/network/S3/Auth behavior exists yet.
+
+Phase 4 completion notes:
+
+- `scripts/phase1-build-baseline.sh` succeeded after Phase 4 changes.
+- The local outbox is ready to be wired into recording persistence in a later local-only patch.
+- Cloud backup should not start until opt-in UI, bootstrap identity, private object storage, retry policy, and privacy review are explicitly implemented.
+
 ## Phase 5: Cloud Backup with Anonymous Owner/Device
+
+Status: completed for disabled-by-default client scaffolding.
 
 Goal: add opt-in cloud backup without requiring login.
 
 Tasks:
 
-- Add bootstrap client for `POST /v1/bootstrap`.
-- Store `ownerId`, `deviceId`, `installationId`, and anonymous credential securely.
-- Add backup settings UI with clear opt-in language.
-- Add sync batch creation from local outbox.
-- Upload route point batch files through presigned S3 URLs.
-- Complete uploads through server metadata endpoint.
-- Avoid logging raw coordinates, presigned URLs, and tokens.
+- Added `CloudBackupConfiguration` with cloud backup disabled by default and a separate development upload gate.
+- Added `CloudBackupAPIClient` using `URLSession`.
+- Added DTOs for bootstrap, presign upload, upload complete, sync batch registration, restore manifest, future auth link, and future cloud data deletion.
+- Added `CloudBackupService` scaffold that can read pending outbox items and represent the presign/upload/complete/sync-batch sequence.
+- Added privacy-safe debug logging for operation names and coarse status only.
+- Stored returned `ownerId` and `deviceId` through the existing identity repository if bootstrap is manually invoked.
+- Did not persist `anonymousDeviceToken`; secure storage remains future work.
+- Did not add backup settings UI yet.
+- Did not enable automatic backup.
+- Did not add AWS credentials, AWS SDK, Auth, S3 public URLs, or production endpoint configuration.
 
 Acceptance criteria:
 
@@ -171,6 +219,40 @@ Acceptance criteria:
 - Local recording works without network.
 - Upload retry is idempotent.
 - S3 object keys are private and owner-scoped.
+
+Phase 5 completion notes:
+
+- `scripts/phase1-build-baseline.sh` succeeded after a small compile fix in `CloudBackupAPIClient`.
+- No user-facing behavior changed.
+- No Realm schema or destructive migration was introduced.
+- No real network upload can happen by default because both backup flags default to false and no call site invokes the service automatically.
+- Real cloud backup remains blocked on opt-in UI, secure token storage, backend availability, gzip/file staging, test coverage, and privacy review.
+
+## iOS 18 Baseline Update
+
+Status: completed.
+
+Goal: set the entire app baseline to iOS 18.0.
+
+Changes:
+
+- Set `Podfile` platform to iOS 18.0.
+- Set generated Pods `IPHONEOS_DEPLOYMENT_TARGET` post-install value to iOS 18.0.
+- Set project, app target, and widget target deployment targets to iOS 18.0.
+- Updated renewal docs to reflect the current iOS 18.0 baseline.
+
+Validation:
+
+- `xcodebuild -list -workspace footage.xcworkspace` succeeded.
+- `scripts/phase1-build-baseline.sh` succeeded after the baseline update.
+
+Follow-up warnings exposed by iOS 18:
+
+- StoreKit 1 donation flow uses APIs deprecated/no longer supported in iOS 18.
+- `UIApplication.shared.applicationIconBadgeNumber` is deprecated.
+- `UIApplication.shared.windows` is deprecated.
+- Static `CLLocationManager.authorizationStatus()` usage is deprecated.
+- Realm/RealmSwift Pods still emit generated dependency warnings.
 
 ## Phase 6: Restore
 

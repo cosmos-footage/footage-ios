@@ -268,6 +268,78 @@ Added safe local/Realm-backed scaffolds:
 
 No backend, S3, auth, or network call is implemented in Phase 2.
 
+## Phase 4 Implemented Local Sync Outbox
+
+Phase 4 adds a local-only outbox implementation as plain Swift/Codable models persisted through `UserDefaults`. It does not add Realm objects or run a Realm migration.
+
+Added app-local concepts:
+
+- `IdempotencyKey`
+- `SyncBatchConfiguration`
+- `SyncBatchDraft`
+- `SyncOutboxItem`
+- `SyncOutboxItemType`
+- `SyncOutboxItemStatus`
+- `SyncOutboxPayload`
+- `LocalBackupStatus`
+- `RoutePointNDJSONRecord`
+
+`LocalSyncOutboxRepository` now stores outbox items under a local `UserDefaults` key separate from existing route data. It can enqueue items, list pending/failed items, mark items as syncing/synced/failed, retry failed items, prepare route-point batches from `MigrationExportDraft`, and report:
+
+- `pendingCount`
+- `failedCount`
+- `lastPreparedAt`
+- `lastError`
+
+The Phase 4 idempotency key format is:
+
+```text
+installationId:syncBatchId:schema_<schemaVersion>
+```
+
+This uses `installationId` because `ownerId` and `deviceId` do not exist until a future bootstrap flow. After bootstrap is implemented, future batches should prefer durable server-issued device identity while preserving retry safety for already-created local batches.
+
+Route-point batch preparation:
+
+- Reads `MigrationExportDraft`.
+- Groups route points by local day.
+- Chunks points by `SyncBatchConfiguration.maxPointsPerBatch`.
+- Generates a local NDJSON string payload for future `points.ndjson.gz`.
+- Does not gzip, write S3 objects, call APIs, delete local data, or move photos/notes out of Realm.
+
+NDJSON privacy rule:
+
+- NDJSON contains latitude/longitude and must not be logged.
+- Compression, checksums, file persistence, private object storage, and server metadata are future cloud backup work.
+
+## Phase 5 Implemented Cloud Backup Scaffold
+
+Phase 5 adds API client and service scaffolding without changing Realm schema or enabling upload by default.
+
+Local configuration:
+
+```text
+baseURL: https://footage-cloud-backup.invalid
+isCloudBackupEnabled: false
+isDevelopmentUploadEnabled: false
+requestTimeout: 30
+schemaVersion: 1
+```
+
+Identity handling:
+
+- `installationId` still comes from `LocalDeviceIdentityRepository`.
+- If `bootstrapInstallation` is manually invoked with cloud backup enabled, returned `ownerId` and `deviceId` can be saved through the existing identity repository.
+- `anonymousDeviceToken` is not persisted in Phase 5. Secure token storage remains future work.
+- No Auth user identity is introduced.
+
+Upload handling:
+
+- `CloudBackupService` reads pending `SyncOutboxItem` values.
+- It can build presign, presigned PUT upload, upload complete, and sync batch requests.
+- It refuses to run uploads unless both cloud backup and development upload flags are enabled and a bearer token is explicitly supplied.
+- No AWS access key or secret key exists in the app model.
+
 ## Server Model
 
 ### owners
