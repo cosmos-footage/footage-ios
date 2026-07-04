@@ -38,6 +38,14 @@ Phase R6 prepares the disabled cloud backup pipeline for S3-style uploads withou
 - Cleared retry metadata when items move to `.syncing`, `.synced`, or manual retry.
 - Included interrupted `.syncing` items in pending scans so a later manual backup run can recover them after relaunch.
 
+## R6-5 Completed
+
+- Added `ManualCloudBackupRunning`.
+- Added `ManualCloudBackupRunner` to prepare current Realm route export into local outbox batches.
+- Added `ManualBackupPreparationResult` with prepared item count and local backup status.
+- Added composition-root construction for the manual runner.
+- Kept the runner manual-only; it is not called from app launch, recording, Settings, or background tasks.
+
 ## Behavior
 
 - No automatic backup, restore, auth, S3 upload, or backend call path was enabled.
@@ -51,4 +59,4 @@ Phase R6 prepares the disabled cloud backup pipeline for S3-style uploads withou
 
 ## Next Step
 
-R6-5 should add a manual-only backup runner and Settings opt-in/status UI while keeping backup disabled by default.
+R6-6 should add Settings opt-in/status UI while keeping backup disabled by default.

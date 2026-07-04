@@ -58,6 +58,18 @@ struct AppCompositionRoot {
         )
     }
 
+    func makeManualCloudBackupRunner(
+        identityRepository: DeviceIdentityRepository = LocalDeviceIdentityRepository(),
+        migrationExportRepository: MigrationExportRepository = RealmMigrationExportRepository(),
+        syncOutboxRepository: SyncOutboxRepository = LocalSyncOutboxRepository()
+    ) -> ManualCloudBackupRunning {
+        return ManualCloudBackupRunner(
+            identityRepository: identityRepository,
+            migrationExportRepository: migrationExportRepository,
+            syncOutboxRepository: syncOutboxRepository
+        )
+    }
+
     func makeRestoreService(
         apiClient: CloudBackupAPIClientProtocol? = nil,
         identityRepository: DeviceIdentityRepository = LocalDeviceIdentityRepository(),

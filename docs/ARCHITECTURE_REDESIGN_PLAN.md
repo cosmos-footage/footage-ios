@@ -256,10 +256,11 @@ R6 progress:
 - Added gzip compression for route NDJSON staging and calculate checksum/content length from the compressed staged payload.
 - Split newly enqueued local outbox route NDJSON payloads into protected Application Support files while keeping metadata in `UserDefaults`.
 - Added retry/backoff metadata with `nextAttemptAt` and included interrupted `.syncing` items in pending scans for relaunch recovery.
+- Added a manual-only backup runner that prepares local route batches into the outbox without starting network upload.
 
 R6 remaining:
 
-- Add a manual-only backup runner and Settings opt-in/status UI.
+- Add Settings opt-in/status UI.
 
 ### R7: Tests and Verification Harness
 
