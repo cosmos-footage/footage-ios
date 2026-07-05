@@ -495,6 +495,36 @@ Phase R13 current completion notes:
 - No Storyboard, asset, widget, Realm schema, network, auth, restore, signing, entitlement, or bundle identifier behavior was changed.
 - Next step is Phase R14: choose and scaffold the new UI runway behind disabled feature flags.
 
+## Refactor Phase R14: New UI Runway
+
+Status: started with disabled-by-default routing scaffold.
+
+Goal: prepare the actual UI rewrite without cutting over user data paths.
+
+Tasks:
+
+- Choose the rewrite surface deliberately: SwiftUI, programmatic UIKit, or hybrid. Do not mix choices per screen without a navigation plan.
+- Add feature flags for new screen entry points, defaulting off.
+- Build new UI screens against use cases and presentation models, not Realm or manager singletons.
+- Introduce coordinators or routing adapters so old and new screens can coexist during parity checks.
+- Add visual QA plans for Home recording, date archive, journey detail, map archive, stats/report, settings, backup status, restore preview, first launch, and widget-adjacent color selection flows.
+
+Phase R14 progress:
+
+- Selected a renewed SwiftUI shell as the runway direction, hosted behind UIKit where needed during transition.
+- Added `FeatureFlags.isNewUIRunwayEnabled`, defaulting to `false`.
+- Added pure routing scaffolding: `AppRootDestination`, `AppRootRoute`, and `AppRootRouter`.
+- Added tests proving existing users still default to the legacy `Main` Storyboard `TabBarController`.
+- Added tests proving first-launch users still route to the legacy `FirstLaunch` Storyboard even when the new UI flag is enabled.
+- The router is not wired into `SceneDelegate` yet, so current runtime behavior is unchanged.
+
+Phase R14 current completion notes:
+
+- `git diff --check` succeeded.
+- `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` succeeded.
+- No Storyboard, asset, widget, Realm schema, network, auth, restore, signing, entitlement, bundle identifier, or root-controller runtime behavior was changed.
+- Next step is to add an internal SwiftUI shell scaffold behind `isNewUIRunwayEnabled`, still disconnected from default launch.
+
 ## First Phase 1 Codex Command
 
 Use this after selecting full Xcode on the machine:
