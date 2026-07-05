@@ -122,6 +122,74 @@ struct AppCompositionRoot {
         )
     }
 
+    func makeHomeDashboardUseCase(
+        daySummaryRepository: DaySummaryRepository = RealmDaySummaryRepository(),
+        widgetStateStore: WidgetStateStore? = AppGroupWidgetStateStore()
+    ) -> HomeDashboardUseCase {
+        DefaultHomeDashboardUseCase(
+            daySummaryRepository: daySummaryRepository,
+            widgetStateStore: widgetStateStore
+        )
+    }
+
+    func makeDateTimelineUseCase(
+        routeRepository: RouteRepository = RealmRouteRepository()
+    ) -> DateTimelineUseCase {
+        DefaultDateTimelineUseCase(routeRepository: routeRepository)
+    }
+
+    func makeStatsOverviewUseCase(
+        daySummaryRepository: DaySummaryRepository = RealmDaySummaryRepository(),
+        colorRepository: ColorRepository = RealmColorRepository(),
+        placeRepository: PlaceRepository = RealmPlaceRepository()
+    ) -> StatsOverviewUseCase {
+        DefaultStatsOverviewUseCase(
+            daySummaryRepository: daySummaryRepository,
+            colorRepository: colorRepository,
+            placeRepository: placeRepository
+        )
+    }
+
+    func makeBackupPreparationUseCase(
+        runner: ManualCloudBackupRunning? = nil
+    ) -> BackupPreparationUseCase {
+        DefaultBackupPreparationUseCase(
+            runner: runner ?? makeManualCloudBackupRunner()
+        )
+    }
+
+    func makeRestorePreviewUseCase(
+        restoreService: RestoreService? = nil
+    ) -> RestorePreviewUseCase {
+        DefaultRestorePreviewUseCase(
+            restoreService: restoreService ?? makeRestoreService()
+        )
+    }
+
+    func makeAuthLinkingReadinessUseCase(
+        identityRepository: DeviceIdentityRepository = LocalDeviceIdentityRepository(),
+        authIdentityStore: AuthIdentityStore = LocalAuthIdentityStore()
+    ) -> AuthLinkingReadinessUseCase {
+        DefaultAuthLinkingReadinessUseCase(
+            identityRepository: identityRepository,
+            authIdentityStore: authIdentityStore,
+            isAuthFeatureEnabled: { environment.featureFlags.isAuthEnabled }
+        )
+    }
+
+    func makeSettingsPreferencesUseCase(
+        settingsRepository: CloudBackupSettingsRepository = CloudBackupSettingsStore()
+    ) -> SettingsPreferencesUseCase {
+        DefaultSettingsPreferencesUseCase(
+            settingsRepository: settingsRepository,
+            featureFlags: { environment.featureFlags }
+        )
+    }
+
+    func makeRecordingLifecycleUseCase() -> RecordingLifecycleUseCase {
+        DefaultRecordingLifecycleUseCase()
+    }
+
     private func makeCloudBackupConfiguration(
         isCloudBackupEnabled: Bool,
         isDevelopmentUploadEnabled: Bool

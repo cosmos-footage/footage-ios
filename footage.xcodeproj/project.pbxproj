@@ -62,6 +62,7 @@
 		C0D3A0090000000000000001 /* RecordingDrafts.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3A00A0000000000000001 /* RecordingDrafts.swift */; };
 		C0D800010000000000000001 /* DomainModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D800050000000000000001 /* DomainModels.swift */; };
 		C0D800020000000000000001 /* DomainPolicies.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D800060000000000000001 /* DomainPolicies.swift */; };
+		C0D810010000000000000001 /* UseCases.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D810030000000000000001 /* UseCases.swift */; };
 		C0D3A00B0000000000000001 /* SyncOutboxDraft.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3A00C0000000000000001 /* SyncOutboxDraft.swift */; };
 		C0D3A00D0000000000000001 /* MigrationExportModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3A00E0000000000000001 /* MigrationExportModels.swift */; };
 		C0D3A00F0000000000000001 /* LocalDeviceIdentityRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3A0100000000000000001 /* LocalDeviceIdentityRepository.swift */; };
@@ -104,6 +105,7 @@
 		C0D700030000000000000001 /* RoutePointNDJSONSerializerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D700060000000000000001 /* RoutePointNDJSONSerializerTests.swift */; };
 		C0D800030000000000000001 /* DomainModelsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D800070000000000000001 /* DomainModelsTests.swift */; };
 		C0D800040000000000000001 /* DomainPoliciesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D800080000000000000001 /* DomainPoliciesTests.swift */; };
+		C0D810020000000000000001 /* UseCasesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D810040000000000000001 /* UseCasesTests.swift */; };
 		C0D710010000000000000001 /* LocalSyncOutboxRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D710050000000000000001 /* LocalSyncOutboxRepositoryTests.swift */; };
 		C0D710020000000000000001 /* RestoreDuplicateDetectorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D710060000000000000001 /* RestoreDuplicateDetectorTests.swift */; };
 		C0D710030000000000000001 /* AuthLinkingServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D710070000000000000001 /* AuthLinkingServiceTests.swift */; };
@@ -248,6 +250,7 @@
 		C0D3A00A0000000000000001 /* RecordingDrafts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingDrafts.swift; sourceTree = "<group>"; };
 		C0D800050000000000000001 /* DomainModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DomainModels.swift; sourceTree = "<group>"; };
 		C0D800060000000000000001 /* DomainPolicies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DomainPolicies.swift; sourceTree = "<group>"; };
+		C0D810030000000000000001 /* UseCases.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UseCases.swift; sourceTree = "<group>"; };
 		C0D3A00C0000000000000001 /* SyncOutboxDraft.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncOutboxDraft.swift; sourceTree = "<group>"; };
 		C0D3A00E0000000000000001 /* MigrationExportModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationExportModels.swift; sourceTree = "<group>"; };
 		C0D3A0100000000000000001 /* LocalDeviceIdentityRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalDeviceIdentityRepository.swift; sourceTree = "<group>"; };
@@ -291,6 +294,7 @@
 		C0D700070000000000000001 /* FootageTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FootageTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C0D800070000000000000001 /* DomainModelsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DomainModelsTests.swift; sourceTree = "<group>"; };
 		C0D800080000000000000001 /* DomainPoliciesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DomainPoliciesTests.swift; sourceTree = "<group>"; };
+		C0D810040000000000000001 /* UseCasesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UseCasesTests.swift; sourceTree = "<group>"; };
 		C0D710050000000000000001 /* LocalSyncOutboxRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalSyncOutboxRepositoryTests.swift; sourceTree = "<group>"; };
 		C0D710060000000000000001 /* RestoreDuplicateDetectorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestoreDuplicateDetectorTests.swift; sourceTree = "<group>"; };
 		C0D710070000000000000001 /* AuthLinkingServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthLinkingServiceTests.swift; sourceTree = "<group>"; };
@@ -513,6 +517,7 @@
 				C0D3A00A0000000000000001 /* RecordingDrafts.swift */,
 				C0D800050000000000000001 /* DomainModels.swift */,
 				C0D800060000000000000001 /* DomainPolicies.swift */,
+				C0D810030000000000000001 /* UseCases.swift */,
 			);
 			path = Domain;
 			sourceTree = "<group>";
@@ -560,6 +565,7 @@
 				C0D700060000000000000001 /* RoutePointNDJSONSerializerTests.swift */,
 				C0D800070000000000000001 /* DomainModelsTests.swift */,
 				C0D800080000000000000001 /* DomainPoliciesTests.swift */,
+				C0D810040000000000000001 /* UseCasesTests.swift */,
 				C0D710050000000000000001 /* LocalSyncOutboxRepositoryTests.swift */,
 				C0D710060000000000000001 /* RestoreDuplicateDetectorTests.swift */,
 				C0D710070000000000000001 /* AuthLinkingServiceTests.swift */,
@@ -1064,6 +1070,7 @@
 				C0D3A0090000000000000001 /* RecordingDrafts.swift in Sources */,
 				C0D800010000000000000001 /* DomainModels.swift in Sources */,
 				C0D800020000000000000001 /* DomainPolicies.swift in Sources */,
+				C0D810010000000000000001 /* UseCases.swift in Sources */,
 				C0D3A00B0000000000000001 /* SyncOutboxDraft.swift in Sources */,
 				C0D3A00D0000000000000001 /* MigrationExportModels.swift in Sources */,
 				C0D3A00F0000000000000001 /* LocalDeviceIdentityRepository.swift in Sources */,
@@ -1186,6 +1193,7 @@
 				C0D700030000000000000001 /* RoutePointNDJSONSerializerTests.swift in Sources */,
 				C0D800030000000000000001 /* DomainModelsTests.swift in Sources */,
 				C0D800040000000000000001 /* DomainPoliciesTests.swift in Sources */,
+				C0D810020000000000000001 /* UseCasesTests.swift in Sources */,
 				C0D710010000000000000001 /* LocalSyncOutboxRepositoryTests.swift in Sources */,
 				C0D710020000000000000001 /* RestoreDuplicateDetectorTests.swift in Sources */,
 				C0D710030000000000000001 /* AuthLinkingServiceTests.swift in Sources */,
