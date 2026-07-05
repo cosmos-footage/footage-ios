@@ -67,6 +67,7 @@
 		C0D3A00D0000000000000001 /* MigrationExportModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3A00E0000000000000001 /* MigrationExportModels.swift */; };
 		C0D3A00F0000000000000001 /* LocalDeviceIdentityRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3A0100000000000000001 /* LocalDeviceIdentityRepository.swift */; };
 		C0D3A0110000000000000001 /* LocalSyncOutboxRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3A0120000000000000001 /* LocalSyncOutboxRepository.swift */; };
+		C0D820010000000000000001 /* LocalPreferencesRepositories.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D820030000000000000001 /* LocalPreferencesRepositories.swift */; };
 		C0D3B0010000000000000001 /* DistanceCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3B0050000000000000001 /* DistanceCalculator.swift */; };
 		C0D3B0020000000000000001 /* LocationFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3B0060000000000000001 /* LocationFilter.swift */; };
 		C0D3B0030000000000000001 /* RecordingStateStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3B0070000000000000001 /* RecordingStateStore.swift */; };
@@ -106,6 +107,7 @@
 		C0D800030000000000000001 /* DomainModelsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D800070000000000000001 /* DomainModelsTests.swift */; };
 		C0D800040000000000000001 /* DomainPoliciesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D800080000000000000001 /* DomainPoliciesTests.swift */; };
 		C0D810020000000000000001 /* UseCasesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D810040000000000000001 /* UseCasesTests.swift */; };
+		C0D820020000000000000001 /* LocalPreferencesRepositoriesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D820040000000000000001 /* LocalPreferencesRepositoriesTests.swift */; };
 		C0D710010000000000000001 /* LocalSyncOutboxRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D710050000000000000001 /* LocalSyncOutboxRepositoryTests.swift */; };
 		C0D710020000000000000001 /* RestoreDuplicateDetectorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D710060000000000000001 /* RestoreDuplicateDetectorTests.swift */; };
 		C0D710030000000000000001 /* AuthLinkingServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D710070000000000000001 /* AuthLinkingServiceTests.swift */; };
@@ -255,6 +257,7 @@
 		C0D3A00E0000000000000001 /* MigrationExportModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationExportModels.swift; sourceTree = "<group>"; };
 		C0D3A0100000000000000001 /* LocalDeviceIdentityRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalDeviceIdentityRepository.swift; sourceTree = "<group>"; };
 		C0D3A0120000000000000001 /* LocalSyncOutboxRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalSyncOutboxRepository.swift; sourceTree = "<group>"; };
+		C0D820030000000000000001 /* LocalPreferencesRepositories.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalPreferencesRepositories.swift; sourceTree = "<group>"; };
 		C0D3B0050000000000000001 /* DistanceCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DistanceCalculator.swift; sourceTree = "<group>"; };
 		C0D3B0060000000000000001 /* LocationFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationFilter.swift; sourceTree = "<group>"; };
 		C0D3B0070000000000000001 /* RecordingStateStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingStateStore.swift; sourceTree = "<group>"; };
@@ -295,6 +298,7 @@
 		C0D800070000000000000001 /* DomainModelsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DomainModelsTests.swift; sourceTree = "<group>"; };
 		C0D800080000000000000001 /* DomainPoliciesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DomainPoliciesTests.swift; sourceTree = "<group>"; };
 		C0D810040000000000000001 /* UseCasesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UseCasesTests.swift; sourceTree = "<group>"; };
+		C0D820040000000000000001 /* LocalPreferencesRepositoriesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalPreferencesRepositoriesTests.swift; sourceTree = "<group>"; };
 		C0D710050000000000000001 /* LocalSyncOutboxRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalSyncOutboxRepositoryTests.swift; sourceTree = "<group>"; };
 		C0D710060000000000000001 /* RestoreDuplicateDetectorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestoreDuplicateDetectorTests.swift; sourceTree = "<group>"; };
 		C0D710070000000000000001 /* AuthLinkingServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthLinkingServiceTests.swift; sourceTree = "<group>"; };
@@ -498,6 +502,7 @@
 				C0D3A0060000000000000001 /* RealmRepositories.swift */,
 				C0D3A0100000000000000001 /* LocalDeviceIdentityRepository.swift */,
 				C0D3A0120000000000000001 /* LocalSyncOutboxRepository.swift */,
+				C0D820030000000000000001 /* LocalPreferencesRepositories.swift */,
 			);
 			path = Repositories;
 			sourceTree = "<group>";
@@ -566,6 +571,7 @@
 				C0D800070000000000000001 /* DomainModelsTests.swift */,
 				C0D800080000000000000001 /* DomainPoliciesTests.swift */,
 				C0D810040000000000000001 /* UseCasesTests.swift */,
+				C0D820040000000000000001 /* LocalPreferencesRepositoriesTests.swift */,
 				C0D710050000000000000001 /* LocalSyncOutboxRepositoryTests.swift */,
 				C0D710060000000000000001 /* RestoreDuplicateDetectorTests.swift */,
 				C0D710070000000000000001 /* AuthLinkingServiceTests.swift */,
@@ -1075,6 +1081,7 @@
 				C0D3A00D0000000000000001 /* MigrationExportModels.swift in Sources */,
 				C0D3A00F0000000000000001 /* LocalDeviceIdentityRepository.swift in Sources */,
 				C0D3A0110000000000000001 /* LocalSyncOutboxRepository.swift in Sources */,
+				C0D820010000000000000001 /* LocalPreferencesRepositories.swift in Sources */,
 				C0D3B0010000000000000001 /* DistanceCalculator.swift in Sources */,
 				C0D3B0020000000000000001 /* LocationFilter.swift in Sources */,
 				C0D3B0030000000000000001 /* RecordingStateStore.swift in Sources */,
@@ -1194,6 +1201,7 @@
 				C0D800030000000000000001 /* DomainModelsTests.swift in Sources */,
 				C0D800040000000000000001 /* DomainPoliciesTests.swift in Sources */,
 				C0D810020000000000000001 /* UseCasesTests.swift in Sources */,
+				C0D820020000000000000001 /* LocalPreferencesRepositoriesTests.swift in Sources */,
 				C0D710010000000000000001 /* LocalSyncOutboxRepositoryTests.swift in Sources */,
 				C0D710020000000000000001 /* RestoreDuplicateDetectorTests.swift in Sources */,
 				C0D710030000000000000001 /* AuthLinkingServiceTests.swift in Sources */,

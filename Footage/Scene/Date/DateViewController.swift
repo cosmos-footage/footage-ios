@@ -23,6 +23,7 @@ class DateViewController: UIViewController {
     
     var dataSource: UICollectionViewDiffableDataSource<Section, MapCell>! = nil
     var routeRepository: RouteRepository = RealmRouteRepository()
+    var profileRepository: UserProfileRepository = UserDefaultsUserProfileRepository()
     
     static let badgeElementKind = "badge-element-kind"
     enum Section {
@@ -135,11 +136,13 @@ extension DateViewController {
 extension DateViewController {
     
     func reloadProfileImage() {
-        if let profileData = UserDefaults.standard.data(forKey: "profileImage") {
-            profileImage = UIImage(data: profileData)!
+        let profile = profileRepository.loadProfile()
+        if let profileData = profile.profileImageData,
+           let image = UIImage(data: profileData) {
+            profileImage = image
             profileView.image = profileImage
         }
-        if let profileID = UserDefaults.standard.string(forKey: "userName") {
+        if let profileID = profile.displayName {
             profileName.text = profileID
         }
         profileView.layer.cornerRadius = profileView.bounds.width / 2.0

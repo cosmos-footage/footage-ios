@@ -77,6 +77,21 @@ protocol MediaRepository {
     func removeAllAssets(from footstep: Footstep) throws
 }
 
+protocol JourneyPreviewRepository {
+    func savePreview(_ preview: Data, for journey: Journey) throws
+}
+
+struct UserProfileSnapshot: Equatable {
+    var displayName: String?
+    var profileImageData: Data?
+}
+
+protocol UserProfileRepository {
+    func loadProfile() -> UserProfileSnapshot
+    func saveDisplayName(_ displayName: String?)
+    func saveProfileImageData(_ data: Data?)
+}
+
 protocol BadgeRepository {
     func add(_ badge: Badge) throws
     func badge(imageName: String) -> Badge?

@@ -9,7 +9,6 @@
 import UIKit
 import MapKit
 import EFCountingLabel
-import RealmSwift
 
 class JourneyViewController: UIViewController {
     
@@ -29,6 +28,8 @@ class JourneyViewController: UIViewController {
     var dateVC: DateViewController! = nil
     var exampleView: UIImageView! = nil
     var annotationNumber: Int?
+    var routeRepository: RouteRepository = RealmRouteRepository()
+    var journeyPreviewRepository: JourneyPreviewRepository = RealmJourneyPreviewRepository()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,21 +46,15 @@ class JourneyViewController: UIViewController {
     }
     
     override func viewDidAppear(_ animated: Bool) { // create preview image using screenshot
-        let realm = try! Realm()
         let imageData = takeScreenshot().pngData()!
         DateViewController.journeys[journeyManager.journeyIndex].preview = imageData // Is this Okay?
+        let journey = DateViewController.journeys[journeyManager.journeyIndex]
+        let object = journey.reference
         do {
-            try realm.write {
-                let object = DateViewController.journeys[journeyManager.journeyIndex].reference
-                if let day = object as? DayData {
-                    day.preview = imageData
-                    removeButton.isHidden = false
-                    addButton.isHidden = false
-                } else if let month = object as? Month {
-                    month.preview = imageData
-                } else if let year = object as? Year {
-                    year.preview = imageData
-                }
+            try journeyPreviewRepository.savePreview(imageData, for: journey)
+            if object is DayData {
+                removeButton.isHidden = false
+                addButton.isHidden = false
             }
         } catch { print(error)}
         dateVC.collectionView.reloadData()
@@ -105,14 +100,13 @@ class JourneyViewController: UIViewController {
     }
     
     @IBAction func addPressed(_ sender: UIButton) {
-        let realm = try! Realm()
         let footstepNumber = Int(slider.value)
         let footstep = journeyManager.journey.footsteps[footstepNumber]
         let newAnnotation = FootAnnotation(footstep: footstep, number: footstepNumber)
         mainMap.addAnnotation(newAnnotation)
         DrawOnMap.moveCenterTo(footstep.coordinate, on: mainMap, centerMark: centerMark)
         journeyManager.prepareNewFootstep(footstepNumber: footstepNumber, annotation: newAnnotation)
-        annotationNumber = Array(realm.objects(Footstep.self)).filter({(footstep) -> Bool in !footstep.notes.isEmpty }).count
+        annotationNumber = routeRepository.footstepsWithAssets().count
         BadgeGiver.annotationCheck(view: view, annotationNumber ?? 0)
     }
     
@@ -275,4 +269,3 @@ extension JourneyViewController {
 class PolylineWithColor: MKPolyline {
     var color: UIColor = .white
 }
-

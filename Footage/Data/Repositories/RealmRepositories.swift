@@ -135,6 +135,21 @@ struct RealmMediaRepository: MediaRepository {
     }
 }
 
+struct RealmJourneyPreviewRepository: JourneyPreviewRepository {
+    func savePreview(_ preview: Data, for journey: Journey) throws {
+        let realm = try Realm()
+        try realm.write {
+            if let day = journey.reference as? DayData {
+                day.preview = preview
+            } else if let month = journey.reference as? Month {
+                month.preview = preview
+            } else if let year = journey.reference as? Year {
+                year.preview = preview
+            }
+        }
+    }
+}
+
 struct RealmBadgeRepository: BadgeRepository {
     func add(_ badge: Badge) throws {
         LevelManager.appendBadge(badge: badge)
