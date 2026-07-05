@@ -18,6 +18,11 @@ class HomeAnimation {
     //MARK- homeStartAnimation
     
     @MainActor static func homeStartAnimation(_ homeVC: HomeViewController) {
+        let presentation = HomeDistancePresentation(
+            mode: .recordingToday,
+            distanceMeters: HomeViewController.distanceToday
+        )
+
         // start button pressed
         
         UIView.animate(withDuration: 1, animations: {
@@ -43,16 +48,16 @@ class HomeAnimation {
             homeVC.unitLabel.alpha = 1
         })
         homeVC.distance.setUpdateBlock { (value, label) in
-            label.text = String(format: "%.2f", value)
+            label.text = presentation.formattedCounterValue(Double(value))
         }
         homeVC.distance.counter.timingFunction = EFTimingFunction.easeOut(easingRate: 7)
-        homeVC.distance.countFrom(0, to: CGFloat(HomeViewController.distanceToday / 1000), withDuration: 5)
+        homeVC.distance.countFrom(0, to: CGFloat(presentation.counterValueKilometers), withDuration: 5)
         
         // 1. Text Animation
         
-        homeVC.todayString.text = "오늘"
-        homeVC.youString.text = "당신이 새로 남긴"
-        homeVC.footString.text = "발자취"
+        homeVC.todayString.text = presentation.todayText
+        homeVC.youString.text = presentation.youText
+        homeVC.footString.text = presentation.footText
         
         homeVC.todayString.alpha = 0.0
         homeVC.youString.alpha = 0.0
@@ -79,6 +84,10 @@ class HomeAnimation {
     //MARK- homeStopAnimation
     
     @MainActor static func homeStopAnimation(_ homeVC: HomeViewController) {
+        let presentation = HomeDistancePresentation(
+            mode: .totalArchive,
+            distanceMeters: HomeViewController.distanceTotal
+        )
         
         UIView.animate(withDuration: 1, animations: {
             homeVC.startButton.alpha = 0
@@ -103,15 +112,15 @@ class HomeAnimation {
             homeVC.unitLabel.alpha = 1
         })
         homeVC.distance.setUpdateBlock { (value, label) in
-            label.text = String(format: "%.f", value)
+            label.text = presentation.formattedCounterValue(Double(value))
         }
         homeVC.distance.counter.timingFunction = EFTimingFunction.easeOut(easingRate: 7)
-        homeVC.distance.countFrom(0, to: CGFloat(HomeViewController.distanceTotal / 1000), withDuration: 5)
+        homeVC.distance.countFrom(0, to: CGFloat(presentation.counterValueKilometers), withDuration: 5)
         
         // 1. Text Animation
-        homeVC.todayString.text = "오늘까지"
-        homeVC.youString.text = "당신이 남긴"
-        homeVC.footString.text = "발자취"
+        homeVC.todayString.text = presentation.todayText
+        homeVC.youString.text = presentation.youText
+        homeVC.footString.text = presentation.footText
         
         homeVC.todayString.alpha = 0.0
         homeVC.youString.alpha = 0.0

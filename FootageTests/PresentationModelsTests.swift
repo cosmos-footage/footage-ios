@@ -32,4 +32,71 @@ final class PresentationModelsTests: XCTestCase {
         XCTAssertEqual(item.title, "7월 5일")
         XCTAssertEqual(item.previewData, previewData)
     }
+
+    func testJourneyDateDetailPresentationForYearJourney() {
+        let presentation = JourneyDateDetailPresentation(legacyDateKey: 2026)
+
+        XCTAssertEqual(presentation.granularity, .year)
+        XCTAssertTrue(presentation.shouldHideMonth)
+        XCTAssertTrue(presentation.shouldHideDay)
+        XCTAssertEqual(presentation.yearCounterStart, 2000)
+        XCTAssertEqual(presentation.yearCounterEnd, 2026)
+        XCTAssertNil(presentation.monthCounterEnd)
+        XCTAssertNil(presentation.dayCounterEnd)
+    }
+
+    func testJourneyDateDetailPresentationForMonthJourney() {
+        let presentation = JourneyDateDetailPresentation(legacyDateKey: 202607)
+
+        XCTAssertEqual(presentation.granularity, .month)
+        XCTAssertFalse(presentation.shouldHideMonth)
+        XCTAssertTrue(presentation.shouldHideDay)
+        XCTAssertEqual(presentation.yearCounterStart, 2000)
+        XCTAssertEqual(presentation.yearCounterEnd, 2026)
+        XCTAssertEqual(presentation.monthCounterEnd, 7)
+        XCTAssertNil(presentation.dayCounterEnd)
+        XCTAssertTrue(presentation.shouldPadMonth)
+    }
+
+    func testJourneyDateDetailPresentationForDayJourneyPreservesLegacyTwoDigitYearCounter() {
+        let presentation = JourneyDateDetailPresentation(legacyDateKey: 20260705)
+
+        XCTAssertEqual(presentation.granularity, .day)
+        XCTAssertFalse(presentation.shouldHideMonth)
+        XCTAssertFalse(presentation.shouldHideDay)
+        XCTAssertEqual(presentation.yearCounterStart, 0)
+        XCTAssertEqual(presentation.yearCounterEnd, 26)
+        XCTAssertEqual(presentation.monthCounterEnd, 7)
+        XCTAssertEqual(presentation.dayCounterEnd, 5)
+        XCTAssertTrue(presentation.shouldPadMonth)
+        XCTAssertTrue(presentation.shouldPadDay)
+    }
+
+    func testHomeDistancePresentationForRecordingToday() {
+        let presentation = HomeDistancePresentation(
+            mode: .recordingToday,
+            distanceMeters: 1234
+        )
+
+        XCTAssertEqual(presentation.todayText, "오늘")
+        XCTAssertEqual(presentation.youText, "당신이 새로 남긴")
+        XCTAssertEqual(presentation.footText, "발자취")
+        XCTAssertEqual(presentation.counterValueKilometers, 1.234)
+        XCTAssertEqual(presentation.formattedSourceValue, "1.23")
+        XCTAssertEqual(presentation.formattedCounterValue(0), "0.00")
+    }
+
+    func testHomeDistancePresentationForTotalArchive() {
+        let presentation = HomeDistancePresentation(
+            mode: .totalArchive,
+            distanceMeters: 1234
+        )
+
+        XCTAssertEqual(presentation.todayText, "오늘까지")
+        XCTAssertEqual(presentation.youText, "당신이 남긴")
+        XCTAssertEqual(presentation.footText, "발자취")
+        XCTAssertEqual(presentation.counterValueKilometers, 1.234)
+        XCTAssertEqual(presentation.formattedSourceValue, "1")
+        XCTAssertEqual(presentation.formattedCounterValue(1.6), "2")
+    }
 }

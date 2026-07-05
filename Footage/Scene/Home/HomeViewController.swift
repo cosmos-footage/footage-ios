@@ -240,7 +240,10 @@ extension HomeViewController: CLLocationManagerDelegate, MKMapViewDelegate  {
                 LocationUpdate.processNewLocation(location: nextLocation, distance: newDistance, setAsStart: false, color: HomeViewController.selectedColor)
                 self.extendPolyline(lastLocation: lastLocation, newLocation: nextLocation)
                 HomeViewController.distanceToday += newDistance
-                distance.text = String(format: "%.2f", (HomeViewController.distanceToday)/1000)
+                distance.text = HomeDistancePresentation(
+                    mode: .recordingToday,
+                    distanceMeters: HomeViewController.distanceToday
+                ).formattedSourceValue
                 HomeViewController.distanceTotal += newDistance
                 BadgeGiver.checkDistance(view: view)
                 BadgeGiver.cityCheck(view: view)

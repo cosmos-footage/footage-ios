@@ -47,3 +47,98 @@ struct JourneyTimelineItemPresentation: Equatable {
         self.previewData = previewData
     }
 }
+
+struct JourneyDateDetailPresentation: Equatable {
+    var legacyDateKey: Int
+    var granularity: JourneyDateGranularity
+    var shouldHideMonth: Bool
+    var shouldHideDay: Bool
+    var yearCounterStart: Int
+    var yearCounterEnd: Int
+    var monthCounterEnd: Int?
+    var dayCounterEnd: Int?
+
+    var shouldPadMonth: Bool {
+        guard let monthCounterEnd = monthCounterEnd else { return false }
+        return monthCounterEnd < 10
+    }
+
+    var shouldPadDay: Bool {
+        guard let dayCounterEnd = dayCounterEnd else { return false }
+        return dayCounterEnd < 10
+    }
+
+    init(legacyDateKey: Int) {
+        self.legacyDateKey = legacyDateKey
+        let date = JourneyDatePresentation(legacyDateKey: legacyDateKey)
+        granularity = date.granularity
+
+        switch date.granularity {
+        case .year:
+            shouldHideMonth = true
+            shouldHideDay = true
+            yearCounterStart = 2000
+            yearCounterEnd = legacyDateKey
+            monthCounterEnd = nil
+            dayCounterEnd = nil
+        case .month:
+            shouldHideMonth = false
+            shouldHideDay = true
+            yearCounterStart = 2000
+            yearCounterEnd = legacyDateKey / 100
+            monthCounterEnd = legacyDateKey % 100
+            dayCounterEnd = nil
+        case .day:
+            shouldHideMonth = false
+            shouldHideDay = false
+            yearCounterStart = 0
+            yearCounterEnd = legacyDateKey / 10000 % 100
+            monthCounterEnd = legacyDateKey / 100 % 100
+            dayCounterEnd = legacyDateKey % 100
+        }
+    }
+}
+
+enum HomeDistancePresentationMode: Equatable {
+    case recordingToday
+    case totalArchive
+}
+
+struct HomeDistancePresentation: Equatable {
+    var mode: HomeDistancePresentationMode
+    var distanceMeters: Double
+    var todayText: String
+    var youText: String
+    var footText: String
+    var valueFormat: String
+
+    var counterValueKilometers: Double {
+        distanceMeters / 1000
+    }
+
+    var formattedSourceValue: String {
+        formattedCounterValue(counterValueKilometers)
+    }
+
+    init(mode: HomeDistancePresentationMode, distanceMeters: Double) {
+        self.mode = mode
+        self.distanceMeters = distanceMeters
+
+        switch mode {
+        case .recordingToday:
+            todayText = "오늘"
+            youText = "당신이 새로 남긴"
+            footText = "발자취"
+            valueFormat = "%.2f"
+        case .totalArchive:
+            todayText = "오늘까지"
+            youText = "당신이 남긴"
+            footText = "발자취"
+            valueFormat = "%.f"
+        }
+    }
+
+    func formattedCounterValue(_ kilometers: Double) -> String {
+        String(format: valueFormat, kilometers)
+    }
+}

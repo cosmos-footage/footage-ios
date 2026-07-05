@@ -24,44 +24,38 @@ extension JourneyViewController {
     }
     
     func animateDateLabel() {
-        switch date {
-        case ...10000 : // journey for a year
+        let presentation = JourneyDateDetailPresentation(legacyDateKey: date)
+
+        if presentation.shouldHideDay {
             dayLabel.removeFromSuperview()
             dayText.removeFromSuperview()
+        }
+        if presentation.shouldHideMonth {
             monthLabel.removeFromSuperview()
             monthText.removeFromSuperview()
-            yearLabel.counter.timingFunction = EFTimingFunction.easeOut(easingRate: 3)
-            yearLabel.countFrom(2000, to: CGFloat(date), withDuration: 2)
-            alphaToOne(object: yearLabel, time: 0.5)
-            
-        case 10001...1000000 : // journey for a month
-            dayLabel.removeFromSuperview()
-            dayText.removeFromSuperview()
-            
-            addNecessaryZeros(date % 100, label: monthLabel) // get month
-            monthLabel.counter.timingFunction = EFTimingFunction.easeOut(easingRate: 3)
-            monthLabel.countFrom(0, to: CGFloat(date % 100), withDuration: 2)
-            alphaToOne(object: monthLabel, time: 0.5)
-            
-            yearLabel.counter.timingFunction = EFTimingFunction.easeOut(easingRate: 3)
-            yearLabel.countFrom(2000, to: CGFloat(date / 100), withDuration: 2)
-            alphaToOne(object: yearLabel, time: 0.5)
-            
-        default: // journey for a day
-            addNecessaryZeros(date % 100, label: dayLabel) // get day
-            dayLabel.counter.timingFunction = EFTimingFunction.easeOut(easingRate: 3)
-            dayLabel.countFrom(0, to: CGFloat(date % 100), withDuration: 2)
-            alphaToOne(object: dayLabel, time: 0.5)
-            
-            addNecessaryZeros(date / 100 % 100, label: monthLabel) // get month
-            monthLabel.counter.timingFunction = EFTimingFunction.easeOut(easingRate: 3)
-            monthLabel.countFrom(0, to: CGFloat(date / 100 % 100), withDuration: 2)
-            alphaToOne(object: monthLabel, time: 0.5)
-            
-            yearLabel.counter.timingFunction = EFTimingFunction.easeOut(easingRate: 3)
-            yearLabel.countFrom(0, to: CGFloat(date / 10000 % 100), withDuration: 2)
-            alphaToOne(object: yearLabel, time: 0.5)
         }
+
+        if let day = presentation.dayCounterEnd {
+            addNecessaryZeros(day, label: dayLabel)
+            dayLabel.counter.timingFunction = EFTimingFunction.easeOut(easingRate: 3)
+            dayLabel.countFrom(0, to: CGFloat(day), withDuration: 2)
+            alphaToOne(object: dayLabel, time: 0.5)
+        }
+
+        if let month = presentation.monthCounterEnd {
+            addNecessaryZeros(month, label: monthLabel)
+            monthLabel.counter.timingFunction = EFTimingFunction.easeOut(easingRate: 3)
+            monthLabel.countFrom(0, to: CGFloat(month), withDuration: 2)
+            alphaToOne(object: monthLabel, time: 0.5)
+        }
+
+        yearLabel.counter.timingFunction = EFTimingFunction.easeOut(easingRate: 3)
+        yearLabel.countFrom(
+            CGFloat(presentation.yearCounterStart),
+            to: CGFloat(presentation.yearCounterEnd),
+            withDuration: 2
+        )
+        alphaToOne(object: yearLabel, time: 0.5)
     }
     
     func addNecessaryZeros(_ date: Int, label: EFCountingLabel) {
