@@ -432,6 +432,28 @@ Phase R11 completion notes:
 - `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` succeeded.
 - Next step is Phase R12: consolidate repository/service boundaries and reduce direct Realm/platform access behind adapters.
 
+## Refactor Phase R12: Repository and Service Consolidation
+
+Status: completed for a narrow Date/Journey repository consolidation slice.
+
+Goal: isolate storage and preferences access behind stable adapters while keeping Realm local-first and preserving the temporary UIKit shell.
+
+Tasks:
+
+- Added `JourneyPreviewRepository` and `RealmJourneyPreviewRepository` for Journey preview persistence.
+- Added `UserProfileRepository`, `UserProfileSnapshot`, and `UserDefaultsUserProfileRepository` for local profile preference reads/writes.
+- Migrated `JourneyViewController` away from direct Realm imports and direct `Realm()` usage for preview saving and annotated-footstep counting.
+- Migrated `DateViewController` away from direct profile `UserDefaults` reads.
+- Added focused tests for local profile preference persistence and clearing.
+- Kept existing managers, Storyboards, widget files, Realm models, signing, bundle identifiers, entitlements, Pods, assets, app group keys, and user-facing flows unchanged.
+
+Phase R12 completion notes:
+
+- `xcodebuild -list -workspace footage.xcworkspace` succeeded after approved Xcode access.
+- `git diff --check` succeeded.
+- `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` succeeded.
+- Next step is Phase R13: add presentation models and migrate the first read-only UIKit shell paths without rewriting the UI yet.
+
 ## First Phase 1 Codex Command
 
 Use this after selecting full Xcode on the machine:
