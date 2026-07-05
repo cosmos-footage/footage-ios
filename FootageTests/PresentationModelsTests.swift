@@ -175,4 +175,29 @@ final class PresentationModelsTests: XCTestCase {
         XCTAssertEqual(presentation.photoCountText, "사진: 2")
         XCTAssertEqual(presentation.noteCountText, "글: 1")
     }
+
+    func testCloudBackupStatusPresentationFormatsPendingAndFailedCounts() {
+        let presentation = CloudBackupStatusPresentation(
+            pendingCount: 3,
+            failedCount: 1
+        )
+
+        XCTAssertEqual(presentation.text, "대기 3 / 실패 1")
+    }
+
+    func testSettingsPushTimePresentationKeepsLegacyRowFormatting() {
+        let presentation = SettingsPushTimePresentation(hour: 8, minute: 5)
+
+        XCTAssertEqual(presentation.rowText, "8시 5분")
+        XCTAssertEqual(presentation.settingsRowText(title: "일일 알림 시간"), "일일 알림 시간 :    8시 5분")
+        XCTAssertEqual(SettingsPushTimePresentation.pickerRowText(5), "05")
+        XCTAssertEqual(SettingsPushTimePresentation.pickerRowText(12), "12")
+    }
+
+    func testAppVersionPresentationFormatsLegacyVersionCode() {
+        XCTAssertEqual(
+            AppVersionPresentation(legacyVersionCode: 122).text,
+            "버전정보 v1.2.2"
+        )
+    }
 }

@@ -30,14 +30,8 @@ class Settings_AboutVC:UIViewController {
     }
     
     func setVersion(){
-        var version = UserDefaults.standard.integer(forKey: "version")
-        let hundred = version/100
-        version -= hundred*100
-        let ten = version/10
-        version -= ten*10
-        let one = version
-        
-        versionText.text = "버전정보 "+"v"+String(hundred)+"."+String(ten)+"."+String(one)
+        let version = UserDefaults.standard.integer(forKey: "version")
+        versionText.text = AppVersionPresentation(legacyVersionCode: version).text
     }
 }
 

@@ -56,7 +56,11 @@ extension Settings_General_PushVC: UITableViewDelegate, UITableViewDataSource {
             enableTimeSetting(cell: cell, UserDefaults.standard.bool(forKey: "everydayPush"))
         }
         if indexPath.row == 1 {
-            cell.textLabel!.text = cellContent[indexPath.row] + " :    " + String(UserDefaults.standard.integer(forKey: "everydayPushHour")) + "시 " + String(UserDefaults.standard.integer(forKey: "everydayPushMinute")) + "분"
+            let presentation = SettingsPushTimePresentation(
+                hour: UserDefaults.standard.integer(forKey: "everydayPushHour"),
+                minute: UserDefaults.standard.integer(forKey: "everydayPushMinute")
+            )
+            cell.textLabel!.text = presentation.settingsRowText(title: cellContent[indexPath.row])
         } else { cell.textLabel!.text = cellContent[indexPath.row] }
         cell.textLabel?.font = UIFont(name: "NanumBarunpen", size: 20)
         
@@ -172,8 +176,7 @@ extension Settings_General_PushVC: UIPickerViewDelegate, UIPickerViewDataSource 
     }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        if row<10 { return "0"+String(row) }
-        else { return String(row) }
+        SettingsPushTimePresentation.pickerRowText(row)
     }
     
 }

@@ -285,3 +285,44 @@ struct MapFootstepPresentation: Equatable {
         "글: \(noteCount)"
     }
 }
+
+struct CloudBackupStatusPresentation: Equatable {
+    var pendingCount: Int
+    var failedCount: Int
+
+    var text: String {
+        "대기 \(pendingCount) / 실패 \(failedCount)"
+    }
+}
+
+struct SettingsPushTimePresentation: Equatable {
+    var hour: Int
+    var minute: Int
+
+    var rowText: String {
+        "\(hour)시 \(minute)분"
+    }
+
+    func settingsRowText(title: String) -> String {
+        title + " :    " + rowText
+    }
+
+    static func pickerRowText(_ row: Int) -> String {
+        row < 10 ? "0" + String(row) : String(row)
+    }
+}
+
+struct AppVersionPresentation: Equatable {
+    var legacyVersionCode: Int
+
+    var text: String {
+        var version = legacyVersionCode
+        let hundred = version / 100
+        version -= hundred * 100
+        let ten = version / 10
+        version -= ten * 10
+        let one = version
+
+        return "버전정보 " + "v" + String(hundred) + "." + String(ten) + "." + String(one)
+    }
+}

@@ -165,7 +165,10 @@ extension Settings_GeneralVC: UITableViewDelegate, UITableViewDataSource {
 
     private func cloudBackupStatusText() -> String {
         let status = manualBackupRunner.localBackupStatus()
-        return "대기 \(status.pendingCount) / 실패 \(status.failedCount)"
+        return CloudBackupStatusPresentation(
+            pendingCount: status.pendingCount,
+            failedCount: status.failedCount
+        ).text
     }
     
 }
