@@ -456,7 +456,7 @@ Phase R12 completion notes:
 
 ## Refactor Phase R13: Presentation Models and UIKit Shell Migration
 
-Status: in progress with Date timeline, Journey detail date, Home distance, and Stats/Report presentation-model slices completed.
+Status: in progress with Date timeline, Journey detail date, Home distance, Stats/Report, and Map archive presentation-model slices completed.
 
 Goal: make legacy UIKit screens thinner by moving display formatting into tested presentation models while preserving the current screens.
 
@@ -472,15 +472,18 @@ Tasks completed so far:
 - Migrated `HomeAnimation` and the live Home distance label assignment to use `HomeDistancePresentation`.
 - Added `CityPresentation`, `DistanceTextPresentation`, and `ReportButtonPresentation`.
 - Migrated formatting-only display state in `StatsViewController`, `ColorVC`, `PlaceVC`, `Place_DetailVC`, `ReportVC`, and `ReportDetailVC`.
+- Added `MapFootstepPresentation` for map archive date, distance, category, photo count, and note count labels.
+- Migrated `MapTableCell` and `SelectedView` in `MapBottomVC` to use `MapFootstepPresentation`.
 - Added tests for year/month/day formatting and preview-data retention.
 - Added tests for Journey detail legacy date-counter state and Home distance display formatting.
 - Added tests for city presentation fallbacks, distance text formats, and report button state.
+- Added tests for map archive footstep cell text.
 
 Phase R13 current completion notes:
 
 - `git diff --check` succeeded.
 - `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` succeeded.
-- Next R13 slice: add read-only presentation models for map archive, settings, backup status, restore preview, and auth linking display states.
+- Next R13 slice: add read-only presentation models for settings, backup status, restore preview, and auth linking display states.
 
 ## First Phase 1 Codex Command
 

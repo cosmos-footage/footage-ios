@@ -32,6 +32,13 @@ sed -n '1,240p' Footage/Scene/Stats/ColorVC.swift
 sed -n '1,240p' Footage/Scene/Stats/PlaceVC.swift
 sed -n '1,120p' Footage/Scene/Stats/Place_DetailVC.swift
 rg -n "String\(format: \"%\.2f\"|String\(format: \"%\.f\"|getCityImage|setCityImage|ReportButtonPresentation|DistanceTextPresentation|CityPresentation" Footage/Scene/Stats Footage/Presentation FootageTests
+sed -n '1,260p' Footage/Scene/Map/MapViewController.swift
+sed -n '1,260p' Footage/Scene/Map/MapCollectionVC.swift
+sed -n '1,260p' Footage/Scene/Map/MapTableVC.swift
+sed -n '1,220p' Footage/Scene/Map/MapCollectionCell.swift
+sed -n '1,220p' Footage/Scene/Map/MapTableCell.swift
+sed -n '1,240p' Footage/Scene/Map/MapBottomVC.swift
+rg -n "String\(format: \"%\.2f\"|date / 10000|사진:|글:|MapFootstepPresentation" Footage/Scene/Map Footage/Presentation FootageTests
 ```
 
 ## Results
@@ -41,6 +48,7 @@ rg -n "String\(format: \"%\.2f\"|String\(format: \"%\.f\"|getCityImage|setCityIm
 - New `PresentationModelsTests` passed, including year/month/day legacy date-key formatting and preview-data retention.
 - A second `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding Home distance and Journey detail presentation models.
 - A third `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding Stats/Report presentation models.
+- A fourth `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding Map archive presentation models.
 
 ## Changed
 
@@ -58,6 +66,8 @@ rg -n "String\(format: \"%\.2f\"|String\(format: \"%\.f\"|getCityImage|setCityIm
 - Added `DistanceTextPresentation` for legacy integer, decimal, and `km`-suffixed distance labels.
 - Added `ReportButtonPresentation` for legacy enabled/alpha state.
 - Updated `StatsViewController`, `ColorVC`, `PlaceVC`, `Place_DetailVC`, `ReportVC`, and `ReportDetailVC` to use presentation models for formatting-only display state.
+- Added `MapFootstepPresentation` for map archive selected-footstep and nearby-table cell labels.
+- Updated `MapTableCell` and `SelectedView` in `MapBottomVC` to use `MapFootstepPresentation`.
 
 ## Safety Notes
 
@@ -66,10 +76,11 @@ rg -n "String\(format: \"%\.2f\"|String\(format: \"%\.f\"|getCityImage|setCityIm
 - Journey detail keeps the existing legacy date-counter behavior, including the two-digit year counter for day-level journeys.
 - Home keeps the same recording-today distance format (`%.2f`) and total-archive distance format (`%.f`).
 - Stats/Report/Color/Place screens keep the same distance formats, city image fallbacks, and report button alpha behavior.
+- Map archive keeps the same date, distance, category, photo count, and note count labels.
 - This is a read-only presentation extraction only; persistence and navigation behavior are unchanged.
 
 ## What Remains
 
-- Continue R13 by adding presentation models for map archive, settings, backup status, restore preview, and auth linking display states.
+- Continue R13 by adding presentation models for settings, backup status, restore preview, and auth linking display states.
 - Move remaining formatting and empty-state logic out of controllers in small tested slices.
 - Keep UIKit controllers responsible for outlets, gestures, layout, animation, map binding, and navigation until the replacement UI is planned separately.
