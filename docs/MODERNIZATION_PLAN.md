@@ -517,13 +517,17 @@ Phase R14 progress:
 - Added tests proving existing users still default to the legacy `Main` Storyboard `TabBarController`.
 - Added tests proving first-launch users still route to the legacy `FirstLaunch` Storyboard even when the new UI flag is enabled.
 - The router is not wired into `SceneDelegate` yet, so current runtime behavior is unchanged.
+- Added `RenewedShellView`, a minimal internal SwiftUI `TabView` shell.
+- Added `RenewedShellPresentation`, `RenewedShellTab`, and `RenewedShellTabKind` for the future shell tab model.
+- Added the SwiftUI shell file to the app target without wiring it into launch.
+- Added tests for the internal shell tab definitions.
 
 Phase R14 current completion notes:
 
 - `git diff --check` succeeded.
 - `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` succeeded.
 - No Storyboard, asset, widget, Realm schema, network, auth, restore, signing, entitlement, bundle identifier, or root-controller runtime behavior was changed.
-- Next step is to add an internal SwiftUI shell scaffold behind `isNewUIRunwayEnabled`, still disconnected from default launch.
+- Next step is to add routing/coordinator adapters that can host existing UIKit controllers from the new shell, still disconnected from default launch.
 
 ## First Phase 1 Codex Command
 
