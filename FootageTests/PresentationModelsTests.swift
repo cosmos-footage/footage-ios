@@ -159,4 +159,20 @@ final class PresentationModelsTests: XCTestCase {
         XCTAssertFalse(ReportButtonPresentation(hasData: false).isEnabled)
         XCTAssertEqual(ReportButtonPresentation(hasData: false).alpha, 0.1)
     }
+
+    func testMapFootstepPresentationFormatsLegacyCellText() {
+        let presentation = MapFootstepPresentation(
+            legacyDateKey: 20260705,
+            distanceKilometers: 1.234,
+            categoryName: "산책",
+            photoCount: 2,
+            noteCount: 1
+        )
+
+        XCTAssertEqual(presentation.dateText, "2026년 7월 5일")
+        XCTAssertEqual(presentation.distanceText, "1.23km")
+        XCTAssertEqual(presentation.categoryName, "산책")
+        XCTAssertEqual(presentation.photoCountText, "사진: 2")
+        XCTAssertEqual(presentation.noteCountText, "글: 1")
+    }
 }

@@ -174,10 +174,17 @@ class SelectedView: UIView {
     func footstepSelected(selectedFootstep: Footstep) {
         footstep = selectedFootstep
         let date = DateConverter.dateToDay(date: footstep.timestamp)
-        timeLabel.text = String(date / 10000) + "년 " + String(date % 10000 / 100) + "월 " + String(date % 100) + "일"
-        categoryLabel.text = UserDefaults.standard.string(forKey: footstep.color)
-        photoCountLabel.text = "사진: " + String(footstep.photos.count)
-        noteCountLabel.text = "글: " + String(footstep.notes.filter({$0 != ""}).count)
+        let presentation = MapFootstepPresentation(
+            legacyDateKey: date,
+            distanceKilometers: 0,
+            categoryName: UserDefaults.standard.string(forKey: footstep.color),
+            photoCount: footstep.photos.count,
+            noteCount: footstep.notes.filter({ $0 != "" }).count
+        )
+        timeLabel.text = presentation.dateText
+        categoryLabel.text = presentation.categoryName
+        photoCountLabel.text = presentation.photoCountText
+        noteCountLabel.text = presentation.noteCountText
         backgroundColor = UIColor(hex: footstep.color)?.withAlphaComponent(0.9)
         for subview in subviews { subview.isHidden = false }
         firstLabel.isHidden = true

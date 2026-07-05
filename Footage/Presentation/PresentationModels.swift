@@ -261,3 +261,27 @@ struct ReportButtonPresentation: Equatable {
         hasData ? 1 : 0.1
     }
 }
+
+struct MapFootstepPresentation: Equatable {
+    var legacyDateKey: Int
+    var distanceKilometers: Double
+    var categoryName: String?
+    var photoCount: Int
+    var noteCount: Int
+
+    var dateText: String {
+        "\(legacyDateKey / 10000)년 \(legacyDateKey % 10000 / 100)월 \(legacyDateKey % 100)일"
+    }
+
+    var distanceText: String {
+        String(format: "%.2f", distanceKilometers) + "km"
+    }
+
+    var photoCountText: String {
+        "사진: \(photoCount)"
+    }
+
+    var noteCountText: String {
+        "글: \(noteCount)"
+    }
+}

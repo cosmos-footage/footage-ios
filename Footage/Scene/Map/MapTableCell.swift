@@ -28,23 +28,30 @@ class MapTableCell: UITableViewCell {
         addSubview(footstepImage)
         
         let date = DateConverter.dateToDay(date: footstep.timestamp)
-        timeLabel.text = String(date / 10000) + "년 " + String(date % 10000 / 100) + "월 " + String(date % 100) + "일"
+        let presentation = MapFootstepPresentation(
+            legacyDateKey: date,
+            distanceKilometers: distance,
+            categoryName: UserDefaults.standard.string(forKey: footstep.color),
+            photoCount: footstep.photos.count,
+            noteCount: footstep.notes.filter({ $0 != "" }).count
+        )
+        timeLabel.text = presentation.dateText
         timeLabel.font = UIFont(name: "NanumBarunpen-Bold", size: 20)
         addSubview(timeLabel)
         
-        distanceLabel.text = String(format: "%.2f", distance) + "km"
+        distanceLabel.text = presentation.distanceText
         distanceLabel.font = UIFont(name: "NanumBarunpen", size: 15)
         addSubview(distanceLabel)
         
-        categoryLabel.text = UserDefaults.standard.string(forKey: footstep.color)
+        categoryLabel.text = presentation.categoryName
         categoryLabel.font = UIFont(name: "NanumBarunpen", size: 15)
         addSubview(categoryLabel)
         
-        photoCountLabel.text = "사진: " + String(footstep.photos.count)
+        photoCountLabel.text = presentation.photoCountText
         photoCountLabel.font = UIFont(name: "NanumBarunpen", size: 15)
         addSubview(photoCountLabel)
         
-        noteCountLabel.text = "글: " + String(footstep.notes.filter({$0 != ""}).count)
+        noteCountLabel.text = presentation.noteCountText
         noteCountLabel.font = UIFont(name: "NanumBarunpen", size: 15)
         addSubview(noteCountLabel)
     }
