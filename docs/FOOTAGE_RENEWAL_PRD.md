@@ -58,7 +58,7 @@ Footage should move from a personal iOS project to a privacy-first personal data
 
 ### P1
 
-- Introduce a renewed SwiftUI shell where practical, without a full UI rewrite.
+- Introduce a renewed programmatic UIKit shell where practical, without a full UI rewrite.
 - Improve recording reliability and state management.
 - Add a local sync outbox.
 - Add cloud backup opt-in.
@@ -152,7 +152,8 @@ Recommendation:
 ### UI Modernization
 
 - Do not rewrite every screen at once.
-- Introduce a SwiftUI shell gradually if it can host existing UIKit flows.
+- Remove Storyboard dependency gradually by introducing programmatic UIKit screens that can host or replace existing UIKit flows.
+- Keep SwiftUI available for WidgetKit-required surfaces or isolated screens where it is clearly simpler, but do not treat SwiftUI migration as the primary UI goal.
 - Keep MapKit rendering stable.
 - Prioritize recording reliability over visual redesign.
 - Initial renewed IA: Today, Map, Timeline, Stats, Backup, Settings.
@@ -364,7 +365,7 @@ Metrics must be measured without raw location analytics or third-party tracking.
 - Phase 1: Xcode/project modernization, dependency audit, build recovery, CI baseline.
 - Phase 2: Data repository abstraction, Realm export, sync-ready IDs.
 - Phase 3: Recording service extraction, location filtering, local sync outbox.
-- Phase 4: SwiftUI renewal shell, Today/Map/Timeline/Stats/Backup/Settings.
+- Phase 4: Programmatic UIKit renewal shell, Today/Map/Timeline/Stats/Backup/Settings, with SwiftUI reserved for widget-required or clearly isolated cases.
 - Phase 5: Backend API spec, S3 presigned upload, cloud backup opt-in.
 - Phase 6: Restore flow.
 - Phase 7: Auth linking.

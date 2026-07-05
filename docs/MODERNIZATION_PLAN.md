@@ -503,7 +503,7 @@ Goal: prepare the actual UI rewrite without cutting over user data paths.
 
 Tasks:
 
-- Choose the rewrite surface deliberately: programmatic UIKit. Do not remove existing Storyboards until replacement paths and parity checks exist.
+- Choose the rewrite surface deliberately: programmatic UIKit by default, with SwiftUI allowed for WidgetKit-required or clearly isolated cleaner implementations. Do not remove existing Storyboards until replacement paths and parity checks exist.
 - Add feature flags for new screen entry points, defaulting off.
 - Build new UI screens against use cases and presentation models, not Realm or manager singletons.
 - Introduce coordinators or routing adapters so old and new screens can coexist during parity checks.
@@ -512,6 +512,7 @@ Tasks:
 Phase R14 progress:
 
 - Selected programmatic UIKit as the runway direction so Storyboards can eventually be removed after parity is proven.
+- Clarified that SwiftUI remains acceptable for widget-required surfaces or isolated screens where it is clearly simpler; the migration goal is Storyboard removal, not a blanket UIKit-only or SwiftUI-only rewrite.
 - Added `FeatureFlags.isNewUIRunwayEnabled`, defaulting to `false`.
 - Added pure routing scaffolding: `AppRootDestination`, `AppRootRoute`, and `AppRootRouter`.
 - Added tests proving existing users still default to the legacy `Main` Storyboard `TabBarController`.

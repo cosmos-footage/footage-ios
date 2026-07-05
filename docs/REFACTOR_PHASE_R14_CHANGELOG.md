@@ -50,6 +50,7 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Added `FeatureFlags.isNewUIRunwayEnabled`, defaulting to `false`.
 - Added `AppRootDestination`, `AppRootRoute`, and `AppRootRouter`.
 - Initially added a SwiftUI shell scaffold, then pivoted the runway direction to programmatic UIKit based on product direction.
+- Clarified the UI policy: Storyboard removal is the goal, programmatic UIKit is the default app-shell path, and SwiftUI remains acceptable for widget-required or clearly isolated cleaner implementations.
 - Added tests proving the legacy Storyboard route remains the default.
 - Added tests proving the renewed shell route can be selected behind the flag without skipping first-launch onboarding.
 - Replaced `RenewedShellView` with `RenewedShellViewController`, a minimal internal programmatic UIKit `UITabBarController` shell.
@@ -63,6 +64,7 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - The renewed shell route is not wired into app launch yet.
 - First-launch users still route to the existing FirstLaunch Storyboard in the router.
 - The programmatic UIKit shell is compiled but not reachable from the production launch path.
+- SwiftUI was not removed from widget-required or future isolated-use eligibility; only the app shell runway was clarified.
 
 ## What Remains
 

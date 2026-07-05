@@ -195,7 +195,8 @@ Goal: prepare the actual UI rewrite without cutting over user data paths.
 
 Tasks:
 
-- Use programmatic UIKit as the rewrite surface. Do not mix in SwiftUI for the app shell unless a later architecture decision explicitly reverses this.
+- Use programmatic UIKit as the default app-shell rewrite surface so Storyboards can be removed after parity is proven.
+- Keep SwiftUI available for WidgetKit-required surfaces or isolated screens where it is clearly simpler, but do not treat SwiftUI migration as the primary goal.
 - Add feature flags for new screen entry points, defaulting off.
 - Build new UI screens against use cases and presentation models, not Realm or manager singletons.
 - Introduce coordinators or routing adapters so old and new screens can coexist during parity checks.
