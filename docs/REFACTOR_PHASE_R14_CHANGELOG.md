@@ -36,6 +36,16 @@ tail -n 80 docs/MODERNIZATION_PLAN.md
 git diff -- Footage/App/FeatureFlags.swift Footage/Presentation/RenewedShellViewController.swift Footage/Presentation/RenewedShellView.swift FootageTests/UseCasesTests.swift footage.xcodeproj/project.pbxproj docs/REFACTOR_PHASE_R14_CHANGELOG.md docs/MODERNIZATION_PLAN.md
 git diff --check
 xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
+rg --files
+find . -maxdepth 3 \( -name '*.xcworkspace' -o -name '*.xcodeproj' -o -name '*.entitlements' \)
+rg -n "Storyboard|storyboard|instantiateViewController|UIStoryboard|tabBarController|RenewedShell|Coordinator|Factory|SceneDelegate|rootViewController" Footage FootageTests docs
+sed -n '1,180p' Footage/Presentation/RenewedShellViewController.swift
+sed -n '20,120p' Footage/Storyboard/Base.lproj/Main.storyboard
+rg -n "storyboardIdentifier=|customClass=|viewControllerPlaceholder" Footage/Storyboard/Home.storyboard Footage/Storyboard/Date.storyboard Footage/Storyboard/Stats.storyboard Footage/Storyboard/Settings.storyboard Footage/Storyboard/FirstLaunch.storyboard Footage/Storyboard/Base.lproj/Main.storyboard
+xcodebuild -list -workspace footage.xcworkspace
+git diff --check
+xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
+xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
 ```
 
 ## Results
@@ -44,6 +54,9 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` succeeded.
 - A second `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding the initial SwiftUI shell scaffold.
 - A third `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after pivoting the shell scaffold to programmatic UIKit.
+- `xcodebuild -list -workspace footage.xcworkspace` succeeded during the coordinator/factory follow-up.
+- A fourth `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding the storyboard-backed renewed shell factory.
+- A fifth `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding the launch storyboard guard test.
 
 ## Changed
 
@@ -57,6 +70,10 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Added `RenewedShellPresentation`, `RenewedShellTab`, and `RenewedShellTabKind`.
 - Updated the app target membership in `footage.xcodeproj`.
 - Added tests for the default internal shell tabs.
+- Added `RenewedShellPresentation.legacyStoryboardBridge`, preserving the current runtime tab order: Home, Map, Stats, Date, Settings.
+- Added `StoryboardSceneDescriptor`, `LegacyRenewedShellStoryboardSceneProvider`, `StoryboardBackedRenewedShellViewControllerFactory`, and `RenewedShellCoordinator`.
+- Added a direct view-controller provider for the legacy inline Map tab because `MapViewController` has no storyboard identifier in `Main.storyboard`.
+- Added tests for the legacy bridge tab order, storyboard descriptor mapping, direct Map-provider precedence, fallback behavior, coordinator root construction, and the current `Info.plist` Main storyboard launch configuration.
 
 ## Safety Notes
 
@@ -65,8 +82,12 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - First-launch users still route to the existing FirstLaunch Storyboard in the router.
 - The programmatic UIKit shell is compiled but not reachable from the production launch path.
 - SwiftUI was not removed from widget-required or future isolated-use eligibility; only the app shell runway was clarified.
+- `SceneDelegate`, `Info.plist`, `FirstLaunch.storyboard`, `Main.storyboard`, and existing storyboard identifiers were not changed.
+- The coordinator can build a disabled-by-default UIKit root, but production still launches through the existing Main storyboard.
+- The legacy bridge intentionally preserves `DateViewController` at tab index 3 because map child flows currently assume that index.
 
 ## What Remains
 
-- Add routing/coordinator adapters that can host existing UIKit controllers from the new shell.
+- Add a root factory around `SceneDelegate` and `FL_LetsStartVC` so direct `UIStoryboard(name: "Main")` calls can be removed behind tests.
+- Add manual QA before enabling the renewed root route, with special attention to widget URL start/stop, password unlock, and Map -> Journey navigation.
 - Keep the default app launch on the existing UIKit/Storyboard shell until manual QA proves parity.

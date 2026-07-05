@@ -522,13 +522,16 @@ Phase R14 progress:
 - Added `RenewedShellPresentation`, `RenewedShellTab`, and `RenewedShellTabKind` for the future shell tab model.
 - Added the UIKit shell file to the app target without wiring it into launch.
 - Added tests for the internal shell tab definitions.
+- Added a storyboard-backed renewed shell factory and coordinator that can host legacy storyboard tabs without changing launch behavior.
+- Added `RenewedShellPresentation.legacyStoryboardBridge` to preserve the current tab order and `DateViewController` index expected by existing map flows.
+- Added launch configuration tests proving `UIMainStoryboardFile` and scene `UISceneStoryboardFile` still point to `Main` during the runway.
 
 Phase R14 current completion notes:
 
 - `git diff --check` succeeded.
 - `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` succeeded.
 - No Storyboard, asset, widget, Realm schema, network, auth, restore, signing, entitlement, bundle identifier, or root-controller runtime behavior was changed.
-- Next step is to add routing/coordinator adapters that can host existing UIKit controllers from the new shell, still disconnected from default launch.
+- Next step is to introduce a root factory around `SceneDelegate` and `FL_LetsStartVC`, still keeping the default launch on `Main` until parity QA is complete.
 
 ## First Phase 1 Codex Command
 

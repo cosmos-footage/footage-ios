@@ -46,6 +46,20 @@ files, storyboards, or assets were changed for this audit.
     - Settings placeholder -> `Settings.storyboard`, `SettingsViewController`.
   - Also owns `PasswordVC`, presented from `SceneDelegate` when lock state requires it.
 
+### Renewed UIKit Shell Bridge
+
+The R14 programmatic UIKit bridge keeps the production launch on `Main.storyboard`, but defines a disabled-by-default host path for gradual Storyboard removal.
+
+| Renewed tab | Legacy source | Identifier or construction | Notes |
+| --- | --- | --- | --- |
+| Home | `Home.storyboard` | `HomeViewController` | Storyboard-backed to preserve outlets, EFCountingLabel wiring, and recording UI. |
+| Map | Programmatic class | `MapViewController()` | Inline in `Main.storyboard` today and has no storyboard identifier. Do not load its view before it is inside a tab bar. |
+| Stats | `Stats.storyboard` | `StatsViewController` | Storyboard-backed to preserve segues and report/detail flows. |
+| Date | `Date.storyboard` | `DateViewController` | Must remain at index `3` while map flows still assume that tab index. |
+| Settings | `Settings.storyboard` | `SettingsViewController` | Storyboard-backed to preserve settings segues. |
+
+The future IA can reorder tabs after map navigation and date routing stop relying on legacy tab indexes.
+
 ### First Launch Flow
 
 - `Footage/Storyboard/FirstLaunch.storyboard`
