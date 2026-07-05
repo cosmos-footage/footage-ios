@@ -64,6 +64,7 @@
 		C0D800020000000000000001 /* DomainPolicies.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D800060000000000000001 /* DomainPolicies.swift */; };
 		C0D810010000000000000001 /* UseCases.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D810030000000000000001 /* UseCases.swift */; };
 		C0D830010000000000000001 /* PresentationModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D830030000000000000001 /* PresentationModels.swift */; };
+		C0D840010000000000000001 /* RenewedShellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D840020000000000000001 /* RenewedShellView.swift */; };
 		C0D3A00B0000000000000001 /* SyncOutboxDraft.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3A00C0000000000000001 /* SyncOutboxDraft.swift */; };
 		C0D3A00D0000000000000001 /* MigrationExportModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3A00E0000000000000001 /* MigrationExportModels.swift */; };
 		C0D3A00F0000000000000001 /* LocalDeviceIdentityRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3A0100000000000000001 /* LocalDeviceIdentityRepository.swift */; };
@@ -256,6 +257,7 @@
 		C0D800060000000000000001 /* DomainPolicies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DomainPolicies.swift; sourceTree = "<group>"; };
 		C0D810030000000000000001 /* UseCases.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UseCases.swift; sourceTree = "<group>"; };
 		C0D830030000000000000001 /* PresentationModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationModels.swift; sourceTree = "<group>"; };
+		C0D840020000000000000001 /* RenewedShellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenewedShellView.swift; sourceTree = "<group>"; };
 		C0D3A00C0000000000000001 /* SyncOutboxDraft.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncOutboxDraft.swift; sourceTree = "<group>"; };
 		C0D3A00E0000000000000001 /* MigrationExportModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationExportModels.swift; sourceTree = "<group>"; };
 		C0D3A0100000000000000001 /* LocalDeviceIdentityRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalDeviceIdentityRepository.swift; sourceTree = "<group>"; };
@@ -535,6 +537,7 @@
 			isa = PBXGroup;
 			children = (
 				C0D830030000000000000001 /* PresentationModels.swift */,
+				C0D840020000000000000001 /* RenewedShellView.swift */,
 			);
 			path = Presentation;
 			sourceTree = "<group>";
@@ -1092,6 +1095,7 @@
 				C0D800020000000000000001 /* DomainPolicies.swift in Sources */,
 				C0D810010000000000000001 /* UseCases.swift in Sources */,
 				C0D830010000000000000001 /* PresentationModels.swift in Sources */,
+				C0D840010000000000000001 /* RenewedShellView.swift in Sources */,
 				C0D3A00B0000000000000001 /* SyncOutboxDraft.swift in Sources */,
 				C0D3A00D0000000000000001 /* MigrationExportModels.swift in Sources */,
 				C0D3A00F0000000000000001 /* LocalDeviceIdentityRepository.swift in Sources */,

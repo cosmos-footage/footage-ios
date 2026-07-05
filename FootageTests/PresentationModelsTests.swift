@@ -266,4 +266,12 @@ final class PresentationModelsTests: XCTestCase {
         XCTAssertEqual(presentation.detailText, "\"지금까지 남긴 발자취가 5km가 넘었어요!\"")
         XCTAssertEqual(BadgePresentation(imageName: "", detail: "").detailText, "")
     }
+
+    func testRenewedShellPresentationDefinesDefaultInternalTabs() {
+        let presentation = RenewedShellPresentation.default
+
+        XCTAssertEqual(presentation.tabs.map(\.kind), [.today, .map, .timeline, .stats, .settings])
+        XCTAssertEqual(presentation.tabs.map(\.title), ["오늘", "지도", "기록", "통계", "설정"])
+        XCTAssertEqual(presentation.tabs.map(\.systemImageName), ["figure.walk", "map", "calendar", "chart.bar", "gearshape"])
+    }
 }
