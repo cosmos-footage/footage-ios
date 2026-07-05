@@ -255,4 +255,15 @@ final class PresentationModelsTests: XCTestCase {
         XCTAssertFalse(linking.isActionEnabled)
         XCTAssertNil(linking.actionTitle)
     }
+
+    func testBadgePresentationFormatsDetailTextWithoutRealmDependency() {
+        let presentation = BadgePresentation(
+            imageName: "total_5",
+            detail: "지금까지 남긴 발자취가 5km가 넘었어요!"
+        )
+
+        XCTAssertEqual(presentation.imageName, "total_5")
+        XCTAssertEqual(presentation.detailText, "\"지금까지 남긴 발자취가 5km가 넘었어요!\"")
+        XCTAssertEqual(BadgePresentation(imageName: "", detail: "").detailText, "")
+    }
 }

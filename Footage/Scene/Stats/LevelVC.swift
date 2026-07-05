@@ -31,8 +31,12 @@ class LevelVC: UIViewController {
         if let todayBadgeImageName = UserDefaults.standard.string(forKey: "todayBadge") {
             if let todayBadge = badgeRepository.badge(imageName: todayBadgeImageName) {
                 self.todayBadge = todayBadge
-                todayBadgeImageView.image =  UIImage(named: todayBadgeImageName)
-                badgeDetail.text = "\"\(todayBadge.detail)\""
+                let presentation = BadgePresentation(
+                    imageName: todayBadgeImageName,
+                    detail: todayBadge.detail
+                )
+                todayBadgeImageView.image = UIImage(named: presentation.imageName)
+                badgeDetail.text = presentation.detailText
             }
         } else {
             todayBadgeImageView.image = UIImage(named: "")
@@ -92,9 +96,13 @@ extension LevelVC: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let cell = collectionView.cellForItem(at: indexPath)
         cell?.contentView.alpha = 0.5
-        todayBadgeImageView.image = UIImage(named: badgeList[indexPath.row].imageName)
-        badgeDetail.text = "\"\(badgeList[indexPath.row].detail)\""
-        UserDefaults.standard.setValue(badgeList[indexPath.row].imageName, forKey: "todayBadge")
+        let presentation = BadgePresentation(
+            imageName: badgeList[indexPath.row].imageName,
+            detail: badgeList[indexPath.row].detail
+        )
+        todayBadgeImageView.image = UIImage(named: presentation.imageName)
+        badgeDetail.text = presentation.detailText
+        UserDefaults.standard.setValue(presentation.imageName, forKey: "todayBadge")
     }
 
     func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {

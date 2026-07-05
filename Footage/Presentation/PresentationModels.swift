@@ -423,3 +423,12 @@ struct AuthLinkingReadinessPresentation: Equatable {
         snapshot.canStartLinking ? "계정 연결" : nil
     }
 }
+
+struct BadgePresentation: Equatable {
+    var imageName: String
+    var detail: String
+
+    var detailText: String {
+        detail.isEmpty ? "" : "\"\(detail)\""
+    }
+}
