@@ -34,7 +34,7 @@ struct FeatureFlags: Equatable {
 enum AppRootDestination: Equatable {
     case legacyFirstLaunch
     case legacyMainTabs
-    case renewedSwiftUIShell
+    case renewedUIKitShell
 }
 
 struct AppRootRoute: Equatable {
@@ -58,8 +58,8 @@ struct AppRootRoute: Equatable {
         storyboardIdentifier: "TabBarController"
     )
 
-    static let renewedSwiftUIShell = AppRootRoute(
-        destination: .renewedSwiftUIShell,
+    static let renewedUIKitShell = AppRootRoute(
+        destination: .renewedUIKitShell,
         storyboardName: nil,
         storyboardIdentifier: nil
     )
@@ -78,7 +78,7 @@ struct AppRootRouter: Equatable {
         }
 
         if featureFlags.isNewUIRunwayEnabled {
-            return .renewedSwiftUIShell
+            return .renewedUIKitShell
         }
 
         return .legacyMainTabs

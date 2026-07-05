@@ -141,7 +141,7 @@ final class UseCasesTests: XCTestCase {
         )
 
         XCTAssertEqual(router.route(userState: nil), .legacyFirstLaunch)
-        XCTAssertEqual(router.route(userState: "noPassword"), .renewedSwiftUIShell)
+        XCTAssertEqual(router.route(userState: "noPassword"), .renewedUIKitShell)
         XCTAssertFalse(router.route(userState: "noPassword").usesStoryboard)
     }
 }
