@@ -56,6 +56,17 @@ sed -n '1,340p' FootageTests/UseCasesTests.swift
 git diff -- Footage/Presentation/PresentationModels.swift FootageTests/PresentationModelsTests.swift
 git diff --check
 xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
+rg --files Footage/Scene Footage/Domain Footage/Presentation FootageTests | rg 'First|Launch|Level|Badge|Profile|FL_'
+sed -n '1,220p' Footage/Scene/Stats/LevelVC.swift
+sed -n '1,180p' Footage/Scene/Home/FL_NameColorVC.swift
+sed -n '1,180p' Footage/Scene/Home/FL_ProfileSettingsVC.swift
+sed -n '1,160p' Footage/Scene/Home/FL_LetsStartVC.swift
+sed -n '1,160p' Footage/Scene/Home/FL_VideoVC.swift
+sed -n '1,180p' Footage/Scene/Date/BadgeSupplementaryView.swift
+sed -n '174,230p' docs/UI_REWRITE_REFACTOR_PLAN.md
+git diff -- Footage/Presentation/PresentationModels.swift Footage/Scene/Stats/LevelVC.swift FootageTests/PresentationModelsTests.swift
+git diff --check
+xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
 ```
 
 ## Results
@@ -68,6 +79,7 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - A fourth `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding Map archive presentation models.
 - A fifth `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding Settings presentation models.
 - A sixth `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding Restore/Auth presentation models.
+- A seventh `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding the Level/Badge presentation model.
 
 ## Changed
 
@@ -91,6 +103,8 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Updated `Settings_GeneralVC`, `Settings_General_PushVC`, and `Settings_AboutVC` to use presentation models for display-only string formatting.
 - Added `RestoreStatusPresentation`, `RestoreImportPlanPresentation`, `AuthLinkStatePresentation`, and `AuthLinkingReadinessPresentation`.
 - Kept Restore/Auth presentation models disconnected from UI because Restore/Auth are still disabled scaffolds without production UX.
+- Added `BadgePresentation` and updated `LevelVC` to use it for selected badge image/detail display.
+- Reviewed First Launch controllers; no safe display-only extraction was made because the remaining logic is tied to photo permissions, profile editing, onboarding navigation, and app launch state.
 
 ## Safety Notes
 
@@ -102,10 +116,13 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Map archive keeps the same date, distance, category, photo count, and note count labels.
 - Settings keeps the same cloud backup status text, push time row text, zero-padded picker row titles, and version label text.
 - Restore/Auth presentation models only expose read-only state text and action availability; no restore import, auth linking, network, or token behavior was enabled.
+- Level/Badge keeps the same badge image names and quoted detail text.
+- First Launch behavior was not changed.
 - This is a read-only presentation extraction only; persistence and navigation behavior are unchanged.
 
 ## What Remains
 
-- Continue R13 by reviewing remaining first-launch and level/badge display formatting, or move on to R14 once those are intentionally deferred.
+- R13 is complete for the current safe UIKit shell slices.
+- First Launch display work is intentionally deferred to R14 because it should be handled alongside the new UI runway and profile/onboarding flow boundaries.
 - Move remaining formatting and empty-state logic out of controllers in small tested slices.
 - Keep UIKit controllers responsible for outlets, gestures, layout, animation, map binding, and navigation until the replacement UI is planned separately.

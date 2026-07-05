@@ -456,7 +456,7 @@ Phase R12 completion notes:
 
 ## Refactor Phase R13: Presentation Models and UIKit Shell Migration
 
-Status: in progress with Date timeline, Journey detail date, Home distance, Stats/Report, Map archive, Settings, Restore, and Auth presentation-model slices completed.
+Status: completed for the current safe UIKit shell slices.
 
 Goal: make legacy UIKit screens thinner by moving display formatting into tested presentation models while preserving the current screens.
 
@@ -478,18 +478,22 @@ Tasks completed so far:
 - Migrated display-only Settings formatting in `Settings_GeneralVC`, `Settings_General_PushVC`, and `Settings_AboutVC`.
 - Added read-only Restore/Auth display models: `RestoreStatusPresentation`, `RestoreImportPlanPresentation`, `AuthLinkStatePresentation`, and `AuthLinkingReadinessPresentation`.
 - Kept Restore/Auth display models disconnected from user-facing UI because those features remain disabled scaffolds.
+- Added `BadgePresentation` and migrated `LevelVC` selected-badge image/detail display formatting.
+- Reviewed First Launch controllers and deferred their display work to R14 because the remaining logic is coupled to profile/photo permissions, onboarding navigation, and app launch state.
 - Added tests for year/month/day formatting and preview-data retention.
 - Added tests for Journey detail legacy date-counter state and Home distance display formatting.
 - Added tests for city presentation fallbacks, distance text formats, and report button state.
 - Added tests for map archive footstep cell text.
 - Added tests for cloud backup status text, push time row/picker text, and legacy version label text.
 - Added tests for restore status text, restore import-plan count text, and auth-linking action readiness.
+- Added tests for badge detail display text without introducing Realm dependencies into the presentation model.
 
 Phase R13 current completion notes:
 
 - `git diff --check` succeeded.
 - `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` succeeded.
-- Next R13 slice: review remaining first-launch and level/badge display formatting, or explicitly defer them before moving to R14.
+- No Storyboard, asset, widget, Realm schema, network, auth, restore, signing, entitlement, or bundle identifier behavior was changed.
+- Next step is Phase R14: choose and scaffold the new UI runway behind disabled feature flags.
 
 ## First Phase 1 Codex Command
 
