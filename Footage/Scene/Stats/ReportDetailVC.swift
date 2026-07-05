@@ -78,27 +78,27 @@ class ReportDetailVC: UIViewController {
         
         if colorRanking.count > 0 {
             firstColor.image = UIImage(named: colorRanking[0].key + "Big")
-            firstColorDistance.text = String(format: "%.f", (colorRanking[0].value) / 1000) + "km"
+            firstColorDistance.text = DistanceTextPresentation(meters: colorRanking[0].value, style: .integerWithKm).text
             colorList.remove(colorRanking[0].key)
         }
         if colorRanking.count > 1 {
             secondColor.image = UIImage(named: colorRanking[1].key)
-            secondColorDistance.text = String(format: "%.f", (colorRanking[1].value) / 1000) + "km"
+            secondColorDistance.text = DistanceTextPresentation(meters: colorRanking[1].value, style: .integerWithKm).text
             colorList.remove(colorRanking[1].key)
         }
         if colorRanking.count > 2 {
             thirdColor.image = UIImage(named: colorRanking[2].key)
-            thirdColorDistance.text = String(format: "%.f", (colorRanking[2].value) / 1000) + "km"
+            thirdColorDistance.text = DistanceTextPresentation(meters: colorRanking[2].value, style: .integerWithKm).text
             colorList.remove(colorRanking[2].key)
         }
         if colorRanking.count > 3 {
             fourthColor.image = UIImage(named: colorRanking[3].key)
-            fourthColorDistance.text = String(format: "%.f", (colorRanking[3].value) / 1000) + "km"
+            fourthColorDistance.text = DistanceTextPresentation(meters: colorRanking[3].value, style: .integerWithKm).text
             colorList.remove(colorRanking[3].key)
         }
         if colorRanking.count > 4 {
             fifthColor.image = UIImage(named: colorRanking[4].key)
-            fifthColorDistance.text = String(format: "%.f", (colorRanking[4].value) / 1000) + "km"
+            fifthColorDistance.text = DistanceTextPresentation(meters: colorRanking[4].value, style: .integerWithKm).text
             colorList.remove(colorRanking[4].key)
         }
         for index in 0..<colorList.count {
@@ -124,45 +124,8 @@ class ReportDetailVC: UIViewController {
     }
     
     func getCityImage(name: String) -> UIImage? {
-        switch name {
-        case "서울특별시", "Seoul":
-            return UIImage(named: "Seoul")
-        case "세종특별자치시", "Sejong City":
-            return UIImage(named: "Sejong City")
-        case "제주도", "Jeju":
-            return UIImage(named: "Jeju")
-        case "경기도", "Gyeonggi-do":
-            return UIImage(named: "Gyeonggi-do")
-        case "대전광역시", "Daejeon":
-            return UIImage(named: "Daejeon")
-        case "울산광역시", "Ulsan":
-            return UIImage(named: "Ulsan")
-        case "광주광역시", "Gwangju":
-            return UIImage(named: "Gwangju")
-        case "부산광역시", "Busan":
-            return UIImage(named: "Busan")
-        case "대구광역시", "Daegu":
-            return UIImage(named: "Daegu")
-        case "강원도", "Gangwon":
-            return UIImage(named: "Gangwon")
-        case "인천광역시", "Incheon":
-            return UIImage(named: "Incheon")
-        case "충청북도", "North Chungcheong":
-            return UIImage(named: "North Chungcheong")
-        case "경상북도", "North Gyeongsang":
-            return UIImage(named: "North Gyeongsang")
-        case "전라북도", "North Jeolla":
-            return UIImage(named: "North Jeolla")
-        case "충청남도", "South Chungcheong":
-            return UIImage(named: "South Chungcheong")
-        case "경상남도", "South Gyeongsang":
-            return UIImage(named: "South Gyeongsang")
-        case "전라남도", "South Jeolla":
-            return UIImage(named: "South Jeolla")
-        default:
-            return UIImage(named: "noDataImage")
-        }
-        
+        let city = CityPresentation(sourceName: name, fallback: .noData)
+        return UIImage(named: city.imageName)
     }
     
     func setDefaultData() {

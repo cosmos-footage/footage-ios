@@ -142,3 +142,122 @@ struct HomeDistancePresentation: Equatable {
         String(format: valueFormat, kilometers)
     }
 }
+
+enum CityPresentationFallback: Equatable {
+    case sejong
+    case noData
+}
+
+struct CityPresentation: Equatable {
+    var sourceName: String
+    var imageName: String
+    var nicknameText: String
+
+    init(sourceName: String, fallback: CityPresentationFallback) {
+        self.sourceName = sourceName
+
+        switch sourceName {
+        case "서울특별시", "Seoul":
+            imageName = "Seoul"
+            nicknameText = "\"서울특별시\""
+        case "세종특별자치시", "Sejong City":
+            imageName = "Sejong City"
+            nicknameText = "\"세종특별자치시\""
+        case "제주도", "Jeju":
+            imageName = "Jeju"
+            nicknameText = "\"제주도\""
+        case "경기도", "Gyeonggi-do":
+            imageName = "Gyeonggi-do"
+            nicknameText = "\"경기도\""
+        case "대전광역시", "Daejeon":
+            imageName = "Daejeon"
+            nicknameText = "\"대전광역시\""
+        case "울산광역시", "Ulsan":
+            imageName = "Ulsan"
+            nicknameText = "\"울산광역시\""
+        case "광주광역시", "Gwangju":
+            imageName = "Gwangju"
+            nicknameText = "\"광주광역시\""
+        case "부산광역시", "Busan":
+            imageName = "Busan"
+            nicknameText = "\"부산광역시\""
+        case "대구광역시", "Daegu":
+            imageName = "Daegu"
+            nicknameText = "\"대구광역시\""
+        case "강원도", "Gangwon":
+            imageName = "Gangwon"
+            nicknameText = "\"강원도\""
+        case "인천광역시", "Incheon":
+            imageName = "Incheon"
+            nicknameText = "\"인천광역시\""
+        case "충청북도", "North Chungcheong":
+            imageName = "North Chungcheong"
+            nicknameText = "\"충청북도\""
+        case "경상북도", "North Gyeongsang":
+            imageName = "North Gyeongsang"
+            nicknameText = "\"경상북도\""
+        case "전라북도", "North Jeolla":
+            imageName = "North Jeolla"
+            nicknameText = "\"전라북도\""
+        case "충청남도", "South Chungcheong":
+            imageName = "South Chungcheong"
+            nicknameText = "\"충청남도\""
+        case "경상남도", "South Gyeongsang":
+            imageName = "South Gyeongsang"
+            nicknameText = "\"경상남도\""
+        case "전라남도", "South Jeolla":
+            imageName = "South Jeolla"
+            nicknameText = "\"전라남도\""
+        default:
+            switch fallback {
+            case .sejong:
+                imageName = "Sejong City"
+                nicknameText = "\"세종특별자치시\""
+            case .noData:
+                imageName = "noDataImage"
+                nicknameText = "-"
+            }
+        }
+    }
+}
+
+enum DistanceTextPresentationStyle: Equatable {
+    case integer
+    case decimal2
+    case integerWithKm
+    case decimal2WithKm
+}
+
+struct DistanceTextPresentation: Equatable {
+    var meters: Double
+    var style: DistanceTextPresentationStyle
+
+    var kilometers: Double {
+        meters / 1000
+    }
+
+    var text: String {
+        switch style {
+        case .integer:
+            return String(format: "%.f", kilometers)
+        case .decimal2:
+            return String(format: "%.2f", kilometers)
+        case .integerWithKm:
+            return String(format: "%.f", kilometers) + "km"
+        case .decimal2WithKm:
+            return String(format: "%.2f", kilometers) + "km"
+        }
+    }
+}
+
+struct ReportButtonPresentation: Equatable {
+    var hasData: Bool
+
+    var isEnabled: Bool {
+        hasData
+    }
+
+    var alpha: Double {
+        hasData ? 1 : 0.1
+    }
+}

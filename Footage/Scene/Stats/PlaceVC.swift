@@ -76,61 +76,24 @@ class PlaceVC: UIViewController {
     func loadData() {
         if ranking.count > 0 {
             firstMap.image = getCityImage(name: ranking[0].key.components(separatedBy: " / ").first!)
-            firstDistance.text = String(format: "%.2f", (ranking[0].value) / 1000)
+            firstDistance.text = DistanceTextPresentation(meters: ranking[0].value, style: .decimal2).text
             firstCityName.text = ranking[0].key // "서울특별시 / 동작구"
         }
         if ranking.count > 1 {
             secondMap.image = getCityImage(name: ranking[1].key.components(separatedBy: " / ").first!)
-            secondDistance.text = String(format: "%.2f", (ranking[1].value) / 1000)
+            secondDistance.text = DistanceTextPresentation(meters: ranking[1].value, style: .decimal2).text
             secondCityName.text = ranking[1].key // "서울특별시 / 동작구"
         }
         if ranking.count > 2 {
             thirdMap.image = getCityImage(name: ranking[2].key.components(separatedBy: " / ").first!)
-            thirdDistance.text = String(format: "%.2f", (ranking[2].value) / 1000)
+            thirdDistance.text = DistanceTextPresentation(meters: ranking[2].value, style: .decimal2).text
             thirdCityName.text = ranking[2].key // "서울특별시 / 동작구"
         }
     }
     
     func getCityImage(name: String) -> UIImage? {
-        switch name {
-        case "서울특별시", "Seoul":
-            return UIImage(named: "Seoul")
-        case "세종특별자치시", "Sejong City":
-            return UIImage(named: "Sejong City")
-        case "제주도", "Jeju":
-            return UIImage(named: "Jeju")
-        case "경기도", "Gyeonggi-do":
-            return UIImage(named: "Gyeonggi-do")
-        case "대전광역시", "Daejeon":
-            return UIImage(named: "Daejeon")
-        case "울산광역시", "Ulsan":
-            return UIImage(named: "Ulsan")
-        case "광주광역시", "Gwangju":
-            return UIImage(named: "Gwangju")
-        case "부산광역시", "Busan":
-            return UIImage(named: "Busan")
-        case "대구광역시", "Daegu":
-            return UIImage(named: "Daegu")
-        case "강원도", "Gangwon":
-            return UIImage(named: "Gangwon")
-        case "인천광역시", "Incheon":
-            return UIImage(named: "Incheon")
-        case "충청북도", "North Chungcheong":
-            return UIImage(named: "North Chungcheong")
-        case "경상북도", "North Gyeongsang":
-            return UIImage(named: "North Gyeongsang")
-        case "전라북도", "North Jeolla":
-            return UIImage(named: "North Jeolla")
-        case "충청남도", "South Chungcheong":
-            return UIImage(named: "South Chungcheong")
-        case "경상남도", "South Gyeongsang":
-            return UIImage(named: "South Gyeongsang")
-        case "전라남도", "South Jeolla":
-            return UIImage(named: "South Jeolla")
-        default:
-            return UIImage(named: "noDataImage")
-        }
-        
+        let city = CityPresentation(sourceName: name, fallback: .noData)
+        return UIImage(named: city.imageName)
     }
     
     func setDefaultData() {

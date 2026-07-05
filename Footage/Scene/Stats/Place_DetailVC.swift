@@ -34,8 +34,11 @@ extension Place_DetailVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
         let place = ranking[indexPath.row].key
-        let distance = String(format: "%.2f", (ranking[indexPath.row].value) / 1000)
-        cell.textLabel?.text = "\(indexPath.row+1)위.  \(place) - \(distance)km"
+        let distance = DistanceTextPresentation(
+            meters: ranking[indexPath.row].value,
+            style: .decimal2WithKm
+        ).text
+        cell.textLabel?.text = "\(indexPath.row+1)위.  \(place) - \(distance)"
         cell.textLabel?.font = UIFont(name: "NanumBarunpen", size: 18)
         cell.selectionStyle = .none
         cell.isUserInteractionEnabled = false

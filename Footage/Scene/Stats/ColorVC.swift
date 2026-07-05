@@ -56,27 +56,27 @@ class ColorVC: UIViewController {
         
         if ranking.count > 0 {
             firstColor.image = UIImage(named: ranking[0].key)
-            firstColorDistance.text = String(format: "%.2f", (ranking[0].value) / 1000)
+            firstColorDistance.text = DistanceTextPresentation(meters: ranking[0].value, style: .decimal2).text
             colorList.remove(ranking[0].key)
         }
         if ranking.count > 1 {
             secondColor.image = UIImage(named: ranking[1].key)
-            secondColorDistance.text = String(format: "%.2f", (ranking[1].value) / 1000)
+            secondColorDistance.text = DistanceTextPresentation(meters: ranking[1].value, style: .decimal2).text
             colorList.remove(ranking[1].key)
         }
         if ranking.count > 2 {
             thirdColor.image = UIImage(named: ranking[2].key)
-            thirdColorDistance.text = String(format: "%.2f", (ranking[2].value) / 1000)
+            thirdColorDistance.text = DistanceTextPresentation(meters: ranking[2].value, style: .decimal2).text
             colorList.remove(ranking[2].key)
         }
         if ranking.count > 3 {
             fourthColor.image = UIImage(named: ranking[3].key)
-            fourthColorDistance.text = String(format: "%.2f", (ranking[3].value) / 1000)
+            fourthColorDistance.text = DistanceTextPresentation(meters: ranking[3].value, style: .decimal2).text
             colorList.remove(ranking[3].key)
         }
         if ranking.count > 4 {
             fifthColor.image = UIImage(named: ranking[4].key)
-            fifthColorDistance.text = String(format: "%.2f", (ranking[4].value) / 1000)
+            fifthColorDistance.text = DistanceTextPresentation(meters: ranking[4].value, style: .decimal2).text
             colorList.remove(ranking[4].key)
         }
         for index in 0..<colorList.count {

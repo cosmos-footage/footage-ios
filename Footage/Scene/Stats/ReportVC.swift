@@ -74,13 +74,11 @@ class ReportVC: UIViewController {
         let monthButtonList = [januaryButton, februaryButton, marchButton, aprilButton, mayButton, juneButton, julyButton, augustButton, septemberButton, octoberButton, novemberButton, decemberButton]
         for index in 0...11 {
             setStartEndDate(year: thisYear, tag: (index+1))
-            if colorRepository.rankingDistance(startDate: startDate!, endDate: endDate!).isEmpty {
-                monthButtonList[index]!.isEnabled = false
-                monthButtonList[index]!.alpha = 0.1
-            } else {
-                monthButtonList[index]!.isEnabled = true
-                monthButtonList[index]!.alpha = 1
-            }
+            let presentation = ReportButtonPresentation(
+                hasData: !colorRepository.rankingDistance(startDate: startDate!, endDate: endDate!).isEmpty
+            )
+            monthButtonList[index]!.isEnabled = presentation.isEnabled
+            monthButtonList[index]!.alpha = CGFloat(presentation.alpha)
         }
         setPrevNextButtons()
     }
@@ -105,19 +103,12 @@ class ReportVC: UIViewController {
                 prevCnt+=1
             }
         }
-        if prevCnt>0 {
-            prevButton.isEnabled = true
-            prevButton.alpha = 1
-        } else {
-            prevButton.isEnabled = false
-            prevButton.alpha = 0.1
-        }
-        if nextCnt>0 {
-            nextButton.isEnabled = true
-            nextButton.alpha = 1
-        } else {
-            nextButton.isEnabled = false
-            nextButton.alpha = 0.1
-        }
+        let prevPresentation = ReportButtonPresentation(hasData: prevCnt > 0)
+        prevButton.isEnabled = prevPresentation.isEnabled
+        prevButton.alpha = CGFloat(prevPresentation.alpha)
+
+        let nextPresentation = ReportButtonPresentation(hasData: nextCnt > 0)
+        nextButton.isEnabled = nextPresentation.isEnabled
+        nextButton.alpha = CGFloat(nextPresentation.alpha)
     }
 }
