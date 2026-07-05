@@ -106,7 +106,8 @@ final class UseCasesTests: XCTestCase {
                     isCloudBackupEnabled: true,
                     isRestoreEnabled: false,
                     isAuthEnabled: false,
-                    isDevelopmentUploadEnabled: false
+                    isDevelopmentUploadEnabled: false,
+                    isNewUIRunwayEnabled: false
                 )
             }
         )
@@ -124,6 +125,24 @@ final class UseCasesTests: XCTestCase {
 
         XCTAssertEqual(try? useCase.transition(from: .idle, event: .start).get(), .recording)
         XCTAssertEqual(useCase.transition(from: .paused, event: .ingestPoint), .failure(.cannotIngestPoint))
+    }
+
+    func testAppRootRouterKeepsLegacyStoryboardDefault() {
+        let router = AppRootRouter(featureFlags: .disabled)
+
+        XCTAssertEqual(router.route(userState: nil), .legacyFirstLaunch)
+        XCTAssertEqual(router.route(userState: "noPassword"), .legacyMainTabs)
+        XCTAssertTrue(router.route(userState: "noPassword").usesStoryboard)
+    }
+
+    func testAppRootRouterCanSelectRenewedShellBehindFlagWithoutSkippingFirstLaunch() {
+        let router = AppRootRouter(
+            featureFlags: FeatureFlags(isNewUIRunwayEnabled: true)
+        )
+
+        XCTAssertEqual(router.route(userState: nil), .legacyFirstLaunch)
+        XCTAssertEqual(router.route(userState: "noPassword"), .renewedSwiftUIShell)
+        XCTAssertFalse(router.route(userState: "noPassword").usesStoryboard)
     }
 }
 
