@@ -5,6 +5,7 @@
 //  Created by Codex on 2026/07/05.
 //
 
+import UIKit
 import XCTest
 @testable import footage
 
@@ -274,4 +275,141 @@ final class PresentationModelsTests: XCTestCase {
         XCTAssertEqual(presentation.tabs.map(\.title), ["오늘", "지도", "기록", "통계", "설정"])
         XCTAssertEqual(presentation.tabs.map(\.systemImageName), ["figure.walk", "map", "calendar", "chart.bar", "gearshape"])
     }
+
+    func testRenewedShellPresentationDefinesLegacyStoryboardBridgeOrder() {
+        let presentation = RenewedShellPresentation.legacyStoryboardBridge
+
+        XCTAssertEqual(presentation.tabs.map(\.kind), [.today, .map, .stats, .timeline, .settings])
+        XCTAssertEqual(presentation.tabs.map(\.title), ["홈", "지도", "월간 리포트", "기록", "설정"])
+        XCTAssertEqual(
+            presentation.tabs.map(\.systemImageName),
+            ["house.fill", "location.fill", "rectangle.grid.1x2.fill", "person.fill", "circle.grid.2x2.fill"]
+        )
+    }
+
+    func testLegacyRenewedShellStoryboardSceneProviderMapsExistingStoryboardTabs() {
+        let provider = LegacyRenewedShellStoryboardSceneProvider()
+
+        XCTAssertEqual(
+            provider.sceneDescriptor(for: RenewedShellTab(kind: .today, title: "", systemImageName: "")),
+            StoryboardSceneDescriptor(storyboardName: "Home", viewControllerIdentifier: "HomeViewController")
+        )
+        XCTAssertEqual(
+            provider.sceneDescriptor(for: RenewedShellTab(kind: .timeline, title: "", systemImageName: "")),
+            StoryboardSceneDescriptor(storyboardName: "Date", viewControllerIdentifier: "DateViewController")
+        )
+        XCTAssertEqual(
+            provider.sceneDescriptor(for: RenewedShellTab(kind: .stats, title: "", systemImageName: "")),
+            StoryboardSceneDescriptor(storyboardName: "Stats", viewControllerIdentifier: "StatsViewController")
+        )
+        XCTAssertEqual(
+            provider.sceneDescriptor(for: RenewedShellTab(kind: .settings, title: "", systemImageName: "")),
+            StoryboardSceneDescriptor(storyboardName: "Settings", viewControllerIdentifier: "SettingsViewController")
+        )
+        XCTAssertNil(provider.sceneDescriptor(for: RenewedShellTab(kind: .map, title: "", systemImageName: "")))
+    }
+
+    func testStoryboardBackedRenewedShellFactoryUsesStoryboardInstantiatorForMappedTab() {
+        let instantiator = FakeStoryboardSceneInstantiator()
+        let expectedController = UIViewController()
+        instantiator.controller = expectedController
+        let factory = StoryboardBackedRenewedShellViewControllerFactory(
+            storyboardInstantiator: instantiator,
+            directViewControllerProvider: EmptyDirectViewControllerProvider()
+        )
+
+        let controller = factory.makeViewController(
+            for: RenewedShellTab(kind: .today, title: "오늘", systemImageName: "figure.walk")
+        )
+
+        XCTAssertTrue(controller === expectedController)
+        XCTAssertEqual(
+            instantiator.instantiatedDescriptors,
+            [StoryboardSceneDescriptor(storyboardName: "Home", viewControllerIdentifier: "HomeViewController")]
+        )
+    }
+
+    func testStoryboardBackedRenewedShellFactoryUsesDirectProviderBeforeStoryboard() {
+        let instantiator = FakeStoryboardSceneInstantiator()
+        let directProvider = FakeDirectViewControllerProvider()
+        let factory = StoryboardBackedRenewedShellViewControllerFactory(
+            storyboardInstantiator: instantiator,
+            directViewControllerProvider: directProvider,
+            fallbackFactory: FakeRenewedShellViewControllerFactory()
+        )
+
+        let controller = factory.makeViewController(
+            for: RenewedShellTab(kind: .map, title: "지도", systemImageName: "map")
+        )
+
+        XCTAssertTrue(controller is FakeDirectViewController)
+        XCTAssertTrue(instantiator.instantiatedDescriptors.isEmpty)
+    }
+
+    func testStoryboardBackedRenewedShellFactoryFallsBackForUnmappedTab() {
+        let instantiator = FakeStoryboardSceneInstantiator()
+        let factory = StoryboardBackedRenewedShellViewControllerFactory(
+            sceneProvider: EmptyStoryboardSceneProvider(),
+            storyboardInstantiator: instantiator,
+            directViewControllerProvider: EmptyDirectViewControllerProvider(),
+            fallbackFactory: FakeRenewedShellViewControllerFactory()
+        )
+
+        let controller = factory.makeViewController(
+            for: RenewedShellTab(kind: .map, title: "지도", systemImageName: "map")
+        )
+
+        XCTAssertTrue(controller is FakeFallbackViewController)
+        XCTAssertTrue(instantiator.instantiatedDescriptors.isEmpty)
+    }
+
+    func testRenewedShellCoordinatorBuildsTabBarRootWithoutRuntimeCutover() {
+        let coordinator = RenewedShellCoordinator(
+            presentation: RenewedShellPresentation(
+                tabs: [RenewedShellTab(kind: .map, title: "지도", systemImageName: "map")]
+            ),
+            viewControllerFactory: FakeRenewedShellViewControllerFactory()
+        )
+
+        let root = coordinator.makeRootViewController()
+
+        XCTAssertTrue(root is RenewedShellViewController)
+    }
 }
+
+private final class FakeStoryboardSceneInstantiator: StoryboardSceneInstantiating {
+    var controller = UIViewController()
+    private(set) var instantiatedDescriptors: [StoryboardSceneDescriptor] = []
+
+    func instantiate(_ descriptor: StoryboardSceneDescriptor) -> UIViewController {
+        instantiatedDescriptors.append(descriptor)
+        return controller
+    }
+}
+
+private struct EmptyStoryboardSceneProvider: RenewedShellStoryboardSceneProviding {
+    func sceneDescriptor(for tab: RenewedShellTab) -> StoryboardSceneDescriptor? {
+        nil
+    }
+}
+
+private struct EmptyDirectViewControllerProvider: RenewedShellDirectViewControllerProviding {
+    func makeViewController(for tab: RenewedShellTab) -> UIViewController? {
+        nil
+    }
+}
+
+private struct FakeDirectViewControllerProvider: RenewedShellDirectViewControllerProviding {
+    func makeViewController(for tab: RenewedShellTab) -> UIViewController? {
+        FakeDirectViewController()
+    }
+}
+
+private struct FakeRenewedShellViewControllerFactory: RenewedShellViewControllerFactory {
+    func makeViewController(for tab: RenewedShellTab) -> UIViewController {
+        FakeFallbackViewController()
+    }
+}
+
+private final class FakeDirectViewController: UIViewController {}
+private final class FakeFallbackViewController: UIViewController {}

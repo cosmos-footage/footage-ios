@@ -9,11 +9,11 @@ import UIKit
 
 final class RenewedShellViewController: UITabBarController {
     private let presentation: RenewedShellPresentation
-    private let viewControllerFactory: RenewedShellViewControllerFactory
+    private let viewControllerFactory: any RenewedShellViewControllerFactory
 
     init(
         presentation: RenewedShellPresentation = .default,
-        viewControllerFactory: RenewedShellViewControllerFactory = PlaceholderRenewedShellViewControllerFactory()
+        viewControllerFactory: any RenewedShellViewControllerFactory = PlaceholderRenewedShellViewControllerFactory()
     ) {
         self.presentation = presentation
         self.viewControllerFactory = viewControllerFactory
@@ -75,6 +75,16 @@ struct RenewedShellPresentation: Equatable {
             RenewedShellTab(kind: .timeline, title: "기록", systemImageName: "calendar"),
             RenewedShellTab(kind: .stats, title: "통계", systemImageName: "chart.bar"),
             RenewedShellTab(kind: .settings, title: "설정", systemImageName: "gearshape")
+        ]
+    )
+
+    static let legacyStoryboardBridge = RenewedShellPresentation(
+        tabs: [
+            RenewedShellTab(kind: .today, title: "홈", systemImageName: "house.fill"),
+            RenewedShellTab(kind: .map, title: "지도", systemImageName: "location.fill"),
+            RenewedShellTab(kind: .stats, title: "월간 리포트", systemImageName: "rectangle.grid.1x2.fill"),
+            RenewedShellTab(kind: .timeline, title: "기록", systemImageName: "person.fill"),
+            RenewedShellTab(kind: .settings, title: "설정", systemImageName: "circle.grid.2x2.fill")
         ]
     )
 }

@@ -144,6 +144,21 @@ final class UseCasesTests: XCTestCase {
         XCTAssertEqual(router.route(userState: "noPassword"), .renewedUIKitShell)
         XCTAssertFalse(router.route(userState: "noPassword").usesStoryboard)
     }
+
+    func testAppLaunchConfigurationStillUsesMainStoryboardDuringRenewedShellRunway() throws {
+        let info = try XCTUnwrap(Bundle(for: AppDelegate.self).infoDictionary)
+
+        XCTAssertEqual(info["UIMainStoryboardFile"] as? String, "Main")
+
+        let sceneManifest = try XCTUnwrap(info["UIApplicationSceneManifest"] as? [String: Any])
+        let sceneConfigurations = try XCTUnwrap(sceneManifest["UISceneConfigurations"] as? [String: Any])
+        let applicationScenes = try XCTUnwrap(
+            sceneConfigurations["UIWindowSceneSessionRoleApplication"] as? [[String: Any]]
+        )
+        let defaultScene = try XCTUnwrap(applicationScenes.first)
+
+        XCTAssertEqual(defaultScene["UISceneStoryboardFile"] as? String, "Main")
+    }
 }
 
 private final class FakeDaySummaryRepository: DaySummaryRepository {
