@@ -392,6 +392,26 @@ Phase 9 completion notes:
 - Signed archive was not run because signing/provisioning was intentionally not changed.
 - Recommendation is No-Go for production App Store release today, and Go for continued internal TestFlight preparation after human signing, device QA, widget QA, StoreKit validation, and privacy metadata review.
 
+## Refactor Phase R10: Domain Extraction
+
+Status: completed for additive pure-domain scaffolding.
+
+Goal: add reusable domain concepts and pure policies without moving existing Realm data or changing current UIKit behavior.
+
+Tasks:
+
+- Added plain Swift domain models for route points, recording sessions, day summaries, journeys, color categories, badge progress, places, media references, notes, recording lifecycle state, widget snapshots, and profile preferences.
+- Added pure policies for route point validation, recording state transitions, badge eligibility, date grouping, and color category selection.
+- Added unit tests for coordinate validity, privacy-safe debug descriptions, recording lifecycle behavior, route point validation, badge progress, date grouping, and color fallback selection.
+- Kept Domain imports limited to `Foundation`.
+- Kept existing Realm models, Storyboards, widget files, signing, entitlements, bundle identifiers, Pods, app group keys, and user-facing flows unchanged.
+
+Phase R10 completion notes:
+
+- `xcodebuild -list -workspace footage.xcworkspace` succeeded after approved Xcode access.
+- `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` succeeded.
+- Next step is Phase R11: define use-case protocols and migrate the first read-only call path behind the new domain boundary.
+
 ## First Phase 1 Codex Command
 
 Use this after selecting full Xcode on the machine:
