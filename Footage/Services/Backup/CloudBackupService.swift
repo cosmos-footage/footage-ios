@@ -274,7 +274,7 @@ final class CloudBackupService {
                 deviceId: deviceId,
                 recordingId: recordingId,
                 syncBatchId: item.syncBatch.syncBatchId.rawValue,
-                objectKey: presignResponse.objectKey,
+                objectId: presignResponse.objectId,
                 checksumSha256: checksum,
                 contentLength: stagedPayload.contentLength
             )
@@ -289,7 +289,7 @@ final class CloudBackupService {
                     ownerId: ownerId,
                     deviceId: deviceId,
                     recordingId: recordingId,
-                    objectKey: presignResponse.objectKey,
+                    objectId: presignResponse.objectId,
                     stagedPayload: stagedPayload,
                     checksum: checksum,
                     bearerToken: bearerToken,
@@ -308,7 +308,7 @@ final class CloudBackupService {
         ownerId: String,
         deviceId: String,
         recordingId: String,
-        objectKey: String,
+        objectId: String,
         stagedPayload: StagedBackupPayloadMetadata,
         checksum: String,
         bearerToken: String,
@@ -333,8 +333,8 @@ final class CloudBackupService {
                         distanceMeters: nil,
                         objects: [
                             SyncBatchRequest.Recording.UploadedObject(
+                                objectId: objectId,
                                 objectType: item.type.rawValue,
-                                objectKey: objectKey,
                                 checksumSha256: checksum,
                                 contentLength: stagedPayload.contentLength
                             )

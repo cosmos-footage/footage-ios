@@ -218,7 +218,7 @@ Acceptance criteria:
 - Enabling backup creates anonymous owner/device identity.
 - Local recording works without network.
 - Upload retry is idempotent.
-- S3 object keys are private and owner-scoped.
+- S3 storage keys are random and server-internal; ownership is scoped by database metadata and app-visible `objectId`.
 
 Phase 5 completion notes:
 

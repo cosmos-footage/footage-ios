@@ -65,7 +65,7 @@ Scaffold-only:
 - Route history contains precise location and timestamps.
 - Photos and notes may contain sensitive personal information.
 - Background location requires clear App Store review language and user-facing copy.
-- Future cloud backup must avoid logging route coordinates, notes, photos, bearer tokens, provider tokens, object keys, presigned URLs, and AWS credentials.
+- Future cloud backup must avoid logging route coordinates, notes, photos, bearer tokens, provider tokens, object identifiers, internal storage keys, presigned URLs, and AWS credentials.
 
 ## Known Data Migration Risks
 

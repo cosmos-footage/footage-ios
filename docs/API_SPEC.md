@@ -14,7 +14,7 @@ Common requirements:
 - Server logs must not include raw latitude/longitude, notes, photos, presigned URLs, anonymous device tokens, or auth tokens.
 - The app never receives AWS credentials.
 - Presigned URLs are short-lived.
-- Server verifies owner/device scope for every object key.
+- Server verifies owner/device scope for every `objectId`; S3 storage keys are random and server-internal.
 - Phase 5 iOS scaffolding keeps cloud backup disabled by default and may use `application/x-ndjson` only as a development-only local scaffold. Production route batches should use `application/x-ndjson+gzip`.
 
 Common identifiers:
@@ -24,7 +24,15 @@ Common identifiers:
 - `installationId`: app install identity.
 - `recordingId`: stable route/recording identifier.
 - `syncBatchId`: stable upload batch identifier.
+- `objectId`: server-side uploaded object identifier returned by presign.
 - `idempotencyKey`: retry deduplication key.
+
+Storage key policy:
+
+- The app never chooses or receives the S3 storage key.
+- The server generates a cryptographically random storage key, stores it in the database, and returns only `objectId` to the app.
+- Database metadata maps `objectId` to owner/device/recording/batch/object type/checksum/content length.
+- Example internal S3 key shape: `objects/7f/3a/{randomObjectName}`.
 
 ## POST /v1/bootstrap
 
@@ -110,16 +118,21 @@ Response:
 ```json
 {
   "uploadId": "upl_01JZ8R1D5E5X3S93S2QDPE5DKA",
+  "objectId": "obj_01JZ8R1D5E5X3S93S2QDPE5DKB",
   "method": "PUT",
   "url": "https://private-bucket.s3.amazonaws.com/...",
   "expiresAt": "2026-07-04T00:15:00Z",
   "requiredHeaders": {
     "Content-Type": "application/x-ndjson+gzip",
     "x-amz-checksum-sha256": "base64-sha256-checksum"
-  },
-  "objectKey": "owners/own_01JZ8Q4AVGS9DZK3HR0N4W35W7/devices/dev_01JZ8Q4D2CC37N7R7HDQ8WFE6V/recordings/rec_01JZ8R0D1G8T4N0KZ8M0E7WQCY/points.ndjson.gz"
+  }
 }
 ```
+
+Notes:
+
+- `objectId` is the app-visible handle for upload completion, sync batch registration, restore manifests, and deletion requests.
+- The matching S3 `storageKey` is server-internal and must not be exposed to clients or logs.
 
 ## POST /v1/uploads/complete
 
@@ -141,7 +154,7 @@ Request:
   "deviceId": "dev_01JZ8Q4D2CC37N7R7HDQ8WFE6V",
   "recordingId": "rec_01JZ8R0D1G8T4N0KZ8M0E7WQCY",
   "syncBatchId": "batch_01JZ8R10V4A3C7KX5Y9P0P3T4T",
-  "objectKey": "owners/own_.../devices/dev_.../recordings/rec_.../points.ndjson.gz",
+  "objectId": "obj_01JZ8R1D5E5X3S93S2QDPE5DKB",
   "checksumSha256": "base64-sha256-checksum",
   "contentLength": 184321
 }
@@ -188,7 +201,7 @@ Request:
       "objects": [
         {
           "objectType": "routePoints",
-          "objectKey": "owners/own_.../devices/dev_.../recordings/rec_.../points.ndjson.gz",
+          "objectId": "obj_01JZ8R1D5E5X3S93S2QDPE5DKB",
           "checksumSha256": "base64-sha256-checksum",
           "contentLength": 184321
         }
@@ -244,6 +257,7 @@ Response:
       "distanceMeters": 4210.7,
       "objects": [
         {
+          "objectId": "obj_01JZ8R1D5E5X3S93S2QDPE5DKB",
           "objectType": "routePoints",
           "downloadUrl": "https://private-bucket.s3.amazonaws.com/...",
           "expiresAt": "2026-07-04T00:25:00Z",

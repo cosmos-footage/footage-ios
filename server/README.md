@@ -51,15 +51,14 @@ PostgreSQL stores metadata:
 - route point batch object metadata
 - media asset metadata
 
-S3 stores private objects:
+S3 stores private objects under random, server-generated storage keys:
 
 ```text
-owners/{ownerId}/devices/{deviceId}/recordings/{recordingId}/manifest.json
-owners/{ownerId}/devices/{deviceId}/recordings/{recordingId}/points.ndjson.gz
-owners/{ownerId}/devices/{deviceId}/recordings/{recordingId}/preview.png
-owners/{ownerId}/devices/{deviceId}/recordings/{recordingId}/photos/{assetId}.jpg
-owners/{ownerId}/backups/realm/{backupId}.realm.zip
+objects/7f/3a/{randomObjectName}
+objects/d2/91/{randomObjectName}
 ```
+
+The database, not the S3 path, defines ownership and relationships. Object metadata should include `objectId`, internal `storageKey`, `ownerId`, `deviceId`, `recordingId`, `syncBatchId`, `objectType`, `contentType`, `contentLength`, `checksumSha256`, upload status, and optional metadata JSON. API clients receive `objectId`; they never receive or choose `storageKey`.
 
 ## Security and Privacy
 
@@ -67,7 +66,7 @@ owners/{ownerId}/backups/realm/{backupId}.realm.zip
 - S3 objects must be encrypted at rest.
 - The app must never include AWS credentials.
 - Presigned URLs must be short-lived.
-- Server logs must not contain raw latitude/longitude, notes, photos, tokens, or presigned URLs.
+- Server logs must not contain raw latitude/longitude, notes, photos, tokens, presigned URLs, or internal storage keys.
 - API access must be owner/device scoped.
 - Cloud backup must be opt-in.
 - Cloud data deletion must delete metadata and object storage.

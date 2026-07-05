@@ -48,7 +48,7 @@ Do not log:
 - anonymous device tokens
 - provider identity tokens
 - presigned URLs
-- S3 object keys
+- S3 object identifiers and internal random storage keys
 
 Cloud/restore/auth scaffolds log operation status only.
 

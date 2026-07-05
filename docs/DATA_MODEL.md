@@ -170,7 +170,7 @@ recordingId: String?
 pointId: String?
 kind: String
 localFilePath: String?
-objectKey: String?
+objectId: String?
 contentType: String
 byteSize: Int
 checksumSha256: String?
@@ -198,7 +198,7 @@ schemaVersion: Int
 idempotencyKey: String
 status: String
 attemptCount: Int
-objectKey: String?
+objectId: String?
 checksumSha256: String?
 createdAt: Date
 updatedAt: Date
@@ -563,7 +563,7 @@ Backfill rules:
 Backup before migration:
 
 - Before any schema migration that touches route points/photos/notes, create a local export or Realm backup plan.
-- If cloud backup is already available, upload an encrypted/private Realm export under `owners/{ownerId}/backups/realm/{backupId}.realm.zip`.
+- If cloud backup is already available, upload an encrypted/private Realm export through a presigned URL and keep only the returned `objectId` on the client.
 
 Do not:
 

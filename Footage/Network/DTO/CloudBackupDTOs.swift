@@ -57,11 +57,11 @@ struct PresignUploadRequest: Codable, Equatable {
 
 struct PresignUploadResponse: Codable, Equatable {
     var uploadId: String
+    var objectId: String
     var method: String
     var url: URL
     var expiresAt: Date
     var requiredHeaders: [String: String]
-    var objectKey: String
 }
 
 struct UploadCompleteRequest: Codable, Equatable {
@@ -70,7 +70,7 @@ struct UploadCompleteRequest: Codable, Equatable {
     var deviceId: String
     var recordingId: String
     var syncBatchId: String
-    var objectKey: String
+    var objectId: String
     var checksumSha256: String?
     var contentLength: Int
 }
@@ -84,8 +84,8 @@ struct UploadCompleteResponse: Codable, Equatable {
 struct SyncBatchRequest: Codable, Equatable {
     struct Recording: Codable, Equatable {
         struct UploadedObject: Codable, Equatable {
+            var objectId: String
             var objectType: String
-            var objectKey: String
             var checksumSha256: String?
             var contentLength: Int
         }
@@ -118,6 +118,7 @@ struct SyncBatchResponse: Codable, Equatable {
 struct RestoreManifestResponse: Codable, Equatable {
     struct Recording: Codable, Equatable {
         struct DownloadObject: Codable, Equatable {
+            var objectId: String
             var objectType: String
             var downloadUrl: URL
             var expiresAt: Date

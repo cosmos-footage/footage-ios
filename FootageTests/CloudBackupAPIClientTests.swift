@@ -41,13 +41,13 @@ final class CloudBackupAPIClientTests: XCTestCase {
             let data = """
             {
               "uploadId": "upload_1",
+              "objectId": "obj_1",
               "method": "PUT",
               "url": "https://s3.example.test/object",
               "expiresAt": "2026-07-04T15:00:00Z",
               "requiredHeaders": {
                 "x-amz-server-side-encryption": "AES256"
-              },
-              "objectKey": "owners/own_1/devices/dev_1/recordings/rec_1/points.ndjson.gz"
+              }
             }
             """.data(using: .utf8)!
             return (response, data)
@@ -70,6 +70,7 @@ final class CloudBackupAPIClientTests: XCTestCase {
             switch result {
             case .success(let response):
                 XCTAssertEqual(response.uploadId, "upload_1")
+                XCTAssertEqual(response.objectId, "obj_1")
                 XCTAssertEqual(response.method, "PUT")
                 XCTAssertEqual(response.requiredHeaders["x-amz-server-side-encryption"], "AES256")
             case .failure(let error):

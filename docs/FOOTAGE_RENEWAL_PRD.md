@@ -237,15 +237,13 @@ S3 should store:
 - Realm/export backups during migration.
 - Manifest files.
 
-Suggested private object key format:
+Recommended private object storage policy:
 
 ```text
-owners/{ownerId}/devices/{deviceId}/recordings/{recordingId}/manifest.json
-owners/{ownerId}/devices/{deviceId}/recordings/{recordingId}/points.ndjson.gz
-owners/{ownerId}/devices/{deviceId}/recordings/{recordingId}/preview.png
-owners/{ownerId}/devices/{deviceId}/recordings/{recordingId}/photos/{assetId}.jpg
-owners/{ownerId}/backups/realm/{backupId}.realm.zip
+objects/{shardA}/{shardB}/{randomObjectName}
 ```
+
+The backend owns the relationship between data and files. It stores a random internal `storageKey` in the database and exposes only an app-safe `objectId` in API responses. DB metadata maps each object to owner/device/recording/sync batch/object type/checksum/content length.
 
 Security requirements:
 
@@ -253,7 +251,7 @@ Security requirements:
 - The app never includes AWS credentials.
 - Server issues short-lived presigned URLs.
 - Objects are encrypted at rest.
-- Access is owner/device scoped.
+- Access is owner/device scoped through database metadata, not through readable S3 paths.
 
 ## 12. Backend Requirements
 

@@ -14,7 +14,7 @@ Move Footage toward a production-grade, local-first architecture that can suppor
 - Do not rename Realm object classes or perform destructive Realm migrations.
 - Do not enable Cloud Backup, Restore, or Auth by default.
 - Do not add AWS credentials to the app.
-- Do not log raw latitude/longitude, notes, photos, bearer tokens, provider tokens, object keys, or presigned URLs.
+- Do not log raw latitude/longitude, notes, photos, bearer tokens, provider tokens, object identifiers, internal storage keys, or presigned URLs.
 
 ## Target Dependency Direction
 
