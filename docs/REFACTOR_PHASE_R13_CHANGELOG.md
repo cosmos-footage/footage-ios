@@ -39,6 +39,15 @@ sed -n '1,220p' Footage/Scene/Map/MapCollectionCell.swift
 sed -n '1,220p' Footage/Scene/Map/MapTableCell.swift
 sed -n '1,240p' Footage/Scene/Map/MapBottomVC.swift
 rg -n "String\(format: \"%\.2f\"|date / 10000|사진:|글:|MapFootstepPresentation" Footage/Scene/Map Footage/Presentation FootageTests
+sed -n '1,260p' Footage/Scene/Settings/Settings_GeneralVC.swift
+sed -n '1,280p' Footage/Scene/Settings/Settings_General_PushVC.swift
+sed -n '1,160p' Footage/Scene/Settings/Settings_AboutVC.swift
+rg -n "struct LocalBackupStatus|LocalBackupStatus|cloudBackupStatusText|showValue|버전정보" Footage FootageTests docs
+sed -n '1,320p' Footage/Presentation/PresentationModels.swift
+sed -n '1,360p' FootageTests/PresentationModelsTests.swift
+git diff -- Footage/Presentation/PresentationModels.swift Footage/Scene/Settings/Settings_GeneralVC.swift Footage/Scene/Settings/Settings_General_PushVC.swift Footage/Scene/Settings/Settings_AboutVC.swift FootageTests/PresentationModelsTests.swift
+git diff --check
+xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
 ```
 
 ## Results
@@ -49,6 +58,7 @@ rg -n "String\(format: \"%\.2f\"|date / 10000|사진:|글:|MapFootstepPresentati
 - A second `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding Home distance and Journey detail presentation models.
 - A third `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding Stats/Report presentation models.
 - A fourth `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding Map archive presentation models.
+- A fifth `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding Settings presentation models.
 
 ## Changed
 
@@ -68,6 +78,8 @@ rg -n "String\(format: \"%\.2f\"|date / 10000|사진:|글:|MapFootstepPresentati
 - Updated `StatsViewController`, `ColorVC`, `PlaceVC`, `Place_DetailVC`, `ReportVC`, and `ReportDetailVC` to use presentation models for formatting-only display state.
 - Added `MapFootstepPresentation` for map archive selected-footstep and nearby-table cell labels.
 - Updated `MapTableCell` and `SelectedView` in `MapBottomVC` to use `MapFootstepPresentation`.
+- Added `CloudBackupStatusPresentation`, `SettingsPushTimePresentation`, and `AppVersionPresentation`.
+- Updated `Settings_GeneralVC`, `Settings_General_PushVC`, and `Settings_AboutVC` to use presentation models for display-only string formatting.
 
 ## Safety Notes
 
@@ -77,10 +89,11 @@ rg -n "String\(format: \"%\.2f\"|date / 10000|사진:|글:|MapFootstepPresentati
 - Home keeps the same recording-today distance format (`%.2f`) and total-archive distance format (`%.f`).
 - Stats/Report/Color/Place screens keep the same distance formats, city image fallbacks, and report button alpha behavior.
 - Map archive keeps the same date, distance, category, photo count, and note count labels.
+- Settings keeps the same cloud backup status text, push time row text, zero-padded picker row titles, and version label text.
 - This is a read-only presentation extraction only; persistence and navigation behavior are unchanged.
 
 ## What Remains
 
-- Continue R13 by adding presentation models for settings, backup status, restore preview, and auth linking display states.
+- Continue R13 by adding presentation models for restore preview and auth linking display states.
 - Move remaining formatting and empty-state logic out of controllers in small tested slices.
 - Keep UIKit controllers responsible for outlets, gestures, layout, animation, map binding, and navigation until the replacement UI is planned separately.
