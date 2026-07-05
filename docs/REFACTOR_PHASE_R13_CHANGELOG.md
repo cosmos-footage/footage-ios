@@ -48,6 +48,14 @@ sed -n '1,360p' FootageTests/PresentationModelsTests.swift
 git diff -- Footage/Presentation/PresentationModels.swift Footage/Scene/Settings/Settings_GeneralVC.swift Footage/Scene/Settings/Settings_General_PushVC.swift Footage/Scene/Settings/Settings_AboutVC.swift FootageTests/PresentationModelsTests.swift
 git diff --check
 xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
+rg --files Footage | rg 'Restore|Auth|Backup|Settings|Presentation'
+sed -n '1,340p' Footage/Services/Restore/RestoreModels.swift
+sed -n '1,320p' Footage/Services/Auth/AuthModels.swift
+sed -n '1,320p' Footage/Services/Auth/Linking/AuthLinkingService.swift
+sed -n '1,340p' FootageTests/UseCasesTests.swift
+git diff -- Footage/Presentation/PresentationModels.swift FootageTests/PresentationModelsTests.swift
+git diff --check
+xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
 ```
 
 ## Results
@@ -59,6 +67,7 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - A third `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding Stats/Report presentation models.
 - A fourth `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding Map archive presentation models.
 - A fifth `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding Settings presentation models.
+- A sixth `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding Restore/Auth presentation models.
 
 ## Changed
 
@@ -80,6 +89,8 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Updated `MapTableCell` and `SelectedView` in `MapBottomVC` to use `MapFootstepPresentation`.
 - Added `CloudBackupStatusPresentation`, `SettingsPushTimePresentation`, and `AppVersionPresentation`.
 - Updated `Settings_GeneralVC`, `Settings_General_PushVC`, and `Settings_AboutVC` to use presentation models for display-only string formatting.
+- Added `RestoreStatusPresentation`, `RestoreImportPlanPresentation`, `AuthLinkStatePresentation`, and `AuthLinkingReadinessPresentation`.
+- Kept Restore/Auth presentation models disconnected from UI because Restore/Auth are still disabled scaffolds without production UX.
 
 ## Safety Notes
 
@@ -90,10 +101,11 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Stats/Report/Color/Place screens keep the same distance formats, city image fallbacks, and report button alpha behavior.
 - Map archive keeps the same date, distance, category, photo count, and note count labels.
 - Settings keeps the same cloud backup status text, push time row text, zero-padded picker row titles, and version label text.
+- Restore/Auth presentation models only expose read-only state text and action availability; no restore import, auth linking, network, or token behavior was enabled.
 - This is a read-only presentation extraction only; persistence and navigation behavior are unchanged.
 
 ## What Remains
 
-- Continue R13 by adding presentation models for restore preview and auth linking display states.
+- Continue R13 by reviewing remaining first-launch and level/badge display formatting, or move on to R14 once those are intentionally deferred.
 - Move remaining formatting and empty-state logic out of controllers in small tested slices.
 - Keep UIKit controllers responsible for outlets, gestures, layout, animation, map binding, and navigation until the replacement UI is planned separately.
