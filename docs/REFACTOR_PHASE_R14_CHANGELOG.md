@@ -29,24 +29,32 @@ find Footage -maxdepth 2 -type d | sort
 git diff -- Footage/Presentation/RenewedShellView.swift FootageTests/PresentationModelsTests.swift footage.xcodeproj/project.pbxproj Footage/App/FeatureFlags.swift FootageTests/UseCasesTests.swift
 git diff --check
 xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
+sed -n '1,180p' Footage/App/FeatureFlags.swift
+sed -n '1,220p' Footage/Presentation/RenewedShellView.swift
+tail -n 80 docs/REFACTOR_PHASE_R14_CHANGELOG.md
+tail -n 80 docs/MODERNIZATION_PLAN.md
+git diff -- Footage/App/FeatureFlags.swift Footage/Presentation/RenewedShellViewController.swift Footage/Presentation/RenewedShellView.swift FootageTests/UseCasesTests.swift footage.xcodeproj/project.pbxproj docs/REFACTOR_PHASE_R14_CHANGELOG.md docs/MODERNIZATION_PLAN.md
+git diff --check
+xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
 ```
 
 ## Results
 
 - `git diff --check` succeeded.
 - `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` succeeded.
-- A second `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding the SwiftUI shell scaffold.
+- A second `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding the initial SwiftUI shell scaffold.
+- A third `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after pivoting the shell scaffold to programmatic UIKit.
 
 ## Changed
 
 - Added `FeatureFlags.isNewUIRunwayEnabled`, defaulting to `false`.
 - Added `AppRootDestination`, `AppRootRoute`, and `AppRootRouter`.
-- Chose the R14 runway direction as a renewed SwiftUI shell, but only behind the disabled feature flag.
+- Initially added a SwiftUI shell scaffold, then pivoted the runway direction to programmatic UIKit based on product direction.
 - Added tests proving the legacy Storyboard route remains the default.
 - Added tests proving the renewed shell route can be selected behind the flag without skipping first-launch onboarding.
-- Added `RenewedShellView`, a minimal internal SwiftUI `TabView` shell.
+- Replaced `RenewedShellView` with `RenewedShellViewController`, a minimal internal programmatic UIKit `UITabBarController` shell.
 - Added `RenewedShellPresentation`, `RenewedShellTab`, and `RenewedShellTabKind`.
-- Added the new SwiftUI file to the app target in `footage.xcodeproj`.
+- Updated the app target membership in `footage.xcodeproj`.
 - Added tests for the default internal shell tabs.
 
 ## Safety Notes
@@ -54,7 +62,7 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - No SceneDelegate, Storyboard, root controller, widget, signing, entitlement, bundle identifier, asset, Realm schema, network, auth, restore, or backup runtime behavior was changed.
 - The renewed shell route is not wired into app launch yet.
 - First-launch users still route to the existing FirstLaunch Storyboard in the router.
-- The SwiftUI shell is compiled but not reachable from the production launch path.
+- The programmatic UIKit shell is compiled but not reachable from the production launch path.
 
 ## What Remains
 

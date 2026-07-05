@@ -113,9 +113,9 @@ Phase 2 completion notes:
 
 ## Current Sequence Adjustment
 
-The active renewal sequence now moves recording engine extraction before SwiftUI shell work. This keeps the highest-risk local-first route recording path testable before changing app navigation or screen structure. SwiftUI shell work is deferred until recording and sync boundaries are stable.
+The active renewal sequence now moves recording engine extraction before programmatic UIKit shell work. This keeps the highest-risk local-first route recording path testable before changing app navigation or screen structure. Storyboard replacement is deferred until recording and sync boundaries are stable.
 
-## Deferred UI Renewal: SwiftUI Renewal Shell
+## Deferred UI Renewal: Programmatic UIKit Renewal Shell
 
 Status: deferred.
 
@@ -123,10 +123,10 @@ Goal: introduce modern navigation without rewriting all existing screens.
 
 Tasks:
 
-- Create a SwiftUI shell or host controller that can present existing UIKit flows.
+- Create a programmatic UIKit shell that can eventually replace existing Storyboard navigation.
 - Proposed tabs: Today, Map, Timeline, Stats, Backup, Settings.
 - Keep existing Storyboards available during transition.
-- Wrap critical UIKit controllers with `UIViewControllerRepresentable` only when useful.
+- Host or port critical UIKit controllers behind explicit routing adapters during transition.
 - Add feature flags or compile-time isolation so the existing app remains shippable.
 
 Acceptance criteria:
@@ -503,7 +503,7 @@ Goal: prepare the actual UI rewrite without cutting over user data paths.
 
 Tasks:
 
-- Choose the rewrite surface deliberately: SwiftUI, programmatic UIKit, or hybrid. Do not mix choices per screen without a navigation plan.
+- Choose the rewrite surface deliberately: programmatic UIKit. Do not remove existing Storyboards until replacement paths and parity checks exist.
 - Add feature flags for new screen entry points, defaulting off.
 - Build new UI screens against use cases and presentation models, not Realm or manager singletons.
 - Introduce coordinators or routing adapters so old and new screens can coexist during parity checks.
@@ -511,15 +511,15 @@ Tasks:
 
 Phase R14 progress:
 
-- Selected a renewed SwiftUI shell as the runway direction, hosted behind UIKit where needed during transition.
+- Selected programmatic UIKit as the runway direction so Storyboards can eventually be removed after parity is proven.
 - Added `FeatureFlags.isNewUIRunwayEnabled`, defaulting to `false`.
 - Added pure routing scaffolding: `AppRootDestination`, `AppRootRoute`, and `AppRootRouter`.
 - Added tests proving existing users still default to the legacy `Main` Storyboard `TabBarController`.
 - Added tests proving first-launch users still route to the legacy `FirstLaunch` Storyboard even when the new UI flag is enabled.
 - The router is not wired into `SceneDelegate` yet, so current runtime behavior is unchanged.
-- Added `RenewedShellView`, a minimal internal SwiftUI `TabView` shell.
+- Initially added a SwiftUI shell scaffold, then replaced it with `RenewedShellViewController`, a minimal internal programmatic UIKit `UITabBarController` shell.
 - Added `RenewedShellPresentation`, `RenewedShellTab`, and `RenewedShellTabKind` for the future shell tab model.
-- Added the SwiftUI shell file to the app target without wiring it into launch.
+- Added the UIKit shell file to the app target without wiring it into launch.
 - Added tests for the internal shell tab definitions.
 
 Phase R14 current completion notes:
