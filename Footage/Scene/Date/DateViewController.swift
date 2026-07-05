@@ -103,15 +103,13 @@ extension DateViewController {
                     withReuseIdentifier: MapCell.reuseIdentifier,
                     for: indexPath) as? MapCell else { fatalError("Could not create new cell") }
             
-            cell.mapImage.image = UIImage(data: DateViewController.journeys[indexPath.row].preview)
-            let date = DateViewController.journeys[indexPath.row].date
-            
-            switch date {
-            case ...10000: cell.label.text = String(date) + "년"
-            case 10001...1000000: cell.label.text = String(date / 100) + "년 " + String(date % 100) + "월"
-            default:
-                cell.label.text =  String(date / 100 % 100) + "월 " + String(date % 100) + "일"
-            }
+            let journey = DateViewController.journeys[indexPath.row]
+            let item = JourneyTimelineItemPresentation(
+                legacyDateKey: journey.date,
+                previewData: journey.preview
+            )
+            cell.mapImage.image = UIImage(data: item.previewData)
+            cell.label.text = item.title
             
             return cell
         }
