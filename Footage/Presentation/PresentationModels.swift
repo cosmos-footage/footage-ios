@@ -326,3 +326,100 @@ struct AppVersionPresentation: Equatable {
         return "버전정보 " + "v" + String(hundred) + "." + String(ten) + "." + String(one)
     }
 }
+
+struct RestoreStatusPresentation: Equatable {
+    var status: RestoreStatus
+
+    var title: String {
+        switch status {
+        case .idle:
+            return "복원 대기"
+        case .fetchingManifest:
+            return "복원 목록 확인 중"
+        case .downloading:
+            return "복원 데이터 다운로드 중"
+        case .parsing:
+            return "복원 데이터 확인 중"
+        case .readyToImport:
+            return "복원 준비 완료"
+        case .importing:
+            return "복원 중"
+        case .completed:
+            return "복원 완료"
+        case .failed:
+            return "복원 실패"
+        }
+    }
+
+    var isInProgress: Bool {
+        switch status {
+        case .fetchingManifest, .downloading, .parsing, .importing:
+            return true
+        case .idle, .readyToImport, .completed, .failed:
+            return false
+        }
+    }
+}
+
+struct RestoreImportPlanPresentation: Equatable {
+    var plan: RestoreImportPlan
+
+    var recordingCountText: String {
+        "기록 \(plan.recordingCount)개"
+    }
+
+    var routePointCountText: String {
+        "경로점 \(plan.routePointCount)개"
+    }
+
+    var duplicateCandidateCountText: String {
+        "중복 후보 \(plan.duplicateCandidateCount)개"
+    }
+
+    var estimatedImportSizeText: String {
+        "예상 크기 \(plan.estimatedImportSizeBytes)B"
+    }
+
+    var canImport: Bool {
+        plan.canImport
+    }
+
+    var requiresUserConfirmation: Bool {
+        plan.requiresUserConfirmation
+    }
+}
+
+struct AuthLinkStatePresentation: Equatable {
+    var state: AuthLinkState
+
+    var title: String {
+        switch state {
+        case .anonymous:
+            return "익명 백업 사용 중"
+        case .linking:
+            return "계정 연결 중"
+        case .linked:
+            return "계정 연결 완료"
+        case .failed:
+            return "계정 연결 실패"
+        case .unavailable:
+            return "계정 연결 불가"
+        }
+    }
+}
+
+struct AuthLinkingReadinessPresentation: Equatable {
+    var snapshot: AuthLinkingReadinessSnapshot
+
+    var title: String {
+        AuthLinkStatePresentation(state: snapshot.authLinkState).title
+    }
+
+    var isActionEnabled: Bool {
+        snapshot.canStartLinking
+    }
+
+    var actionTitle: String? {
+        snapshot.canStartLinking ? "계정 연결" : nil
+    }
+}

@@ -200,4 +200,59 @@ final class PresentationModelsTests: XCTestCase {
             "버전정보 v1.2.2"
         )
     }
+
+    func testRestoreStatusPresentationMapsStatusTextAndProgressState() {
+        XCTAssertEqual(RestoreStatusPresentation(status: .idle).title, "복원 대기")
+        XCTAssertFalse(RestoreStatusPresentation(status: .idle).isInProgress)
+        XCTAssertEqual(RestoreStatusPresentation(status: .downloading).title, "복원 데이터 다운로드 중")
+        XCTAssertTrue(RestoreStatusPresentation(status: .downloading).isInProgress)
+        XCTAssertEqual(RestoreStatusPresentation(status: .failed).title, "복원 실패")
+        XCTAssertFalse(RestoreStatusPresentation(status: .failed).isInProgress)
+    }
+
+    func testRestoreImportPlanPresentationFormatsCountsAndGuards() {
+        let plan = RestoreImportPlan(
+            ownerId: OwnerID(rawValue: "own_1"),
+            sourceDeviceId: DeviceID(rawValue: "dev_1"),
+            recordingCount: 2,
+            routePointCount: 25,
+            duplicateCandidateCount: 3,
+            estimatedImportSizeBytes: 1024,
+            canImport: true,
+            requiresUserConfirmation: true,
+            conflictPolicy: .skipExisting
+        )
+        let presentation = RestoreImportPlanPresentation(plan: plan)
+
+        XCTAssertEqual(presentation.recordingCountText, "기록 2개")
+        XCTAssertEqual(presentation.routePointCountText, "경로점 25개")
+        XCTAssertEqual(presentation.duplicateCandidateCountText, "중복 후보 3개")
+        XCTAssertEqual(presentation.estimatedImportSizeText, "예상 크기 1024B")
+        XCTAssertTrue(presentation.canImport)
+        XCTAssertTrue(presentation.requiresUserConfirmation)
+    }
+
+    func testAuthLinkingReadinessPresentationUsesSnapshotGate() {
+        let readySnapshot = AuthLinkingReadinessSnapshot(
+            ownerId: OwnerID(rawValue: "own_1"),
+            authLinkState: .anonymous,
+            isAuthFeatureEnabled: true
+        )
+        let ready = AuthLinkingReadinessPresentation(snapshot: readySnapshot)
+
+        XCTAssertEqual(ready.title, "익명 백업 사용 중")
+        XCTAssertTrue(ready.isActionEnabled)
+        XCTAssertEqual(ready.actionTitle, "계정 연결")
+
+        let linkingSnapshot = AuthLinkingReadinessSnapshot(
+            ownerId: OwnerID(rawValue: "own_1"),
+            authLinkState: .linking,
+            isAuthFeatureEnabled: true
+        )
+        let linking = AuthLinkingReadinessPresentation(snapshot: linkingSnapshot)
+
+        XCTAssertEqual(linking.title, "계정 연결 중")
+        XCTAssertFalse(linking.isActionEnabled)
+        XCTAssertNil(linking.actionTitle)
+    }
 }
