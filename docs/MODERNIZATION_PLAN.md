@@ -412,6 +412,26 @@ Phase R10 completion notes:
 - `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` succeeded.
 - Next step is Phase R11: define use-case protocols and migrate the first read-only call path behind the new domain boundary.
 
+## Refactor Phase R11: Use Case Layer
+
+Status: completed for additive use-case scaffolding.
+
+Goal: make app behavior callable from the legacy UIKit shell now and the future rewritten UI later.
+
+Tasks:
+
+- Added use-case protocols and default implementations for home dashboard, date timeline, stats overview, backup preparation, restore preview, auth linking readiness, settings preferences, and recording lifecycle transitions.
+- Added `AppCompositionRoot` factories for the new use cases.
+- Added unit tests using fake repositories/services to verify use-case behavior without Storyboards or live Realm writes.
+- Kept existing ViewControllers on their current paths; no call-site migration was performed in this phase.
+- Kept Cloud Backup, Restore, and Auth behind existing disabled/default-off flags and opt-in settings.
+
+Phase R11 completion notes:
+
+- `xcodebuild -list -workspace footage.xcworkspace` succeeded after approved Xcode access.
+- `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` succeeded.
+- Next step is Phase R12: consolidate repository/service boundaries and reduce direct Realm/platform access behind adapters.
+
 ## First Phase 1 Codex Command
 
 Use this after selecting full Xcode on the machine:
