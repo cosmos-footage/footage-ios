@@ -98,6 +98,24 @@ rg -n "SceneAppRootInstallAction|appRootInstallAction|testSceneLifecycleCoordina
 git diff -- Footage/Presentation/SceneLifecycleSupport.swift FootageTests/UseCasesTests.swift
 git diff --check -- Footage/Presentation/SceneLifecycleSupport.swift FootageTests/UseCasesTests.swift
 xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
+git status --short
+sed -n '1,220p' Footage/Presentation/ProgrammaticRenewedShellFactory.swift
+sed -n '1,220p' Footage/Presentation/RenewedShellPresentation.swift
+sed -n '1,220p' Footage/Presentation/RenewedShellPlaceholderViewController.swift
+sed -n '1,560p' FootageTests/PresentationModelsTests.swift
+rg -n "struct .*UseCase|final class .*UseCase|protocol .*UseCase|HomeDashboard|StatsOverview|SettingsPreferences|CloudBackupStatus" Footage FootageTests
+sed -n '1,90p' Footage/Domain/UseCases.swift
+sed -n '1,220p' Footage/Presentation/PresentationModels.swift
+sed -n '100,210p' Footage/App/AppCompositionRoot.swift
+rg -n "ProgrammaticRenewedShellFactory.swift|RenewedShellPlaceholderViewController.swift|RenewedShellCoordinator.swift|AppRootViewControllerFactory.swift" footage.xcodeproj/project.pbxproj
+rg -n "RenewedTodayDashboardViewController|homeDashboardUseCase|testProgrammaticRenewedShellFactoryBuildsTodayDashboard|testRenewedTodayDashboardRendersHomeSnapshot" Footage FootageTests footage.xcodeproj/project.pbxproj
+git diff --check -- Footage/App/AppCompositionRoot.swift Footage/Presentation/ProgrammaticRenewedShellFactory.swift Footage/Presentation/RenewedTodayDashboardViewController.swift FootageTests/PresentationModelsTests.swift footage.xcodeproj/project.pbxproj
+git diff -- Footage/App/AppCompositionRoot.swift Footage/Presentation/ProgrammaticRenewedShellFactory.swift Footage/Presentation/RenewedTodayDashboardViewController.swift FootageTests/PresentationModelsTests.swift footage.xcodeproj/project.pbxproj
+xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
+rg -n "AppRootRouting.swift|RenewedTodayDashboardViewController.swift" footage.xcodeproj/project.pbxproj
+git diff --check -- Footage/App/AppCompositionRoot.swift Footage/Presentation/ProgrammaticRenewedShellFactory.swift Footage/Presentation/RenewedTodayDashboardViewController.swift FootageTests/PresentationModelsTests.swift footage.xcodeproj/project.pbxproj
+xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
+xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
 ```
 
 ## Results
@@ -150,6 +168,11 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - A twenty-eighth approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding composition-root factories for app root routing.
 - The Scene app-root install policy search confirmed `SceneAppRootInstallAction`, `SceneLifecycleCoordinator.appRootInstallAction(route:)`, and its test live in the expected files.
 - A twenty-ninth approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding the pure Scene app-root install policy.
+- The programmatic screen candidate inspection selected the disabled Today dashboard as the safest first screen-level UIKit slice because it can use `HomeDashboardUseCase` and `HomeDistancePresentation` without touching live recording, MapKit, Storyboards, or Realm models.
+- The first Today dashboard `xcodebuild test` failed because the new Xcode project file IDs collided with the existing `AppRootRouting.swift` references, making Xcode look for `Footage/Presentation/AppRootRouting.swift`.
+- A follow-up `rg` confirmed `AppRootRouting.swift` and `RenewedTodayDashboardViewController.swift` now use separate project file/build IDs.
+- The second Today dashboard `xcodebuild test` failed with `Missing return in instance method expected to return 'UIViewController'` in `ProgrammaticRenewedShellFactory.swift`; the placeholder fallback now returns the controller explicitly.
+- A thirtieth approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding the disabled programmatic Today dashboard screen.
 
 ## Changed
 
@@ -234,6 +257,11 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Added a test proving the composition root can create the app root routing boundaries without wiring them into `SceneDelegate`.
 - Added `SceneAppRootInstallAction` and `SceneLifecycleCoordinator.appRootInstallAction(route:)` to describe whether a planned route should keep the storyboard root or request a root replacement.
 - Added a test proving legacy routes keep the storyboard root while the disabled renewed UIKit shell route requests replacement.
+- Added `RenewedTodayDashboardViewController`, a read-only programmatic UIKit Today screen backed by `HomeDashboardSnapshot` and existing `HomeDistancePresentation` formatting.
+- Extended `ProgrammaticRenewedShellViewControllerFactory` so only the `.today` tab returns `RenewedTodayDashboardViewController` when a `HomeDashboardUseCase` provider is injected; all other tabs still fall back to placeholders.
+- Updated `AppCompositionRoot.makeAppRootViewControllerFactory(...)` so the disabled renewed shell can inject `makeHomeDashboardUseCase()` into the programmatic Today screen.
+- Added tests proving the programmatic factory returns the Today dashboard only when the use case provider exists and proving the Today dashboard renders a fake snapshot.
+- Updated `footage.xcodeproj` target membership for `RenewedTodayDashboardViewController.swift`.
 
 ## Safety Notes
 
@@ -268,6 +296,8 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Moving app root routing types changed source placement only; the default feature flags and launch behavior remain unchanged.
 - Adding composition-root factory methods changed only construction boundaries; `SceneDelegate` still uses the existing launch path.
 - Adding the Scene app-root install policy changed pure planning only; `SceneDelegate` does not consume it yet, so production launch still uses the existing storyboard root.
+- Adding the Today dashboard changed only the disabled renewed shell path; `SceneDelegate`, the legacy Home storyboard screen, recording controls, widget files, and launch configuration were not changed.
+- The Xcode project ID collision was corrected before commit; `AppRootRouting.swift` remains in the App group and `RenewedTodayDashboardViewController.swift` is the separate Presentation file.
 - `Info.plist`, Storyboards, widget target files, signing, entitlements, bundle identifiers, app group keys, Realm schema, backup, restore, and auth behavior were not changed.
 
 ## What Remains

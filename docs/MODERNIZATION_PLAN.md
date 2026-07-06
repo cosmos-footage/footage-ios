@@ -569,6 +569,8 @@ Phase R14 progress:
 - Added `AppRootRouting.swift` and moved root route types out of `FeatureFlags.swift` so feature-flag configuration and launch routing have separate homes.
 - Added composition-root factory methods for app root routing and root view-controller creation, still without wiring them into `SceneDelegate`.
 - Added a pure `SceneAppRootInstallAction` policy so Scene lifecycle code can later decide whether to keep the storyboard root or replace it with the disabled renewed UIKit shell root.
+- Added the first screen-level programmatic UIKit slice: a disabled Today dashboard screen backed by `HomeDashboardUseCase` / `HomeDistancePresentation`.
+- Wired the Today dashboard only through the disabled `ProgrammaticRenewedShellViewControllerFactory`; remaining renewed tabs still use placeholders and production launch still uses the existing storyboard root.
 
 Phase R14 current completion notes:
 
@@ -581,8 +583,10 @@ Phase R14 current completion notes:
 - The latest `xcodebuild test` succeeded after splitting `AppRootRouting.swift`.
 - The latest `xcodebuild test` succeeded after adding app root routing factories to `AppCompositionRoot`.
 - The latest `xcodebuild test` succeeded after adding the pure Scene app-root install policy.
+- Two intermediate Today-dashboard test runs failed and were fixed: first an Xcode project file ID collision with `AppRootRouting.swift`, then a missing `return` in `ProgrammaticRenewedShellFactory`.
+- The latest `xcodebuild test` succeeded after adding the disabled programmatic Today dashboard screen.
 - No Storyboard, asset, widget, Realm schema, network, auth, restore, signing, entitlement, bundle identifier, or root-controller runtime behavior was changed.
-- Next step is to add screen-level programmatic UIKit composition behind the disabled renewed shell, still keeping the default launch on `Main` until parity QA is complete.
+- Next step is to continue screen-level programmatic UIKit composition behind the disabled renewed shell, still keeping the default launch on `Main` until parity QA is complete.
 
 ## First Phase 1 Codex Command
 
