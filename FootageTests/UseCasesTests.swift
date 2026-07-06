@@ -182,6 +182,28 @@ final class UseCasesTests: XCTestCase {
         XCTAssertTrue(try XCTUnwrap(factory.makeRootViewController(for: .legacyFirstLaunch)) === firstLaunch)
     }
 
+    func testAppCompositionRootBuildsRenewedRootForEnabledRoute() throws {
+        let compositionRoot = AppCompositionRoot(
+            environment: AppEnvironment(
+                featureFlags: FeatureFlags(isNewUIRunwayEnabled: true)
+            )
+        )
+        let firstLaunch = UIViewController()
+        let factory = compositionRoot.makeAppRootViewControllerFactory(
+            legacyRootFactory: FakeLegacyRootViewControllerFactory(
+                mainTabs: nil,
+                firstLaunch: firstLaunch
+            )
+        )
+
+        let route = compositionRoot.makeAppRootRouter().route(userState: "noPassword")
+        let rootViewController = try XCTUnwrap(factory.makeRootViewController(for: route))
+
+        XCTAssertEqual(route, .renewedUIKitShell)
+        XCTAssertTrue(rootViewController is RenewedShellViewController)
+        XCTAssertFalse(rootViewController === firstLaunch)
+    }
+
     func testAppLaunchConfigurationStillUsesMainStoryboardDuringRenewedShellRunway() throws {
         let info = try XCTUnwrap(Bundle(for: AppDelegate.self).infoDictionary)
 
