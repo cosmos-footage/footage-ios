@@ -652,12 +652,12 @@ Current R15 notes:
 - Added `docs/REFACTOR_PHASE_R15_QA_EVIDENCE.md`.
 - Added a QA-only renewed root override through launch argument `--footage-enable-renewed-ui` or environment variable `FOOTAGE_ENABLE_RENEWED_UI=1`.
 - The QA override keeps cloud backup, restore, auth, and development upload disabled, and first-launch users still route to the existing FirstLaunch Storyboard.
-- The earlier iPhone 17 Pro iOS 26.5 simulator clean-install launch smoke was superseded by the bundle namespace renewal to `co.nyeok`; rerun launch smoke before using it for any cutover decision.
 - After the namespace renewal, workspace listing and Debug simulator build passed, and the rebuilt app/widget identifiers resolved to `co.nyeok.footage` and `co.nyeok.footage.MainWidget`.
-- The earlier QA override screenshot showed a black screen with only the status bar visible, so FirstLaunch visual parity, existing-user parity, physical-device background location, and widget QA are still not claimed.
+- After the namespace renewal, fresh-install simulator visual smoke passed with the renewed flag off and on; both delayed screenshots showed the existing FirstLaunch video screen with the footprint logo and `시작` button.
+- Existing-user parity, physical-device background location, and widget QA are still not claimed.
 - Manual QA is not yet passed or claimed.
 - No Storyboard, widget, Realm schema, signing, entitlement file, app group, Pod, or asset change was made to start R15. The bundle namespace was later renewed by explicit owner request.
 
 Next step:
 
-- Investigate the simulator black-screen observation, then run simulator and physical-device manual QA from `docs/RENEWED_ROOT_QA_PLAN.md` before any production-facing renewed-root cutover.
+- Run existing-user simulator QA, widget URL/app-group QA, and physical-device background location QA from `docs/RENEWED_ROOT_QA_PLAN.md` before any production-facing renewed-root cutover.

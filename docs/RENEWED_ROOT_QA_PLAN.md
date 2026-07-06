@@ -13,7 +13,8 @@ This plan defines the manual QA gate before the disabled renewed UIKit root can 
 
 - Do not enable the renewed root by default in this QA phase.
 - Do not remove Storyboards.
-- Do not change signing, entitlements, bundle identifiers, app group, widget files, Pods, or Realm schema.
+- Do not change signing, entitlements, app group, widget files, Pods, or Realm schema.
+- Bundle identifiers already use the explicit renewal namespace `co.nyeok`; do not change them again without a separate owner decision.
 - Do not start cloud backup, restore import, or auth linking from the renewed Settings detail screens.
 - Do not log raw latitude/longitude, auth tokens, presigned URLs, object keys, photos, or notes.
 

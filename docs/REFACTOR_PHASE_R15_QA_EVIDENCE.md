@@ -18,7 +18,8 @@ Production root status:
 - The default app launch must remain on the current UIKit/Storyboard shell.
 - The renewed UIKit root may be exercised only for QA/internal validation.
 - QA can enable the renewed root with launch argument `--footage-enable-renewed-ui` or environment variable `FOOTAGE_ENABLE_RENEWED_UI=1`.
-- Storyboards, widget files, Realm schema, signing, entitlements, bundle identifiers, app group keys, assets, Pods, and existing user data models must not be removed during this gate.
+- Storyboards, widget files, Realm schema, signing, entitlements, app group keys, assets, Pods, and existing user data models must not be removed during this gate.
+- Bundle identifiers now use the explicit renewal namespace `co.nyeok` after owner approval.
 
 ## QA-Only Renewed Root Override
 
@@ -72,7 +73,11 @@ Status after bundle namespace renewal:
 - The rebuilt app reported `CFBundleIdentifier` as `co.nyeok.footage`, and the embedded widget reported `co.nyeok.footage.MainWidget`.
 - Post-renewal clean install passed with `xcrun simctl install 95D8FB23-A840-44C9-851E-7CE54603720B build/NamespaceRenameDerivedData/Build/Products/Debug-iphonesimulator/footage.app`.
 - Post-renewal default launch passed with `xcrun simctl launch 95D8FB23-A840-44C9-851E-7CE54603720B co.nyeok.footage` and returned `co.nyeok.footage: 79974`.
-- FirstLaunch visual confirmation, existing-user Realm parity, physical-device QA, and widget QA remain unclaimed.
+- Post-renewal QA override launch passed after clean reinstall with `xcrun simctl launch 95D8FB23-A840-44C9-851E-7CE54603720B co.nyeok.footage --footage-enable-renewed-ui` and returned `co.nyeok.footage: 85577`.
+- Post-renewal QA override screenshot after 6 seconds showed the existing FirstLaunch video screen with the footprint logo and `시작` button.
+- Post-renewal default launch after another clean reinstall returned `co.nyeok.footage: 87429`.
+- Post-renewal default launch screenshot after 6 seconds showed the existing FirstLaunch video screen with the footprint logo and `시작` button.
+- Existing-user Realm parity, physical-device QA, and widget QA remain unclaimed.
 
 ## Manual QA Evidence Required
 
@@ -80,8 +85,8 @@ These checks require simulator interaction, physical-device interaction, seeded 
 
 | Area | Required Evidence | Result |
 | --- | --- | --- |
-| Fresh install with renewed flag off | Existing FirstLaunch storyboard opens. | Smoke only after bundle namespace renewal; simulator launch returned `co.nyeok.footage: 79974`, but visual FirstLaunch confirmation was not completed |
-| Fresh install with renewed flag on for QA | Existing FirstLaunch storyboard still opens. | Not run after bundle namespace renewal |
+| Fresh install with renewed flag off | Existing FirstLaunch storyboard opens. | Simulator visual smoke passed after bundle namespace renewal; clean install launch returned `co.nyeok.footage: 87429`, and delayed screenshot showed the existing FirstLaunch video screen with the footprint logo and `시작` button |
+| Fresh install with renewed flag on for QA | Existing FirstLaunch storyboard still opens. | Simulator visual smoke passed after bundle namespace renewal; clean install launch returned `co.nyeok.footage: 85577`, and delayed screenshot showed the existing FirstLaunch video screen with the footprint logo and `시작` button |
 | Existing user with renewed flag off | Existing Main storyboard root remains active and local data is visible. | Not run |
 | Existing user with renewed flag on for QA | Renewed UIKit shell opens without crash. | Not run |
 | Existing Realm data parity | Today, Timeline, Stats, Settings read the expected local data. | Not run |
