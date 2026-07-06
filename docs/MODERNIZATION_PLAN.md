@@ -571,6 +571,7 @@ Phase R14 progress:
 - Added a pure `SceneAppRootInstallAction` policy so Scene lifecycle code can later decide whether to keep the storyboard root or replace it with the disabled renewed UIKit shell root.
 - Added the first screen-level programmatic UIKit slice: a disabled Today dashboard screen backed by `HomeDashboardUseCase` / `HomeDistancePresentation`.
 - Wired the Today dashboard only through the disabled `ProgrammaticRenewedShellViewControllerFactory`; remaining renewed tabs still use placeholders and production launch still uses the existing storyboard root.
+- Added a disabled read-only Settings dashboard screen backed by `SettingsPreferencesUseCase` / `SettingsPreferencesPresentation`.
 
 Phase R14 current completion notes:
 
@@ -585,6 +586,7 @@ Phase R14 current completion notes:
 - The latest `xcodebuild test` succeeded after adding the pure Scene app-root install policy.
 - Two intermediate Today-dashboard test runs failed and were fixed: first an Xcode project file ID collision with `AppRootRouting.swift`, then a missing `return` in `ProgrammaticRenewedShellFactory`.
 - The latest `xcodebuild test` succeeded after adding the disabled programmatic Today dashboard screen.
+- The latest `xcodebuild test` succeeded after adding the disabled programmatic Settings dashboard screen.
 - No Storyboard, asset, widget, Realm schema, network, auth, restore, signing, entitlement, bundle identifier, or root-controller runtime behavior was changed.
 - Next step is to continue screen-level programmatic UIKit composition behind the disabled renewed shell, still keeping the default launch on `Main` until parity QA is complete.
 

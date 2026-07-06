@@ -116,6 +116,14 @@ rg -n "AppRootRouting.swift|RenewedTodayDashboardViewController.swift" footage.x
 git diff --check -- Footage/App/AppCompositionRoot.swift Footage/Presentation/ProgrammaticRenewedShellFactory.swift Footage/Presentation/RenewedTodayDashboardViewController.swift FootageTests/PresentationModelsTests.swift footage.xcodeproj/project.pbxproj
 xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
 xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
+sed -n '220,270p' Footage/Domain/UseCases.swift
+sed -n '260,330p' Footage/Presentation/PresentationModels.swift
+sed -n '90,130p' FootageTests/UseCasesTests.swift
+sed -n '1,140p' Footage/Presentation/ProgrammaticRenewedShellFactory.swift
+rg -n "RenewedSettingsDashboardViewController|SettingsPreferencesPresentation|settingsPreferencesUseCase" Footage FootageTests footage.xcodeproj/project.pbxproj
+git diff --check -- Footage/App/AppCompositionRoot.swift Footage/Presentation/ProgrammaticRenewedShellFactory.swift Footage/Presentation/PresentationModels.swift Footage/Presentation/RenewedSettingsDashboardViewController.swift FootageTests/PresentationModelsTests.swift footage.xcodeproj/project.pbxproj
+git status --short
+xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
 ```
 
 ## Results
@@ -173,6 +181,8 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - A follow-up `rg` confirmed `AppRootRouting.swift` and `RenewedTodayDashboardViewController.swift` now use separate project file/build IDs.
 - The second Today dashboard `xcodebuild test` failed with `Missing return in instance method expected to return 'UIViewController'` in `ProgrammaticRenewedShellFactory.swift`; the placeholder fallback now returns the controller explicitly.
 - A thirtieth approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding the disabled programmatic Today dashboard screen.
+- The Settings screen inspection confirmed `SettingsPreferencesUseCase` already provides a read-only preferences snapshot suitable for a disabled renewed-shell screen.
+- A thirty-first approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding the disabled programmatic Settings dashboard screen.
 
 ## Changed
 
@@ -262,6 +272,12 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Updated `AppCompositionRoot.makeAppRootViewControllerFactory(...)` so the disabled renewed shell can inject `makeHomeDashboardUseCase()` into the programmatic Today screen.
 - Added tests proving the programmatic factory returns the Today dashboard only when the use case provider exists and proving the Today dashboard renders a fake snapshot.
 - Updated `footage.xcodeproj` target membership for `RenewedTodayDashboardViewController.swift`.
+- Added `SettingsPreferencesPresentation` for read-only cloud backup, restore, and auth feature state text.
+- Added `RenewedSettingsDashboardViewController`, a read-only programmatic UIKit Settings screen backed by `SettingsPreferencesSnapshot`.
+- Extended `ProgrammaticRenewedShellViewControllerFactory` so the `.settings` tab returns `RenewedSettingsDashboardViewController` when a `SettingsPreferencesUseCase` provider is injected; tabs without providers still fall back to placeholders.
+- Updated `AppCompositionRoot.makeAppRootViewControllerFactory(...)` so the disabled renewed shell can inject `makeSettingsPreferencesUseCase()` into the programmatic Settings screen.
+- Added tests proving Settings presentation text, factory routing, and fake-snapshot rendering.
+- Updated `footage.xcodeproj` target membership for `RenewedSettingsDashboardViewController.swift`.
 
 ## Safety Notes
 
@@ -298,6 +314,7 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Adding the Scene app-root install policy changed pure planning only; `SceneDelegate` does not consume it yet, so production launch still uses the existing storyboard root.
 - Adding the Today dashboard changed only the disabled renewed shell path; `SceneDelegate`, the legacy Home storyboard screen, recording controls, widget files, and launch configuration were not changed.
 - The Xcode project ID collision was corrected before commit; `AppRootRouting.swift` remains in the App group and `RenewedTodayDashboardViewController.swift` is the separate Presentation file.
+- Adding the Settings dashboard changed only the disabled renewed shell path; legacy Settings storyboards, preference mutation flows, auth/password flows, and backup behavior were not changed.
 - `Info.plist`, Storyboards, widget target files, signing, entitlements, bundle identifiers, app group keys, Realm schema, backup, restore, and auth behavior were not changed.
 
 ## What Remains
