@@ -296,6 +296,20 @@ final class PresentationModelsTests: XCTestCase {
         XCTAssertEqual(placeholder?.title, "통계")
     }
 
+    func testProgrammaticRenewedShellFactoryUsesPlaceholderScreensForDefaultTabs() {
+        let factory = ProgrammaticRenewedShellViewControllerFactory()
+
+        let controllers = RenewedShellPresentation.default.tabs.map {
+            factory.makeViewController(for: $0)
+        }
+
+        XCTAssertEqual(controllers.count, RenewedShellPresentation.default.tabs.count)
+        XCTAssertEqual(
+            controllers.compactMap { ($0 as? RenewedShellPlaceholderViewController)?.shellTab },
+            RenewedShellPresentation.default.tabs
+        )
+    }
+
     func testLegacyRenewedShellStoryboardSceneProviderMapsExistingStoryboardTabs() {
         let provider = LegacyRenewedShellStoryboardSceneProvider()
 
