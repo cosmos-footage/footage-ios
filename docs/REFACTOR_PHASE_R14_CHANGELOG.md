@@ -70,6 +70,8 @@ git diff --check
 xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
 git diff --check
 xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
+git diff --check
+xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
 ```
 
 ## Results
@@ -92,6 +94,7 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - An eleventh `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after extracting initial connection planning.
 - A twelfth `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after extracting foreground full-screen presentation.
 - A thirteenth `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after extracting root replacement and widget timeline reload boundaries.
+- A fourteenth `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after extracting Home initial data loading and selected-color restore boundaries.
 
 ## Changed
 
@@ -136,6 +139,10 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Added `SceneWidgetTimelineReloading` and `WidgetKitSceneWidgetTimelineReloader` to isolate `WidgetCenter.shared.reloadAllTimelines()`.
 - Routed `SceneDelegate` first-launch root replacement and widget timeline reload calls through the new helpers.
 - Added tests for root replacement and a fake widget timeline reloader boundary.
+- Added `SceneHomeInitialDataLoading` and `LegacySceneHomeInitialDataLoader` for legacy Home startup data preparation.
+- Added `SceneSelectedColorStore` for legacy app-group `selectedColor` reads.
+- Routed `SceneDelegate.scene(_:willConnectTo:options:)` through the new Home initial-data and selected-color boundaries.
+- Added tests for selected-color app-group key reads and fake Home initial-data loader behavior.
 
 ## Safety Notes
 
@@ -154,10 +161,11 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - `SceneDelegate` still performs `DateManager.loadTodayData()`, total-distance loading, category restoration, and optional Home tracking start during initial connection.
 - `SceneDelegate` still requests the existing `PasswordVC` from the legacy storyboard root factory; the presenter only centralizes current modal setup.
 - `SceneDelegate` still replaces the root with the same `FirstLaunch` storyboard controller and reloads all widget timelines at the same lifecycle points.
+- `SceneDelegate` still applies the selected category to the existing `HomeViewController` and still prepares the same legacy Home data through `DateManager`.
 - `Info.plist`, Storyboards, widget target files, signing, entitlements, bundle identifiers, app group keys, Realm schema, backup, restore, and auth behavior were not changed.
 
 ## What Remains
 
-- Extract remaining `SceneDelegate` side effects in smaller passes, starting with Home initial data loading and category restore boundaries.
+- Extract remaining `SceneDelegate` side effects in smaller passes, starting with recording start/stop dispatch and scene lifecycle helper placement cleanup.
 - Add manual QA before enabling the renewed root route, with special attention to widget URL start/stop, password unlock, and Map -> Journey navigation.
 - Keep the default app launch on the existing UIKit/Storyboard shell until manual QA proves parity.
