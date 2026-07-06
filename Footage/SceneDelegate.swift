@@ -107,17 +107,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Called as the scene transitions from the foreground to the background.
         // Use this method to save data, release shared resources, and store enough scene-specific state information
         // to restore the scene back to its current state.
-        if HomeViewController.currentStartButtonImage == #imageLiteral(resourceName: "stopButton") {
-            let alwaysOn = UserDefaults.standard.bool(forKey: "alwaysOn")
-            if alwaysOn {
-                Timer.scheduledTimer(withTimeInterval: 2.5, repeats: true) { timer in
-                    self.alwaysOnTimer = timer
-                    HomeViewController.locationManager.requestLocation()
-                }
-            } else {
-                HomeViewController.locationManager.startUpdatingLocation()
-                
+        let backgroundAction = sceneLifecycleCoordinator.backgroundRecordingAction(
+            isRecording: HomeViewController.currentStartButtonImage == #imageLiteral(resourceName: "stopButton"),
+            alwaysOn: UserDefaults.standard.bool(forKey: "alwaysOn")
+        )
+        switch backgroundAction {
+        case .none:
+            break
+        case .scheduleAlwaysOnLocationRefresh:
+            Timer.scheduledTimer(withTimeInterval: 2.5, repeats: true) { timer in
+                self.alwaysOnTimer = timer
+                HomeViewController.locationManager.requestLocation()
             }
+        case .startUpdatingLocation:
+            HomeViewController.locationManager.startUpdatingLocation()
         }
         WidgetCenter.shared.reloadAllTimelines()
     }

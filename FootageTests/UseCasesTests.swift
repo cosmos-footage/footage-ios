@@ -196,6 +196,23 @@ final class UseCasesTests: XCTestCase {
         XCTAssertEqual(coordinator.widgetTrackingAction(wasTracking: true), .stop)
     }
 
+    func testSceneLifecycleCoordinatorPlansBackgroundRecordingAction() {
+        let coordinator = SceneLifecycleCoordinator()
+
+        XCTAssertEqual(
+            coordinator.backgroundRecordingAction(isRecording: false, alwaysOn: true),
+            .none
+        )
+        XCTAssertEqual(
+            coordinator.backgroundRecordingAction(isRecording: true, alwaysOn: true),
+            .scheduleAlwaysOnLocationRefresh
+        )
+        XCTAssertEqual(
+            coordinator.backgroundRecordingAction(isRecording: true, alwaysOn: false),
+            .startUpdatingLocation
+        )
+    }
+
     func testFirstLaunchDefaultsInitializerPreservesLegacyDefaultKeys() {
         let standardDefaults = makeIsolatedDefaults(name: "first-launch-standard")
         let widgetDefaults = makeIsolatedDefaults(name: "first-launch-widget")

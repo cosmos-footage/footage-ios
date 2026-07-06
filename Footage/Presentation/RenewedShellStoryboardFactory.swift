@@ -179,6 +179,12 @@ enum SceneWidgetTrackingAction: Equatable {
     case stop
 }
 
+enum SceneBackgroundRecordingAction: Equatable {
+    case none
+    case scheduleAlwaysOnLocationRefresh
+    case startUpdatingLocation
+}
+
 struct SceneLifecycleCoordinator: Equatable {
     func foregroundPlan(userState: String?, alwaysOn: Bool) -> SceneForegroundPlan {
         if userState == "hasPassword" || userState == "hasBioId" {
@@ -207,6 +213,12 @@ struct SceneLifecycleCoordinator: Equatable {
 
     func widgetTrackingAction(wasTracking: Bool) -> SceneWidgetTrackingAction {
         wasTracking ? .stop : .start
+    }
+
+    func backgroundRecordingAction(isRecording: Bool, alwaysOn: Bool) -> SceneBackgroundRecordingAction {
+        guard isRecording else { return .none }
+
+        return alwaysOn ? .scheduleAlwaysOnLocationRefresh : .startUpdatingLocation
     }
 }
 
