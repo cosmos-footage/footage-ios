@@ -192,6 +192,17 @@ sed -n '1,80p' Footage/App/AppRootRouting.swift
 git diff --check
 rg -n "testInitialLaunchParityMatrix" FootageTests/UseCasesTests.swift
 xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
+git status --short
+sed -n '1,180p' Footage/Presentation/RenewedSettingsDashboardViewController.swift
+sed -n '1,160p' Footage/Presentation/ProgrammaticRenewedShellFactory.swift
+sed -n '180,240p' Footage/App/AppCompositionRoot.swift
+rg -n "BackupPreparation|CloudBackupStatusPresentation|Fake.*Backup|backup" Footage FootageTests
+sed -n '120,170p' Footage/Domain/UseCases.swift
+sed -n '300,330p' Footage/Presentation/PresentationModels.swift
+sed -n '150,178p' Footage/Services/Sync/SyncOutboxModels.swift
+rg -n "RenewedBackupStatusViewController" Footage FootageTests footage.xcodeproj/project.pbxproj
+git diff --check
+xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
 ```
 
 ## Results
@@ -378,6 +389,10 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Added the repository task harness files and committed them before continuing R14 executor tasks.
 - Added a renewed-root smoke test proving `AppCompositionRoot` can build a `RenewedShellViewController` for an enabled existing-user route without returning the legacy first-launch controller.
 - Added an initial launch parity matrix test covering first-launch with flags off/on, existing-user default widget launch, existing-user renewed widget launch, and non-window-scene renewed launch.
+- Used a read-only sub-agent to confirm backup status use-case and fake patterns before adding the next screen slice.
+- Added `RenewedBackupStatusViewController`, a standalone programmatic UIKit screen that reads `BackupPreparationUseCase.status()` and renders pending/failed counts plus last prepared/error text.
+- Added a rendering test proving the backup status screen does not call `prepare(configuration:)`.
+- Added `RenewedBackupStatusViewController.swift` to the app target in `footage.xcodeproj`.
 
 ## Safety Notes
 
@@ -423,13 +438,16 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - The renewed root replacement path remains behind `FeatureFlags.isNewUIRunwayEnabled` and is not enabled by default.
 - The renewed-root smoke test changes tests only; no feature flag default, `SceneDelegate`, storyboard, or production route behavior was changed.
 - The initial launch parity matrix changes tests only; it does not enable the renewed UI flag, alter `SceneDelegate`, or change widget URL side effects.
+- The backup status screen is standalone and not wired into production navigation or the renewed shell tabs yet.
+- The backup status screen calls `status()` only; it does not call `prepare(...)`, upload data, change opt-in, start networking, auth, or restore work.
 - `Info.plist`, Storyboards, widget target files, signing, entitlements, bundle identifiers, app group keys, Realm schema, backup, restore, and auth behavior were not changed.
 - A sandboxed `xcodebuild test` run failed before test execution with CoreSimulator access errors and `xcodebuild: error: 'footage.xcworkspace' is not a workspace file.` The workspace directory and `contents.xcworkspacedata` were inspected and valid, then the same command succeeded with external Xcode/Simulator permissions.
 - One `xcodebuild test` run failed on `UseCasesTests.testAppCompositionRootBuildsRenewedRootForEnabledRouteWithoutLoadingViews()` because the test incorrectly assumed `RenewedShellViewController.isViewLoaded` would remain false after root construction. The assertion was narrowed to route/root identity and non-first-launch root identity, and the next `xcodebuild test` succeeded.
 - The latest `xcodebuild test` succeeded after adding `UseCasesTests.testInitialLaunchParityMatrixKeepsDefaultAndFirstLaunchRoutesSafe()`.
+- The latest `xcodebuild test` succeeded after adding `RenewedBackupStatusViewController`.
 
 ## What Remains
 
-- Select the next small screen-level UIKit rewrite slice with sub-agent assistance, then execute one bounded task at a time.
+- Decide whether the backup status screen should remain standalone or get a disabled renewed Settings navigation entry in a later bounded task.
 - Add manual QA before enabling the renewed root route, with special attention to widget URL start/stop, password unlock, and Map -> Journey navigation.
 - Keep the default app launch on the existing UIKit/Storyboard shell until manual QA proves parity.

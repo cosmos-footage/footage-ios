@@ -579,6 +579,7 @@ Phase R14 progress:
 - Added `SceneInitialLaunchPlan` so initial window-scene, widget URL, and app-root installation decisions are planned together before `SceneDelegate` performs side effects.
 - Added a renewed-root smoke test proving an enabled existing-user route can build a `RenewedShellViewController` root while first launch still remains covered by the legacy route tests.
 - Added an initial launch parity matrix covering first-launch, existing-user, widget URL, renewed-flag, and non-window-scene combinations without changing runtime feature flags.
+- Added a disabled, read-only `RenewedBackupStatusViewController` that renders local backup status through `BackupPreparationUseCase.status()` without preparing, uploading, or mutating backup state.
 
 Phase R14 current completion notes:
 
@@ -602,8 +603,9 @@ Phase R14 current completion notes:
 - The latest `xcodebuild test` succeeded after moving initial launch root/action planning into `SceneInitialLaunchPlan`.
 - One renewed-root smoke test run failed because the test incorrectly assumed the UIKit tab-bar root would remain view-unloaded after construction; the assertion was narrowed to route/root identity, and the next `xcodebuild test` succeeded.
 - The latest `xcodebuild test` succeeded after adding the initial launch parity matrix.
+- The latest `xcodebuild test` succeeded after adding the read-only backup status UIKit screen and app target membership.
 - No Storyboard, asset, widget, Realm schema, network, auth, restore, signing, entitlement, bundle identifier, or default root-controller behavior was changed.
-- Next step is to select the next small screen-level UIKit rewrite slice with sub-agent assistance before making more implementation changes.
+- Next step is to decide whether to keep the backup status screen standalone or introduce a disabled navigation entry from the renewed Settings dashboard.
 
 ## First Phase 1 Codex Command
 
