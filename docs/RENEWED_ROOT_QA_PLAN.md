@@ -8,6 +8,7 @@ This plan defines the manual QA gate before the disabled renewed UIKit root can 
 - Current production root: existing `Main.storyboard` tab bar root
 - Candidate root: `RenewedShellViewController` created through `AppCompositionRoot.makeAppRootViewControllerFactory`
 - Gate under review: `FeatureFlags.isNewUIRunwayEnabled`
+- Physical-device-only checks are deferred until final release-readiness. They remain required before production cutover, but they should not force speculative code splitting before a physical iPhone is available.
 
 ## Non-Goals
 

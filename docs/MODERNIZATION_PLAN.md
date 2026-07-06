@@ -658,9 +658,11 @@ Current R15 notes:
 - Widget URL simulator smoke reached the iOS URL-opening confirmation prompt, but in-app widget action after tapping `열기` remains manual because Computer Use permissions were unavailable.
 - Physical-device background location, full widget QA, and password foreground gate are still not claimed.
 - Existing Realm data parity is no longer a renewal gate because the app is being rebuilt as a clean service architecture rather than preserving legacy Realm display parity.
+- Physical-device-dependent paths are deferred to the final release-readiness gate; do not split widget URL handling, password foreground gating, or background location lifecycle only for abstraction before device QA.
+- Added `docs/REFACTOR_PHASE_R15_DEVICE_DEFERRED_PLAN.md` to define the device-deferred policy and the next simulator-safe UIKit cutover task.
 - Manual QA is not yet passed or claimed.
 - No Storyboard, widget, Realm schema, signing, entitlement file, app group, Pod, or asset change was made to start R15. The bundle namespace was later renewed by explicit owner request.
 
 Next step:
 
-- Run physical-device background location QA, password foreground-gate QA, and full widget URL/app-group QA from `docs/RENEWED_ROOT_QA_PLAN.md` before any production-facing renewed-root cutover.
+- Continue R15 with a simulator-safe, read-only programmatic UIKit replacement behind the renewed-root QA flag. Keep physical-device background location QA, password foreground-gate QA, and full widget URL/app-group QA deferred until final release-readiness.

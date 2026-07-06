@@ -20,6 +20,7 @@ Production root status:
 - QA can enable the renewed root with launch argument `--footage-enable-renewed-ui` or environment variable `FOOTAGE_ENABLE_RENEWED_UI=1`.
 - Storyboards, widget files, Realm schema, signing, entitlements, app group keys, assets, Pods, and existing user data models must not be removed during this gate.
 - Bundle identifiers now use the explicit renewal namespace `co.nyeok` after owner approval.
+- Physical-device-dependent behavior is deferred to final release-readiness; do not refactor widget URL handling, password foreground gating, or background location lifecycle only for abstraction before physical-device QA.
 
 ## QA-Only Renewed Root Override
 
@@ -132,6 +133,6 @@ Recommended sequence after this QA gate has evidence:
 
 ## Current Next Step
 
-Run simulator and physical-device manual QA from `docs/RENEWED_ROOT_QA_PLAN.md`, then update the manual evidence table with exact observations.
+Continue simulator-safe R15 work by hardening one read-only programmatic UIKit replacement behind the renewed-root QA flag. Keep physical-device background location, widget URL, and password foreground-gate checks as final release-readiness gates.
 
 Manual QA remains required before any R15 production-facing cutover.
