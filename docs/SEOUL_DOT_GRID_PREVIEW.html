@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Seoul Dot Grid Preview</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #111827;
+      --muted: #6b7280;
+      --line: #d1d5db;
+      --cell: #f9fafb;
+      --dot: #0a8fd8;
+      --paper: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #eef2f7;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+    }
+
+    main {
+      width: calc(100vw - 48px);
+      max-width: 1120px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 32px;
+      align-items: start;
+    }
+
+    .option {
+      padding: 24px;
+      background: var(--paper);
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      box-shadow: 0 18px 48px rgba(15, 23, 42, 0.08);
+    }
+
+    .header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.2;
+      letter-spacing: 0;
+      font-weight: 700;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+
+    .grid-image {
+      display: block;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+    }
+
+    @media (max-width: 760px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="option">
+      <div class="header">
+        <h1>Seoul 15x15</h1>
+        <div class="meta">badge/list scale</div>
+      </div>
+      <img class="grid-image" src="seoul-dot-grid-15.svg" alt="Seoul 15 by 15 dot grid">
+    </section>
+
+    <section class="option">
+      <div class="header">
+        <h1>Seoul 20x20</h1>
+        <div class="meta">primary scale</div>
+      </div>
+      <img class="grid-image" src="seoul-dot-grid-20.svg" alt="Seoul 20 by 20 dot grid">
+    </section>
+  </main>
+</body>
+</html>
