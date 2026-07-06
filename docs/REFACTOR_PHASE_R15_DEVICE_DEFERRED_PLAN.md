@@ -62,6 +62,7 @@ Current R15-S1 checkpoint:
 - Renewed Timeline now uses the same scroll-backed read-only layout pattern without changing the production Date Storyboard path.
 - Renewed Today dashboard now uses the same scroll-backed read-only layout pattern without changing the production Home Storyboard or recording flow.
 - Renewed Map canvas now uses safe-area containment and a minimal accessibility label without changing production route overlays, annotations, or location behavior.
+- `docs/REFACTOR_PHASE_R15_STORYBOARD_REMOVAL_MATRIX.md` now defines Storyboard retention/removal states and blocks deletion until replacement, routing, test, reference-audit, QA, and rollback evidence exists.
 
 Suggested first candidate:
 
