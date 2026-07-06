@@ -654,10 +654,12 @@ Current R15 notes:
 - The QA override keeps cloud backup, restore, auth, and development upload disabled, and first-launch users still route to the existing FirstLaunch Storyboard.
 - After the namespace renewal, workspace listing and Debug simulator build passed, and the rebuilt app/widget identifiers resolved to `co.nyeok.footage` and `co.nyeok.footage.MainWidget`.
 - After the namespace renewal, fresh-install simulator visual smoke passed with the renewed flag off and on; both delayed screenshots showed the existing FirstLaunch video screen with the footprint logo and `시작` button.
-- Existing-user parity, physical-device background location, and widget QA are still not claimed.
+- Existing-user simulator visual smoke passed with the renewed flag off and on; the default launch showed the existing Main storyboard Home tab, and the QA override launch showed the renewed UIKit shell Today tab.
+- Widget URL simulator smoke reached the iOS URL-opening confirmation prompt, but in-app widget action after tapping `열기` remains manual because Computer Use permissions were unavailable.
+- Physical-device background location, full widget QA, password foreground gate, and real existing Realm data parity are still not claimed.
 - Manual QA is not yet passed or claimed.
 - No Storyboard, widget, Realm schema, signing, entitlement file, app group, Pod, or asset change was made to start R15. The bundle namespace was later renewed by explicit owner request.
 
 Next step:
 
-- Run existing-user simulator QA, widget URL/app-group QA, and physical-device background location QA from `docs/RENEWED_ROOT_QA_PLAN.md` before any production-facing renewed-root cutover.
+- Run physical-device background location QA, password foreground-gate QA, full widget URL/app-group QA, and real existing Realm data parity from `docs/RENEWED_ROOT_QA_PLAN.md` before any production-facing renewed-root cutover.

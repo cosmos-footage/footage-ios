@@ -47,9 +47,9 @@ These commands can be run by the repository agent.
 
 | Check | Command | Latest Result | Evidence |
 | --- | --- | --- | --- |
-| Git working tree | `git status --short` | Passed with expected docs-only changes before commit | `M docs/MODERNIZATION_PLAN.md`, `?? docs/REFACTOR_PHASE_R15_QA_EVIDENCE.md` |
+| Git working tree | `git status --short` | Passed with expected docs-only changes before commit | `M docs/MODERNIZATION_PLAN.md`, `M docs/REFACTOR_PHASE_R15_QA_EVIDENCE.md` |
 | Workspace schemes | `xcodebuild -list -workspace footage.xcworkspace` | Passed | Schemes listed: `EFCountingLabel`, `footage`, `MainWidgetExtension`, `Pods-footage`, `Pods-MainWidgetExtension`, `Realm`, `Realm-realm_objc_privacy`, `RealmSwift`, `RealmSwift-realm_swift_privacy`, `WidgetColorSelection` |
-| Unit/integration tests | `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` | Passed | `** TEST SUCCEEDED **`; result bundle `/Users/nyeok/Library/Developer/Xcode/DerivedData/footage-fcfkhlxrlvchugggglstbjyxsmlr/Logs/Test/Test-footage-2026.07.06_16-55-00-+0900.xcresult` |
+| Unit/integration tests | `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` | Passed | `** TEST SUCCEEDED **`; result bundle `/Users/nyeok/Library/Developer/Xcode/DerivedData/footage-fcfkhlxrlvchugggglstbjyxsmlr/Logs/Test/Test-footage-2026.07.06_17-29-07-+0900.xcresult` |
 | Whitespace/diff check | `git diff --check` | Passed | No output |
 
 Do not mark a command as passed unless that exact command, or a documented destination substitution, actually ran.
@@ -77,6 +77,11 @@ Status after bundle namespace renewal:
 - Post-renewal QA override screenshot after 6 seconds showed the existing FirstLaunch video screen with the footprint logo and `시작` button.
 - Post-renewal default launch after another clean reinstall returned `co.nyeok.footage: 87429`.
 - Post-renewal default launch screenshot after 6 seconds showed the existing FirstLaunch video screen with the footprint logo and `시작` button.
+- Existing-user defaults were seeded with `UserState=noPassword`, `startedBefore=true`, and app-group `selectedColor=#EADE4Cff`.
+- Existing-user default launch passed with `xcrun simctl launch 95D8FB23-A840-44C9-851E-7CE54603720B co.nyeok.footage` and returned `co.nyeok.footage: 97536`; screenshot showed the existing Main storyboard Home tab.
+- Existing-user QA override launch passed with `xcrun simctl launch 95D8FB23-A840-44C9-851E-7CE54603720B co.nyeok.footage --footage-enable-renewed-ui` and returned `co.nyeok.footage: 98622`; screenshot showed the renewed UIKit shell Today tab.
+- Widget URL smoke reached the iOS URL-opening confirmation prompt with `xcrun simctl openurl 95D8FB23-A840-44C9-851E-7CE54603720B widget://toggle`.
+- Widget URL in-app action was not completed automatically because accepting the simulator confirmation prompt required Computer Use permissions that were not granted in this session.
 - Existing-user Realm parity, physical-device QA, and widget QA remain unclaimed.
 
 ## Manual QA Evidence Required
@@ -87,11 +92,11 @@ These checks require simulator interaction, physical-device interaction, seeded 
 | --- | --- | --- |
 | Fresh install with renewed flag off | Existing FirstLaunch storyboard opens. | Simulator visual smoke passed after bundle namespace renewal; clean install launch returned `co.nyeok.footage: 87429`, and delayed screenshot showed the existing FirstLaunch video screen with the footprint logo and `시작` button |
 | Fresh install with renewed flag on for QA | Existing FirstLaunch storyboard still opens. | Simulator visual smoke passed after bundle namespace renewal; clean install launch returned `co.nyeok.footage: 85577`, and delayed screenshot showed the existing FirstLaunch video screen with the footprint logo and `시작` button |
-| Existing user with renewed flag off | Existing Main storyboard root remains active and local data is visible. | Not run |
-| Existing user with renewed flag on for QA | Renewed UIKit shell opens without crash. | Not run |
+| Existing user with renewed flag off | Existing Main storyboard root remains active and local data is visible. | Simulator seeded-user visual smoke passed; launch returned `co.nyeok.footage: 97536`, and screenshot showed the existing Main storyboard Home tab |
+| Existing user with renewed flag on for QA | Renewed UIKit shell opens without crash. | Simulator seeded-user visual smoke passed; launch returned `co.nyeok.footage: 98622`, and screenshot showed the renewed UIKit shell Today tab |
 | Existing Realm data parity | Today, Timeline, Stats, Settings read the expected local data. | Not run |
-| Widget URL start/stop | Widget start/stop URLs preserve current recording intent path. | Not run |
-| App group compatibility | `isTracking`, `distanceToday`, `distanceTotal`, and `selectedColor` remain compatible. | Not run |
+| Widget URL start/stop | Widget start/stop URLs preserve current recording intent path. | Partial simulator smoke only; `widget://toggle` reached the iOS open confirmation prompt, but in-app action after tapping `열기` was not completed automatically |
+| App group compatibility | `isTracking`, `distanceToday`, `distanceTotal`, and `selectedColor` remain compatible. | Partial simulator smoke only; `selectedColor=#EADE4Cff` was seeded/read for launch, but full widget state compatibility remains manual QA |
 | Background location | Recording/background/relaunch behavior passes on a physical iPhone. | Not run |
 | Password foreground gate | Password gate behavior remains unchanged. | Not run |
 | First launch completion | Onboarding completion still lands in the expected app path. | Not run |
