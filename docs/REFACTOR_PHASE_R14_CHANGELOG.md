@@ -140,6 +140,10 @@ rg -n "RenewedTimelineViewController|RenewedTimelineItemPresentation|timelineJou
 git diff --check -- Footage/App/AppCompositionRoot.swift Footage/Presentation/ProgrammaticRenewedShellFactory.swift Footage/Presentation/PresentationModels.swift Footage/Presentation/RenewedTimelineViewController.swift FootageTests/PresentationModelsTests.swift footage.xcodeproj/project.pbxproj
 git status --short
 xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
+rg -n "RenewedMapViewController|mapViewController" Footage FootageTests footage.xcodeproj/project.pbxproj
+git diff --check -- Footage/App/AppCompositionRoot.swift Footage/Presentation/ProgrammaticRenewedShellFactory.swift Footage/Presentation/RenewedMapViewController.swift FootageTests/PresentationModelsTests.swift footage.xcodeproj/project.pbxproj
+git status --short
+xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
 ```
 
 ## Results
@@ -203,6 +207,8 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - A thirty-second approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding the disabled programmatic Stats overview screen.
 - The Timeline inspection confirmed `DateTimelineUseCase` can provide `JourneyEntity` values without touching the legacy collection view, image preview cells, or storyboard navigation.
 - A thirty-third approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding the disabled programmatic Timeline screen.
+- The Map inspection kept the first slice to a programmatic `MKMapView` canvas only, without route overlays, user-location permission prompts, annotation selection, or legacy map-bottom coupling.
+- A thirty-fourth approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding the disabled programmatic Map canvas screen.
 
 ## Changed
 
@@ -310,6 +316,11 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Updated `AppCompositionRoot.makeAppRootViewControllerFactory(...)` so the disabled renewed shell can inject `makeDateTimelineUseCase().loadTimeline(range: .day)`.
 - Added tests proving Timeline item presentation, factory routing, and fake-journey rendering.
 - Updated `footage.xcodeproj` target membership for `RenewedTimelineViewController.swift`.
+- Added `RenewedMapViewController`, a programmatic UIKit Map screen with a full-view `MKMapView` canvas.
+- Extended `ProgrammaticRenewedShellViewControllerFactory` so the `.map` tab returns a programmatic map controller when a map provider is injected.
+- Updated `AppCompositionRoot.makeAppRootViewControllerFactory(...)` so the disabled renewed shell can inject `RenewedMapViewController()`.
+- Added tests proving Map factory routing and programmatic `MKMapView` layout.
+- Updated `footage.xcodeproj` target membership for `RenewedMapViewController.swift`.
 
 ## Safety Notes
 
@@ -349,6 +360,7 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Adding the Settings dashboard changed only the disabled renewed shell path; legacy Settings storyboards, preference mutation flows, auth/password flows, and backup behavior were not changed.
 - Adding the Stats overview changed only the disabled renewed shell path; legacy Stats storyboards, ranking detail navigation, Realm schema, and existing Stats runtime behavior were not changed.
 - Adding the Timeline screen changed only the disabled renewed shell path; legacy Date storyboard, preview image collection view, journey navigation, and current archive runtime behavior were not changed.
+- Adding the Map canvas changed only the disabled renewed shell path; legacy Map storyboard, live route rendering, annotations, map bottom sheet, and location behavior were not changed.
 - `Info.plist`, Storyboards, widget target files, signing, entitlements, bundle identifiers, app group keys, Realm schema, backup, restore, and auth behavior were not changed.
 
 ## What Remains
