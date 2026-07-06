@@ -1,0 +1,113 @@
+//
+//  LegacyStoryboardBridge.swift
+//  footage
+//
+//  Created by Codex on 2026/07/06.
+//
+
+import UIKit
+
+struct StoryboardSceneDescriptor: Equatable, Hashable {
+    var storyboardName: String
+    var viewControllerIdentifier: String
+
+    static let legacyMainTabs = StoryboardSceneDescriptor(
+        storyboardName: "Main",
+        viewControllerIdentifier: "TabBarController"
+    )
+
+    static let legacyFirstLaunch = StoryboardSceneDescriptor(
+        storyboardName: "FirstLaunch",
+        viewControllerIdentifier: "FL_VideoVC"
+    )
+
+    static let legacyPasswordUnlock = StoryboardSceneDescriptor(
+        storyboardName: "Main",
+        viewControllerIdentifier: "PasswordVC"
+    )
+}
+
+protocol RenewedShellStoryboardSceneProviding {
+    func sceneDescriptor(for tab: RenewedShellTab) -> StoryboardSceneDescriptor?
+}
+
+struct LegacyRenewedShellStoryboardSceneProvider: RenewedShellStoryboardSceneProviding {
+    func sceneDescriptor(for tab: RenewedShellTab) -> StoryboardSceneDescriptor? {
+        switch tab.kind {
+        case .today:
+            return StoryboardSceneDescriptor(
+                storyboardName: "Home",
+                viewControllerIdentifier: "HomeViewController"
+            )
+        case .timeline:
+            return StoryboardSceneDescriptor(
+                storyboardName: "Date",
+                viewControllerIdentifier: "DateViewController"
+            )
+        case .stats:
+            return StoryboardSceneDescriptor(
+                storyboardName: "Stats",
+                viewControllerIdentifier: "StatsViewController"
+            )
+        case .settings:
+            return StoryboardSceneDescriptor(
+                storyboardName: "Settings",
+                viewControllerIdentifier: "SettingsViewController"
+            )
+        case .map:
+            return nil
+        }
+    }
+}
+
+protocol StoryboardSceneInstantiating {
+    func instantiate(_ descriptor: StoryboardSceneDescriptor) -> UIViewController
+}
+
+struct UIKitStoryboardSceneInstantiator: StoryboardSceneInstantiating {
+    func instantiate(_ descriptor: StoryboardSceneDescriptor) -> UIViewController {
+        UIStoryboard(name: descriptor.storyboardName, bundle: nil)
+            .instantiateViewController(withIdentifier: descriptor.viewControllerIdentifier)
+    }
+}
+
+protocol RenewedShellDirectViewControllerProviding {
+    func makeViewController(for tab: RenewedShellTab) -> UIViewController?
+}
+
+struct LegacyRenewedShellDirectViewControllerProvider: RenewedShellDirectViewControllerProviding {
+    func makeViewController(for tab: RenewedShellTab) -> UIViewController? {
+        switch tab.kind {
+        case .map:
+            return MapViewController()
+        case .today, .timeline, .stats, .settings:
+            return nil
+        }
+    }
+}
+
+protocol LegacyRootViewControllerFactory {
+    func makeMainTabs() -> UITabBarController?
+    func makeFirstLaunch() -> UIViewController
+    func makePasswordUnlock() -> PasswordVC?
+}
+
+struct StoryboardLegacyRootViewControllerFactory: LegacyRootViewControllerFactory {
+    private let storyboardInstantiator: any StoryboardSceneInstantiating
+
+    init(storyboardInstantiator: any StoryboardSceneInstantiating = UIKitStoryboardSceneInstantiator()) {
+        self.storyboardInstantiator = storyboardInstantiator
+    }
+
+    func makeMainTabs() -> UITabBarController? {
+        storyboardInstantiator.instantiate(.legacyMainTabs) as? UITabBarController
+    }
+
+    func makeFirstLaunch() -> UIViewController {
+        storyboardInstantiator.instantiate(.legacyFirstLaunch)
+    }
+
+    func makePasswordUnlock() -> PasswordVC? {
+        storyboardInstantiator.instantiate(.legacyPasswordUnlock) as? PasswordVC
+    }
+}
