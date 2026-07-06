@@ -665,6 +665,7 @@ Current R15 notes:
 - Hardened the renewed read-only Stats overview with a scroll-backed programmatic UIKit layout while leaving the existing Stats Storyboard path available for rollback.
 - Hardened the renewed read-only Timeline screen with a scroll-backed programmatic UIKit layout while leaving the existing Date Storyboard path available for rollback.
 - Hardened the renewed read-only Today dashboard with a scroll-backed programmatic UIKit layout while leaving the existing Home Storyboard and recording flow untouched.
+- Hardened the renewed Map canvas containment against the safe area and added a minimal accessibility label without changing route overlays, annotations, location, or production map behavior.
 - Manual QA is not yet passed or claimed.
 - No Storyboard, widget, Realm schema, signing, entitlement file, app group, Pod, or asset change was made to start R15. The bundle namespace was later renewed by explicit owner request.
 

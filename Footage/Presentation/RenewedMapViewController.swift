@@ -29,13 +29,14 @@ final class RenewedMapViewController: UIViewController {
     private func configureMapView() {
         mapView.translatesAutoresizingMaskIntoConstraints = false
         mapView.pointOfInterestFilter = .includingAll
+        mapView.accessibilityLabel = "지도"
         view.addSubview(mapView)
 
         NSLayoutConstraint.activate([
             mapView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             mapView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            mapView.topAnchor.constraint(equalTo: view.topAnchor),
-            mapView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            mapView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            mapView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
     }
 }

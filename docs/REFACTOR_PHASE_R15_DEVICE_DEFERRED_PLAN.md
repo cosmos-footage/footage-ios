@@ -61,6 +61,7 @@ Current R15-S1 checkpoint:
 - Renewed Stats overview now uses the same scroll-backed read-only layout pattern without changing the production Stats Storyboard path.
 - Renewed Timeline now uses the same scroll-backed read-only layout pattern without changing the production Date Storyboard path.
 - Renewed Today dashboard now uses the same scroll-backed read-only layout pattern without changing the production Home Storyboard or recording flow.
+- Renewed Map canvas now uses safe-area containment and a minimal accessibility label without changing production route overlays, annotations, or location behavior.
 
 Suggested first candidate:
 
