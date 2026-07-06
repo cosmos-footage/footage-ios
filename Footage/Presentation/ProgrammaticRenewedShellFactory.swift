@@ -14,6 +14,7 @@ struct ProgrammaticRenewedShellViewControllerFactory: RenewedShellViewController
     private let statsOverview: (() -> StatsOverviewSnapshot)?
     private let timelineJourneys: (() -> [JourneyEntity])?
     private let settingsPreferencesUseCase: (() -> SettingsPreferencesUseCase)?
+    private let backupPreparationUseCase: (() -> BackupPreparationUseCase)?
 
     init(
         placeholderFactory: any RenewedShellViewControllerFactory = PlaceholderRenewedShellViewControllerFactory(),
@@ -21,7 +22,8 @@ struct ProgrammaticRenewedShellViewControllerFactory: RenewedShellViewController
         mapViewController: (() -> UIViewController)? = nil,
         statsOverview: (() -> StatsOverviewSnapshot)? = nil,
         timelineJourneys: (() -> [JourneyEntity])? = nil,
-        settingsPreferencesUseCase: (() -> SettingsPreferencesUseCase)? = nil
+        settingsPreferencesUseCase: (() -> SettingsPreferencesUseCase)? = nil,
+        backupPreparationUseCase: (() -> BackupPreparationUseCase)? = nil
     ) {
         self.placeholderFactory = placeholderFactory
         self.homeDashboardUseCase = homeDashboardUseCase
@@ -29,6 +31,7 @@ struct ProgrammaticRenewedShellViewControllerFactory: RenewedShellViewController
         self.statsOverview = statsOverview
         self.timelineJourneys = timelineJourneys
         self.settingsPreferencesUseCase = settingsPreferencesUseCase
+        self.backupPreparationUseCase = backupPreparationUseCase
     }
 
     func makeViewController(for tab: RenewedShellTab) -> UIViewController {
@@ -51,9 +54,16 @@ struct ProgrammaticRenewedShellViewControllerFactory: RenewedShellViewController
         }
 
         if tab.kind == .settings, let settingsPreferencesUseCase = settingsPreferencesUseCase {
-            return RenewedSettingsDashboardViewController {
-                settingsPreferencesUseCase().loadPreferences()
-            }
+            return RenewedSettingsDashboardViewController(
+                loadSnapshot: {
+                    settingsPreferencesUseCase().loadPreferences()
+                },
+                makeBackupStatusViewController: backupPreparationUseCase.map { backupPreparationUseCase in
+                    {
+                        RenewedBackupStatusViewController(backupPreparationUseCase: backupPreparationUseCase())
+                    }
+                }
+            )
         }
 
         return placeholderFactory.makeViewController(for: tab)

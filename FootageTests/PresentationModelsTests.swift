@@ -425,6 +425,48 @@ final class PresentationModelsTests: XCTestCase {
         XCTAssertTrue(today is RenewedShellPlaceholderViewController)
     }
 
+    func testProgrammaticRenewedShellFactoryConnectsSettingsBackupStatusWhenUseCaseExists() {
+        let backupUseCase = FakeBackupPreparationUseCase(
+            status: LocalBackupStatus(
+                pendingCount: 1,
+                failedCount: 0,
+                lastPreparedAt: nil,
+                lastError: nil
+            )
+        )
+        let factory = ProgrammaticRenewedShellViewControllerFactory(
+            settingsPreferencesUseCase: {
+                FakeSettingsPreferencesUseCase(
+                    snapshot: SettingsPreferencesSnapshot(
+                        isCloudBackupOptedIn: false,
+                        featureFlags: FeatureFlags(
+                            isCloudBackupEnabled: true,
+                            isRestoreEnabled: false,
+                            isAuthEnabled: false,
+                            isDevelopmentUploadEnabled: false,
+                            isNewUIRunwayEnabled: true
+                        )
+                    )
+                )
+            },
+            backupPreparationUseCase: {
+                backupUseCase
+            }
+        )
+
+        let settings = factory.makeViewController(
+            for: RenewedShellTab(kind: .settings, title: "설정", systemImageName: "gearshape")
+        )
+        let navigationController = UINavigationController(rootViewController: settings)
+        navigationController.loadViewIfNeeded()
+        settings.loadViewIfNeeded()
+
+        settings.view.button(titled: "백업 상태")?.sendActions(for: .touchUpInside)
+
+        XCTAssertTrue(navigationController.topViewController is RenewedBackupStatusViewController)
+        XCTAssertFalse(backupUseCase.didPrepare)
+    }
+
     func testProgrammaticRenewedShellFactoryBuildsStatsOverviewWhenSnapshotExists() {
         let factory = ProgrammaticRenewedShellViewControllerFactory(
             statsOverview: {
@@ -541,6 +583,37 @@ final class PresentationModelsTests: XCTestCase {
         XCTAssertTrue(texts.contains("백업 기능 준비됨"))
         XCTAssertTrue(texts.contains("복원 기능 비활성"))
         XCTAssertTrue(texts.contains("계정 연결 비활성"))
+    }
+
+    func testRenewedSettingsDashboardShowsBackupStatusEntryWhenFactoryExists() {
+        let controller = RenewedSettingsDashboardViewController(
+            loadSnapshot: {
+                SettingsPreferencesSnapshot(
+                    isCloudBackupOptedIn: true,
+                    featureFlags: FeatureFlags(
+                        isCloudBackupEnabled: true,
+                        isRestoreEnabled: false,
+                        isAuthEnabled: false,
+                        isDevelopmentUploadEnabled: false,
+                        isNewUIRunwayEnabled: true
+                    )
+                )
+            },
+            makeBackupStatusViewController: {
+                RenewedBackupStatusViewController {
+                    LocalBackupStatus(
+                        pendingCount: 0,
+                        failedCount: 0,
+                        lastPreparedAt: nil,
+                        lastError: nil
+                    )
+                }
+            }
+        )
+
+        controller.loadViewIfNeeded()
+
+        XCTAssertTrue(controller.view.buttonTitles().contains("백업 상태"))
     }
 
     func testRenewedBackupStatusRendersReadOnlyStatusWithoutPreparingBackup() {
@@ -847,5 +920,20 @@ private extension UIView {
         return subviews.reduce(ownText) { partialResult, subview in
             partialResult + subview.labelTexts()
         }
+    }
+
+    func buttonTitles() -> [String] {
+        let ownTitle = (self as? UIButton)?.title(for: .normal).map { [$0] } ?? []
+        return subviews.reduce(ownTitle) { partialResult, subview in
+            partialResult + subview.buttonTitles()
+        }
+    }
+
+    func button(titled title: String) -> UIButton? {
+        if let button = self as? UIButton, button.title(for: .normal) == title {
+            return button
+        }
+
+        return subviews.compactMap { $0.button(titled: title) }.first
     }
 }

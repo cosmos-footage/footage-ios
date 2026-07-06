@@ -222,6 +222,9 @@ struct AppCompositionRoot {
                         },
                         settingsPreferencesUseCase: {
                             self.makeSettingsPreferencesUseCase()
+                        },
+                        backupPreparationUseCase: {
+                            self.makeBackupPreparationUseCase()
                         }
                     )
                 ).makeRootViewController()
