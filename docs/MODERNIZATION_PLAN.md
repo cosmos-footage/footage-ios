@@ -533,13 +533,15 @@ Phase R14 progress:
 - Added tests for first-tab selection and nil behavior without directly constructing `HomeViewController`.
 - Added `SceneBackgroundRecordingAction` and routed `SceneDelegate` background recording / always-on decisions through `SceneLifecycleCoordinator`.
 - Added tests for background non-recording, always-on refresh, and direct location-update actions.
+- Added `SceneInitialConnectionPlan` and routed `SceneDelegate` initial connection window-scene / widget-start decisions through `SceneLifecycleCoordinator`.
+- Added tests for non-window scene, widget URL, and non-widget URL initial connection plans.
 
 Phase R14 current completion notes:
 
 - `git diff --check` succeeded.
 - `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` succeeded.
 - No Storyboard, asset, widget, Realm schema, network, auth, restore, signing, entitlement, bundle identifier, or root-controller runtime behavior was changed.
-- Next step is to extract remaining `SceneDelegate` side effects, starting with initial connect setup and foreground password presentation, still keeping the default launch on `Main` until parity QA is complete.
+- Next step is to extract remaining `SceneDelegate` side effects, starting with foreground password presentation, still keeping the default launch on `Main` until parity QA is complete.
 
 ## First Phase 1 Codex Command
 

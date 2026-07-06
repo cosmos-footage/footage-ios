@@ -64,6 +64,8 @@ git diff --check
 xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
 git diff --check
 xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
+git diff --check
+xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
 ```
 
 ## Results
@@ -83,6 +85,7 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - `xcrun xcresulttool get object --legacy --path /Users/nyeok/Library/Developer/Xcode/DerivedData/footage-fcfkhlxrlvchugggglstbjyxsmlr/Logs/Test/Test-footage-2026.07.06_11-21-16-+0900.xcresult --format json` confirmed `Crash: footage at UseCasesTests.testLegacyHomeTabControllerAccessorSelectsHomeTab()`.
 - A ninth `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after changing the test to avoid direct `HomeViewController` construction.
 - A tenth `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after extracting background recording action decisions.
+- An eleventh `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after extracting initial connection planning.
 
 ## Changed
 
@@ -117,6 +120,9 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Added `SceneBackgroundRecordingAction` and `SceneLifecycleCoordinator.backgroundRecordingAction(isRecording:alwaysOn:)`.
 - Routed `SceneDelegate.sceneDidEnterBackground` through the coordinator for recording/always-on decisions while preserving the existing timer and location-manager side effects.
 - Added tests for background non-recording, always-on refresh, and direct location-update actions.
+- Added `SceneInitialConnectionPlan` and `SceneLifecycleCoordinator.initialConnectionPlan(isWindowScene:url:)`.
+- Routed `SceneDelegate.scene(_:willConnectTo:options:)` through the initial connection plan for window-scene and widget-start decisions.
+- Added tests for non-window scene, widget URL, and non-widget URL initial connection plans.
 
 ## Safety Notes
 
@@ -132,10 +138,11 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - `SceneDelegate` still owns presentation and `HomeViewController.startTracking()` / `stopTracking()` calls, but default initialization and widget `isTracking` writes now live behind small helpers.
 - `SceneDelegate` still performs the actual Home start/stop/category side effects; the new accessor only centralizes current tab lookup.
 - `SceneDelegate` still performs timer scheduling, one-shot location requests, continuous location updates, and widget timeline reloads on background entry.
+- `SceneDelegate` still performs `DateManager.loadTodayData()`, total-distance loading, category restoration, and optional Home tracking start during initial connection.
 - `Info.plist`, Storyboards, widget target files, signing, entitlements, bundle identifiers, app group keys, Realm schema, backup, restore, and auth behavior were not changed.
 
 ## What Remains
 
-- Extract remaining `SceneDelegate` side effects in smaller passes, starting with initial connect setup and foreground password presentation.
+- Extract remaining `SceneDelegate` side effects in smaller passes, starting with foreground password presentation.
 - Add manual QA before enabling the renewed root route, with special attention to widget URL start/stop, password unlock, and Map -> Journey navigation.
 - Keep the default app launch on the existing UIKit/Storyboard shell until manual QA proves parity.
