@@ -305,6 +305,22 @@ struct SceneWidgetTrackingStateStore {
     }
 }
 
+struct SceneUserStateStore {
+    private let defaults: UserDefaults
+
+    init(defaults: UserDefaults = .standard) {
+        self.defaults = defaults
+    }
+
+    func userState() -> String? {
+        defaults.string(forKey: "UserState")
+    }
+
+    func isAlwaysOnEnabled() -> Bool {
+        defaults.bool(forKey: "alwaysOn")
+    }
+}
+
 struct LegacyHomeTabControllerAccessor {
     func selectHomeTab(from rootViewController: UIViewController?) -> UIViewController? {
         guard let tabBarController = rootViewController as? UITabBarController else { return nil }

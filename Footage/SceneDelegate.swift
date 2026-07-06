@@ -15,6 +15,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var alwaysOnTimer = Timer()
     private let rootViewControllerFactory: any LegacyRootViewControllerFactory = StoryboardLegacyRootViewControllerFactory()
     private let sceneLifecycleCoordinator = SceneLifecycleCoordinator()
+    private let userStateStore = SceneUserStateStore()
     private let firstLaunchDefaultsInitializer = FirstLaunchDefaultsInitializer()
     private let widgetTrackingStateStore = SceneWidgetTrackingStateStore()
     private let homeTabAccessor = LegacyHomeTabControllerAccessor()
@@ -81,11 +82,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneWillEnterForeground(_ scene: UIScene) {
         // Called as the scene transitions from the background to the foreground.
         // Use this method to undo the changes made on entering the background.
-        let userState = UserDefaults.standard.string(forKey: "UserState")
-        let alwaysOn = UserDefaults.standard.bool(forKey: "alwaysOn")
         let foregroundPlan = sceneLifecycleCoordinator.foregroundPlan(
-            userState: userState,
-            alwaysOn: alwaysOn
+            userState: userStateStore.userState(),
+            alwaysOn: userStateStore.isAlwaysOnEnabled()
         )
         if foregroundPlan.shouldInvalidateAlwaysOnTimer {
             alwaysOnTimer.invalidate()
@@ -112,7 +111,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // to restore the scene back to its current state.
         let backgroundAction = sceneLifecycleCoordinator.backgroundRecordingAction(
             isRecording: HomeViewController.currentStartButtonImage == #imageLiteral(resourceName: "stopButton"),
-            alwaysOn: UserDefaults.standard.bool(forKey: "alwaysOn")
+            alwaysOn: userStateStore.isAlwaysOnEnabled()
         )
         backgroundRecordingDispatcher.dispatch(backgroundAction) { [weak self] timer in
             self?.alwaysOnTimer = timer

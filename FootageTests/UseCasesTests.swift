@@ -279,6 +279,17 @@ final class UseCasesTests: XCTestCase {
         XCTAssertFalse(defaults.bool(forKey: "isTracking"))
     }
 
+    func testSceneUserStateStoreReadsLegacyForegroundKeys() {
+        let defaults = makeIsolatedDefaults(name: "scene-user-state")
+        let store = SceneUserStateStore(defaults: defaults)
+
+        defaults.set("hasPassword", forKey: "UserState")
+        defaults.set(true, forKey: "alwaysOn")
+
+        XCTAssertEqual(store.userState(), "hasPassword")
+        XCTAssertTrue(store.isAlwaysOnEnabled())
+    }
+
     func testLegacyHomeTabControllerAccessorSelectsFirstTab() {
         let homeViewController = UIViewController()
         let otherViewController = UIViewController()
