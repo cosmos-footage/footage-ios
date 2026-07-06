@@ -34,6 +34,27 @@ final class PresentationModelsTests: XCTestCase {
         XCTAssertEqual(item.previewData, previewData)
     }
 
+    func testRenewedTimelineItemPresentationFormatsJourneySummary() {
+        let item = RenewedTimelineItemPresentation(
+            journey: JourneyEntity(
+                recordingId: RecordingID(rawValue: "rec_1"),
+                localDate: "20260705",
+                startedAt: Date(timeIntervalSince1970: 100),
+                endedAt: nil,
+                distanceMeters: 1_230,
+                pointCount: 12,
+                primaryColorCategoryId: "yellow",
+                mediaCount: 2,
+                noteCount: 1,
+                syncStatus: .localOnly
+            )
+        )
+
+        XCTAssertEqual(item.title, "7월 5일")
+        XCTAssertEqual(item.distanceText, "1.23km")
+        XCTAssertEqual(item.detailText, "점 12 / 사진 2 / 글 1")
+    }
+
     func testJourneyDateDetailPresentationForYearJourney() {
         let presentation = JourneyDateDetailPresentation(legacyDateKey: 2026)
 
@@ -429,6 +450,37 @@ final class PresentationModelsTests: XCTestCase {
         XCTAssertTrue(map is RenewedShellPlaceholderViewController)
     }
 
+    func testProgrammaticRenewedShellFactoryBuildsTimelineWhenJourneysExist() {
+        let factory = ProgrammaticRenewedShellViewControllerFactory(
+            timelineJourneys: {
+                [
+                    JourneyEntity(
+                        recordingId: RecordingID(rawValue: "rec_1"),
+                        localDate: "20260705",
+                        startedAt: Date(timeIntervalSince1970: 100),
+                        endedAt: nil,
+                        distanceMeters: 1_230,
+                        pointCount: 12,
+                        primaryColorCategoryId: "yellow",
+                        mediaCount: 2,
+                        noteCount: 1,
+                        syncStatus: .localOnly
+                    )
+                ]
+            }
+        )
+
+        let timeline = factory.makeViewController(
+            for: RenewedShellTab(kind: .timeline, title: "기록", systemImageName: "calendar")
+        )
+        let map = factory.makeViewController(
+            for: RenewedShellTab(kind: .map, title: "지도", systemImageName: "map")
+        )
+
+        XCTAssertTrue(timeline is RenewedTimelineViewController)
+        XCTAssertTrue(map is RenewedShellPlaceholderViewController)
+    }
+
     func testRenewedTodayDashboardRendersHomeSnapshot() {
         let controller = RenewedTodayDashboardViewController {
             HomeDashboardSnapshot(
@@ -494,6 +546,33 @@ final class PresentationModelsTests: XCTestCase {
         XCTAssertTrue(texts.contains("전체 10km"))
         XCTAssertTrue(texts.contains("이번 달 대표 색 yellow"))
         XCTAssertTrue(texts.contains("이번 달 대표 장소 Seoul"))
+    }
+
+    func testRenewedTimelineRendersJourneySummaries() {
+        let controller = RenewedTimelineViewController {
+            [
+                JourneyEntity(
+                    recordingId: RecordingID(rawValue: "rec_1"),
+                    localDate: "20260705",
+                    startedAt: Date(timeIntervalSince1970: 100),
+                    endedAt: nil,
+                    distanceMeters: 1_230,
+                    pointCount: 12,
+                    primaryColorCategoryId: "yellow",
+                    mediaCount: 2,
+                    noteCount: 1,
+                    syncStatus: .localOnly
+                )
+            ]
+        }
+
+        controller.loadViewIfNeeded()
+
+        let texts = controller.view.labelTexts()
+        XCTAssertTrue(texts.contains("기록"))
+        XCTAssertTrue(texts.contains("7월 5일"))
+        XCTAssertTrue(texts.contains("1.23km"))
+        XCTAssertTrue(texts.contains("점 12 / 사진 2 / 글 1"))
     }
 
     func testLegacyRenewedShellStoryboardSceneProviderMapsExistingStoryboardTabs() {

@@ -214,6 +214,9 @@ struct AppCompositionRoot {
                                 monthEndKey: days.1
                             )
                         },
+                        timelineJourneys: {
+                            self.makeDateTimelineUseCase().loadTimeline(range: .day)
+                        },
                         settingsPreferencesUseCase: {
                             self.makeSettingsPreferencesUseCase()
                         }

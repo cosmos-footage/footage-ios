@@ -48,6 +48,26 @@ struct JourneyTimelineItemPresentation: Equatable {
     }
 }
 
+struct RenewedTimelineItemPresentation: Equatable {
+    var journey: JourneyEntity
+
+    var title: String {
+        if let legacyDateKey = Int(journey.localDate) {
+            return JourneyDatePresentation(legacyDateKey: legacyDateKey).title
+        }
+
+        return journey.localDate
+    }
+
+    var distanceText: String {
+        DistanceTextPresentation(meters: journey.distanceMeters, style: .decimal2WithKm).text
+    }
+
+    var detailText: String {
+        "점 \(journey.pointCount) / 사진 \(journey.mediaCount) / 글 \(journey.noteCount)"
+    }
+}
+
 struct JourneyDateDetailPresentation: Equatable {
     var legacyDateKey: Int
     var granularity: JourneyDateGranularity
