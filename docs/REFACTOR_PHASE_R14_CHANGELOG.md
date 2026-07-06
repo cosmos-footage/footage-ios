@@ -131,6 +131,9 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - A twenty-first approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after moving legacy storyboard bridge/root factory types into their own source file.
 - The renewed shell composition placement search confirmed `RenewedShellPresentation`, `RenewedShellTab`, `RenewedShellTabKind`, and the placeholder factory now live in `RenewedShellPresentation.swift`, with the new file included in `footage.xcodeproj`.
 - A twenty-second approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after splitting renewed shell composition out of the UIKit shell controller file.
+- The first placeholder-controller split test run failed with `Property 'tab' with type 'RenewedShellTab' cannot override a property with type 'UITab?'`. The cause was a new placeholder property name colliding with UIKit's `UIViewController.tab` API.
+- A follow-up search confirmed the placeholder now uses `shellTab` instead of `tab`.
+- A twenty-third approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after fixing the UIKit property-name conflict.
 
 ## Changed
 
@@ -200,6 +203,9 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Updated `footage.xcodeproj` target membership for `LegacyStoryboardBridge.swift`.
 - Added `RenewedShellPresentation.swift` and moved renewed shell composition types plus the placeholder tab factory into it.
 - Updated `footage.xcodeproj` target membership for `RenewedShellPresentation.swift`.
+- Added `RenewedShellPlaceholderViewController.swift` so disabled-by-default placeholder tabs are concrete programmatic UIKit controllers rather than inline factory views.
+- Updated `PlaceholderRenewedShellViewControllerFactory` to return `RenewedShellPlaceholderViewController`.
+- Added a test proving placeholder factory output carries the expected shell tab and title.
 
 ## Safety Notes
 
@@ -227,6 +233,7 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Moving Scene helper types changed source placement only; production launch still uses the existing `Main` storyboard path and the same helper implementations.
 - Moving legacy storyboard bridge/root factory types changed source placement only; the same storyboard identifiers and direct Map provider remain in use.
 - Moving renewed shell composition types changed source placement only; the disabled-by-default UIKit shell still has no production launch path.
+- Adding the placeholder controller changed only the disabled-by-default renewed shell fallback path; production launch still uses the existing storyboard root.
 - `Info.plist`, Storyboards, widget target files, signing, entitlements, bundle identifiers, app group keys, Realm schema, backup, restore, and auth behavior were not changed.
 
 ## What Remains
