@@ -564,6 +564,8 @@ Phase R14 progress:
 - Added `RenewedShellCoordinator.swift` to the app target in `footage.xcodeproj`.
 - Added `ProgrammaticRenewedShellFactory.swift` as the non-storyboard tab factory boundary for future Home/Map/Timeline/Stats/Settings replacements.
 - Added a test proving that boundary currently returns placeholder programmatic UIKit screens for the default internal tabs.
+- Added `AppRootViewControllerFactory.swift` to map `AppRootRoute` values to legacy storyboard roots or the disabled programmatic renewed shell root.
+- Added a test proving route-to-root creation works without wiring the new factory into `SceneDelegate`.
 
 Phase R14 current completion notes:
 
@@ -572,6 +574,7 @@ Phase R14 current completion notes:
 - One intermediate `xcodebuild test` failed because `RenewedShellPlaceholderViewController.tab` collided with UIKit's `UIViewController.tab`; the property was renamed to `shellTab`, and the next `xcodebuild test` succeeded.
 - The latest `xcodebuild test` succeeded after splitting `RenewedShellCoordinator.swift`.
 - The latest `xcodebuild test` succeeded after adding `ProgrammaticRenewedShellFactory.swift`.
+- The latest `xcodebuild test` succeeded after adding `AppRootViewControllerFactory.swift`.
 - No Storyboard, asset, widget, Realm schema, network, auth, restore, signing, entitlement, bundle identifier, or root-controller runtime behavior was changed.
 - Next step is to add screen-level programmatic UIKit composition behind the disabled renewed shell, still keeping the default launch on `Main` until parity QA is complete.
 
