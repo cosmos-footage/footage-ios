@@ -423,6 +423,7 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Added an optional renewed Settings "계정 연결 상태" entry that appears only when an auth-readiness screen factory is injected.
 - Wired `ProgrammaticRenewedShellViewControllerFactory` and `AppCompositionRoot` so the disabled renewed Settings path can lazily create `RenewedAuthReadinessViewController` from `AuthLinkingReadinessUseCase`.
 - Added tests proving the auth-readiness screen reads snapshot state only and does not start account linking.
+- Added `docs/RENEWED_ROOT_QA_PLAN.md` to define the manual QA gate before enabling the renewed UIKit root for production-facing builds.
 
 ## Safety Notes
 
@@ -476,6 +477,7 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Adding the restore status Settings entry did not add a new tab and did not change `SceneDelegate`, feature flag defaults, Storyboards, signing, entitlements, bundle identifiers, widget files, or Realm schema.
 - The auth-readiness Settings entry is limited to the disabled renewed Settings path and is created lazily on tap; it calls `snapshot()` only and does not start linking, request provider tokens, process authorization codes, or perform networking.
 - Adding the auth-readiness Settings entry did not add a new tab and did not change `SceneDelegate`, feature flag defaults, Storyboards, signing, entitlements, bundle identifiers, widget files, or Realm schema.
+- The renewed root QA plan is documentation-only and does not enable the renewed root route or change app runtime behavior.
 - `Info.plist`, Storyboards, widget target files, signing, entitlements, bundle identifiers, app group keys, Realm schema, backup, restore, and auth behavior were not changed.
 - A sandboxed `xcodebuild test` run failed before test execution with CoreSimulator access errors and `xcodebuild: error: 'footage.xcworkspace' is not a workspace file.` The workspace directory and `contents.xcworkspacedata` were inspected and valid, then the same command succeeded with external Xcode/Simulator permissions.
 - One `xcodebuild test` run failed on `UseCasesTests.testAppCompositionRootBuildsRenewedRootForEnabledRouteWithoutLoadingViews()` because the test incorrectly assumed `RenewedShellViewController.isViewLoaded` would remain false after root construction. The assertion was narrowed to route/root identity and non-first-launch root identity, and the next `xcodebuild test` succeeded.
@@ -490,6 +492,6 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 
 ## What Remains
 
-- Continue storyboard-removal runway by extracting one more legacy screen boundary or begin manual QA planning before enabling the renewed root route.
-- Add manual QA before enabling the renewed root route, with special attention to widget URL start/stop, password unlock, and Map -> Journey navigation.
+- Execute the renewed root manual QA plan before enabling the renewed root route.
+- Continue storyboard-removal runway by extracting one more legacy screen boundary after the QA gate is documented.
 - Keep the default app launch on the existing UIKit/Storyboard shell until manual QA proves parity.

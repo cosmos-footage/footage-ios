@@ -583,6 +583,7 @@ Phase R14 progress:
 - Added an optional renewed Settings "백업 상태" entry that lazily opens the read-only backup status screen only inside the disabled renewed UIKit shell path.
 - Added a disabled, read-only `RenewedRestoreStatusViewController` plus an optional renewed Settings "복원 상태" entry that reads `RestorePreviewUseCase.status()` without previewing, importing, networking, or mutating restore state.
 - Added a disabled, read-only `RenewedAuthReadinessViewController` plus an optional renewed Settings "계정 연결 상태" entry that reads `AuthLinkingReadinessUseCase.snapshot()` without starting account linking or networking.
+- Added `docs/RENEWED_ROOT_QA_PLAN.md` as the manual QA gate before any production-facing renewed root enablement.
 
 Phase R14 current completion notes:
 
@@ -609,6 +610,7 @@ Phase R14 current completion notes:
 - The latest `xcodebuild test` succeeded after adding the optional renewed Settings backup-status entry.
 - The latest `xcodebuild test` succeeded after adding the optional renewed Settings restore-status entry.
 - The latest `xcodebuild test` succeeded after adding the optional renewed Settings auth-readiness entry.
+- The renewed root QA plan was added as a documentation-only checkpoint; no runtime behavior changed.
 - The latest `xcodebuild test` succeeded after adding the read-only backup status UIKit screen and app target membership.
 - No Storyboard, asset, widget, Realm schema, network, auth, restore, signing, entitlement, bundle identifier, or default root-controller behavior was changed.
 - Next step is to decide whether to keep the backup status screen standalone or introduce a disabled navigation entry from the renewed Settings dashboard.
