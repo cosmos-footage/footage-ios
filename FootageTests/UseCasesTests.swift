@@ -166,22 +166,48 @@ final class UseCasesTests: XCTestCase {
 
         XCTAssertTrue(argumentEnvironment.featureFlags.isNewUIRunwayEnabled)
         XCTAssertTrue(variableEnvironment.featureFlags.isNewUIRunwayEnabled)
+        XCTAssertFalse(argumentEnvironment.featureFlags.areRenewedSettingsDetailRoutesEnabled)
+        XCTAssertFalse(variableEnvironment.featureFlags.areRenewedSettingsDetailRoutesEnabled)
         XCTAssertFalse(argumentEnvironment.featureFlags.isCloudBackupEnabled)
         XCTAssertFalse(variableEnvironment.featureFlags.isCloudBackupEnabled)
+    }
+
+    func testR15QAOverrideCanEnableRenewedSettingsDetailRoutesSeparately() {
+        let argumentEnvironment = AppEnvironment.current(
+            arguments: ["footage", "--footage-enable-renewed-settings-details"],
+            environment: [:]
+        )
+        let variableEnvironment = AppEnvironment.current(
+            arguments: ["footage"],
+            environment: ["FOOTAGE_ENABLE_RENEWED_SETTINGS_DETAILS": "1"]
+        )
+
+        XCTAssertFalse(argumentEnvironment.featureFlags.isNewUIRunwayEnabled)
+        XCTAssertFalse(variableEnvironment.featureFlags.isNewUIRunwayEnabled)
+        XCTAssertTrue(argumentEnvironment.featureFlags.areRenewedSettingsDetailRoutesEnabled)
+        XCTAssertTrue(variableEnvironment.featureFlags.areRenewedSettingsDetailRoutesEnabled)
     }
 
     func testR15QAOverrideIgnoresDisabledOrUnexpectedEnvironmentValues() {
         let disabledValue = AppEnvironment.current(
             arguments: ["footage"],
-            environment: ["FOOTAGE_ENABLE_RENEWED_UI": "0"]
+            environment: [
+                "FOOTAGE_ENABLE_RENEWED_UI": "0",
+                "FOOTAGE_ENABLE_RENEWED_SETTINGS_DETAILS": "0"
+            ]
         )
         let unexpectedValue = AppEnvironment.current(
             arguments: ["footage"],
-            environment: ["FOOTAGE_ENABLE_RENEWED_UI": "true"]
+            environment: [
+                "FOOTAGE_ENABLE_RENEWED_UI": "true",
+                "FOOTAGE_ENABLE_RENEWED_SETTINGS_DETAILS": "true"
+            ]
         )
 
         XCTAssertFalse(disabledValue.featureFlags.isNewUIRunwayEnabled)
         XCTAssertFalse(unexpectedValue.featureFlags.isNewUIRunwayEnabled)
+        XCTAssertFalse(disabledValue.featureFlags.areRenewedSettingsDetailRoutesEnabled)
+        XCTAssertFalse(unexpectedValue.featureFlags.areRenewedSettingsDetailRoutesEnabled)
     }
 
     func testR15QAOverrideStillProtectsFirstLaunchRoute() {

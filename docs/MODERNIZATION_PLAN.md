@@ -668,9 +668,11 @@ Current R15 notes:
 - Hardened the renewed Map canvas containment against the safe area and added a minimal accessibility label without changing route overlays, annotations, location, or production map behavior.
 - Added `docs/REFACTOR_PHASE_R15_STORYBOARD_REMOVAL_MATRIX.md` to mark all Storyboard files as retained for now, classify the renewed UIKit screens as runway only, and define deletion evidence requirements.
 - Added `docs/REFACTOR_PHASE_R15_COMPLETION_PLAN.md` to split the remaining R15 work into rollback-flagged renewed Settings routing and documentation closure checkpoints.
+- Added a disabled-by-default renewed Settings detail route flag through launch argument `--footage-enable-renewed-settings-details` or environment variable `FOOTAGE_ENABLE_RENEWED_SETTINGS_DETAILS=1`.
+- The renewed root QA flag and renewed Settings detail route flag are independent; enabling the renewed root no longer exposes those read-only detail routes unless the detail flag is also enabled.
 - Manual QA is not yet passed or claimed.
 - No Storyboard, widget, Realm schema, signing, entitlement file, app group, Pod, or asset change was made to start R15. The bundle namespace was later renewed by explicit owner request.
 
 Next step:
 
-- Continue R15 with `R15-C1`, a routing-only, rollback-flagged renewed Settings detail task before any Storyboard deletion. Keep physical-device background location QA, password foreground-gate QA, and full widget URL/app-group QA deferred until final release-readiness.
+- Continue R15 with `R15-C2`, documentation closure for simulator-safe automated work before any Storyboard deletion. Keep physical-device background location QA, password foreground-gate QA, and full widget URL/app-group QA deferred until final release-readiness.

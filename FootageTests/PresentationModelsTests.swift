@@ -451,7 +451,8 @@ final class PresentationModelsTests: XCTestCase {
             },
             backupPreparationUseCase: {
                 backupUseCase
-            }
+            },
+            areReadOnlySettingsDetailRoutesEnabled: true
         )
 
         let settings = factory.makeViewController(
@@ -486,7 +487,8 @@ final class PresentationModelsTests: XCTestCase {
             },
             restorePreviewUseCase: {
                 restoreUseCase
-            }
+            },
+            areReadOnlySettingsDetailRoutesEnabled: true
         )
 
         let settings = factory.makeViewController(
@@ -527,7 +529,8 @@ final class PresentationModelsTests: XCTestCase {
             },
             authLinkingReadinessUseCase: {
                 authUseCase
-            }
+            },
+            areReadOnlySettingsDetailRoutesEnabled: true
         )
 
         let settings = factory.makeViewController(
@@ -561,7 +564,8 @@ final class PresentationModelsTests: XCTestCase {
             },
             legacyVersionCode: {
                 122
-            }
+            },
+            areReadOnlySettingsDetailRoutesEnabled: true
         )
 
         let settings = factory.makeViewController(
@@ -594,7 +598,8 @@ final class PresentationModelsTests: XCTestCase {
             },
             legacyVersionCode: {
                 122
-            }
+            },
+            areReadOnlySettingsDetailRoutesEnabled: true
         )
         let settings = factory.makeViewController(for: RenewedShellPresentation.default.tabs[4])
         let navigationController = UINavigationController(rootViewController: settings)
@@ -605,6 +610,61 @@ final class PresentationModelsTests: XCTestCase {
         navigationController.topViewController?.loadViewIfNeeded()
 
         XCTAssertTrue(navigationController.topViewController?.view.buttonTitles().contains("문의하기") == true)
+    }
+
+    func testProgrammaticRenewedShellFactoryHidesSettingsDetailRoutesWhenRollbackFlagIsOff() {
+        let factory = ProgrammaticRenewedShellViewControllerFactory(
+            settingsPreferencesUseCase: {
+                FakeSettingsPreferencesUseCase(
+                    snapshot: SettingsPreferencesSnapshot(
+                        isCloudBackupOptedIn: true,
+                        featureFlags: FeatureFlags(
+                            isCloudBackupEnabled: true,
+                            isRestoreEnabled: true,
+                            isAuthEnabled: true,
+                            isDevelopmentUploadEnabled: false,
+                            isNewUIRunwayEnabled: true
+                        )
+                    )
+                )
+            },
+            backupPreparationUseCase: {
+                FakeBackupPreparationUseCase(
+                    status: LocalBackupStatus(
+                        pendingCount: 1,
+                        failedCount: 0,
+                        lastPreparedAt: nil,
+                        lastError: nil
+                    )
+                )
+            },
+            restorePreviewUseCase: {
+                FakeRestorePreviewUseCase(status: .idle)
+            },
+            authLinkingReadinessUseCase: {
+                FakeAuthLinkingReadinessUseCase(
+                    snapshot: AuthLinkingReadinessSnapshot(
+                        ownerId: OwnerID(rawValue: "own_1"),
+                        authLinkState: .anonymous,
+                        isAuthFeatureEnabled: true
+                    )
+                )
+            },
+            legacyVersionCode: {
+                122
+            },
+            areReadOnlySettingsDetailRoutesEnabled: false
+        )
+
+        let settings = factory.makeViewController(
+            for: RenewedShellTab(kind: .settings, title: "설정", systemImageName: "gearshape")
+        )
+        settings.loadViewIfNeeded()
+
+        XCTAssertEqual(settings.view.button(titled: "백업 상태")?.isHidden, true)
+        XCTAssertEqual(settings.view.button(titled: "복원 상태")?.isHidden, true)
+        XCTAssertEqual(settings.view.button(titled: "계정 연결 상태")?.isHidden, true)
+        XCTAssertEqual(settings.view.button(titled: "앱 정보")?.isHidden, true)
     }
 
     func testProgrammaticRenewedShellFactoryBuildsStatsOverviewWhenSnapshotExists() {

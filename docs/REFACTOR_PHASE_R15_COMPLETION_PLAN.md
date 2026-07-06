@@ -69,6 +69,12 @@ Out of scope:
 - Existing production root behavior remains unchanged.
 - Tests cover default-disabled and override-enabled behavior.
 
+**Implementation Notes**
+
+- Launch argument: `--footage-enable-renewed-settings-details`
+- Environment variable: `FOOTAGE_ENABLE_RENEWED_SETTINGS_DETAILS=1`
+- This flag only controls read-only renewed Settings detail routes. It does not enable the renewed root by itself.
+
 **Validation**
 
 Run:

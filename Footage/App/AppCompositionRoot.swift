@@ -234,7 +234,8 @@ struct AppCompositionRoot {
                         },
                         legacyVersionCode: {
                             UserDefaults.standard.integer(forKey: "version")
-                        }
+                        },
+                        areReadOnlySettingsDetailRoutesEnabled: self.environment.featureFlags.areRenewedSettingsDetailRoutesEnabled
                     )
                 ).makeRootViewController()
             }

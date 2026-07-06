@@ -18,6 +18,7 @@ struct ProgrammaticRenewedShellViewControllerFactory: RenewedShellViewController
     private let restorePreviewUseCase: (() -> RestorePreviewUseCase)?
     private let authLinkingReadinessUseCase: (() -> AuthLinkingReadinessUseCase)?
     private let legacyVersionCode: (() -> Int)?
+    private let areReadOnlySettingsDetailRoutesEnabled: Bool
 
     init(
         placeholderFactory: any RenewedShellViewControllerFactory = PlaceholderRenewedShellViewControllerFactory(),
@@ -29,7 +30,8 @@ struct ProgrammaticRenewedShellViewControllerFactory: RenewedShellViewController
         backupPreparationUseCase: (() -> BackupPreparationUseCase)? = nil,
         restorePreviewUseCase: (() -> RestorePreviewUseCase)? = nil,
         authLinkingReadinessUseCase: (() -> AuthLinkingReadinessUseCase)? = nil,
-        legacyVersionCode: (() -> Int)? = nil
+        legacyVersionCode: (() -> Int)? = nil,
+        areReadOnlySettingsDetailRoutesEnabled: Bool = false
     ) {
         self.placeholderFactory = placeholderFactory
         self.homeDashboardUseCase = homeDashboardUseCase
@@ -41,6 +43,7 @@ struct ProgrammaticRenewedShellViewControllerFactory: RenewedShellViewController
         self.restorePreviewUseCase = restorePreviewUseCase
         self.authLinkingReadinessUseCase = authLinkingReadinessUseCase
         self.legacyVersionCode = legacyVersionCode
+        self.areReadOnlySettingsDetailRoutesEnabled = areReadOnlySettingsDetailRoutesEnabled
     }
 
     func makeViewController(for tab: RenewedShellTab) -> UIViewController {
@@ -67,22 +70,22 @@ struct ProgrammaticRenewedShellViewControllerFactory: RenewedShellViewController
                 loadSnapshot: {
                     settingsPreferencesUseCase().loadPreferences()
                 },
-                makeBackupStatusViewController: backupPreparationUseCase.map { backupPreparationUseCase in
+                makeBackupStatusViewController: readOnlySettingsDetailRoute(backupPreparationUseCase) { backupPreparationUseCase in
                     {
                         RenewedBackupStatusViewController(backupPreparationUseCase: backupPreparationUseCase())
                     }
                 },
-                makeRestoreStatusViewController: restorePreviewUseCase.map { restorePreviewUseCase in
+                makeRestoreStatusViewController: readOnlySettingsDetailRoute(restorePreviewUseCase) { restorePreviewUseCase in
                     {
                         RenewedRestoreStatusViewController(restorePreviewUseCase: restorePreviewUseCase())
                     }
                 },
-                makeAuthReadinessViewController: authLinkingReadinessUseCase.map { authLinkingReadinessUseCase in
+                makeAuthReadinessViewController: readOnlySettingsDetailRoute(authLinkingReadinessUseCase) { authLinkingReadinessUseCase in
                     {
                         RenewedAuthReadinessViewController(authLinkingReadinessUseCase: authLinkingReadinessUseCase())
                     }
                 },
-                makeAboutViewController: legacyVersionCode.map { legacyVersionCode in
+                makeAboutViewController: readOnlySettingsDetailRoute(legacyVersionCode) { legacyVersionCode in
                     {
                         RenewedAboutViewController(
                             legacyVersionCode: legacyVersionCode,
@@ -97,5 +100,16 @@ struct ProgrammaticRenewedShellViewControllerFactory: RenewedShellViewController
         }
 
         return placeholderFactory.makeViewController(for: tab)
+    }
+
+    private func readOnlySettingsDetailRoute<Dependency>(
+        _ dependency: Dependency?,
+        makeFactory: (Dependency) -> (() -> UIViewController)
+    ) -> (() -> UIViewController)? {
+        guard areReadOnlySettingsDetailRoutesEnabled, let dependency = dependency else {
+            return nil
+        }
+
+        return makeFactory(dependency)
     }
 }

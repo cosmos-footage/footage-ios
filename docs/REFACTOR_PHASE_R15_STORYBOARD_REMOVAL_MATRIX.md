@@ -46,7 +46,7 @@ Keep these surfaces unchanged for now:
 
 ## Renewed Programmatic UIKit Runway
 
-These replacements exist behind the renewed-root QA flag and have passed simulator tests, but they are not production cutover approvals.
+These replacements exist behind the renewed-root QA flag and have passed simulator tests, but they are not production cutover approvals. Renewed Settings detail routes are additionally gated by the disabled-by-default `areRenewedSettingsDetailRoutesEnabled` feature flag, enabled only through `--footage-enable-renewed-settings-details` or `FOOTAGE_ENABLE_RENEWED_SETTINGS_DETAILS=1`.
 
 | Renewed screen | Covers | Does not cover yet | R15 state |
 | --- | --- | --- | --- |
@@ -111,3 +111,8 @@ R15-S2: Add a rollback-flagged route from the renewed Settings dashboard to one 
 
 The recommended first target is the About/privacy path because it is display-oriented and already has a programmatic UIKit runway.
 
+Current checkpoint:
+
+- Renewed Settings detail route factories are now hidden unless the dedicated read-only detail rollback flag is enabled.
+- The renewed root flag and the renewed Settings detail flag are independent, so QA can build the shell without exposing the detail routes.
+- No Storyboard scene is removed or approved for removal.
