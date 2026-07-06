@@ -88,7 +88,8 @@ struct ProgrammaticRenewedShellViewControllerFactory: RenewedShellViewController
                             legacyVersionCode: legacyVersionCode,
                             makePrivacyPolicyViewController: {
                                 RenewedPrivacyPolicyViewController()
-                            }
+                            },
+                            contactMailPresenter: RenewedContactMailPresenter()
                         )
                     }
                 }

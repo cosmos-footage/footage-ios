@@ -10,17 +10,21 @@ import UIKit
 final class RenewedAboutViewController: UIViewController {
     private let legacyVersionCode: () -> Int
     private let makePrivacyPolicyViewController: (() -> UIViewController)?
+    private let contactMailPresenter: ContactMailPresenting?
     private let titleLabel = UILabel()
     private let versionLabel = UILabel()
     private let privacyButton = UIButton(type: .system)
     private let contactLabel = UILabel()
+    private let contactButton = UIButton(type: .system)
 
     init(
         legacyVersionCode: @escaping () -> Int,
-        makePrivacyPolicyViewController: (() -> UIViewController)? = nil
+        makePrivacyPolicyViewController: (() -> UIViewController)? = nil,
+        contactMailPresenter: ContactMailPresenting? = nil
     ) {
         self.legacyVersionCode = legacyVersionCode
         self.makePrivacyPolicyViewController = makePrivacyPolicyViewController
+        self.contactMailPresenter = contactMailPresenter
         super.init(nibName: nil, bundle: nil)
         title = "앱 정보"
         tabBarItem = UITabBarItem(title: "정보", image: UIImage(systemName: "info.circle"), selectedImage: nil)
@@ -42,7 +46,8 @@ final class RenewedAboutViewController: UIViewController {
             titleLabel,
             versionLabel,
             privacyButton,
-            contactLabel
+            contactLabel,
+            contactButton
         ])
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical
@@ -64,6 +69,13 @@ final class RenewedAboutViewController: UIViewController {
         privacyButton.titleLabel?.adjustsFontForContentSizeCategory = true
         privacyButton.isHidden = makePrivacyPolicyViewController == nil
         privacyButton.addTarget(self, action: #selector(showPrivacyPolicy), for: .touchUpInside)
+
+        contactButton.setTitle("문의하기", for: .normal)
+        contactButton.titleLabel?.font = .preferredFont(forTextStyle: .body)
+        contactButton.titleLabel?.adjustsFontForContentSizeCategory = true
+        contactButton.isHidden = contactMailPresenter == nil
+        contactButton.addTarget(self, action: #selector(showContactMail), for: .touchUpInside)
+        contactLabel.isHidden = contactMailPresenter != nil
 
         view.addSubview(stackView)
 
@@ -91,5 +103,9 @@ final class RenewedAboutViewController: UIViewController {
         } else {
             present(viewController, animated: true)
         }
+    }
+
+    @objc private func showContactMail() {
+        _ = contactMailPresenter?.presentContactMail(from: self)
     }
 }

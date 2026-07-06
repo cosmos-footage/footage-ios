@@ -576,6 +576,37 @@ final class PresentationModelsTests: XCTestCase {
         XCTAssertTrue(navigationController.topViewController is RenewedAboutViewController)
     }
 
+    func testProgrammaticRenewedShellFactoryConnectsAboutContactMailBoundary() {
+        let factory = ProgrammaticRenewedShellViewControllerFactory(
+            settingsPreferencesUseCase: {
+                FakeSettingsPreferencesUseCase(
+                    snapshot: SettingsPreferencesSnapshot(
+                        isCloudBackupOptedIn: true,
+                        featureFlags: FeatureFlags(
+                            isCloudBackupEnabled: true,
+                            isRestoreEnabled: true,
+                            isAuthEnabled: true,
+                            isDevelopmentUploadEnabled: false,
+                            isNewUIRunwayEnabled: true
+                        )
+                    )
+                )
+            },
+            legacyVersionCode: {
+                122
+            }
+        )
+        let settings = factory.makeViewController(for: RenewedShellPresentation.default.tabs[4])
+        let navigationController = UINavigationController(rootViewController: settings)
+        navigationController.loadViewIfNeeded()
+        settings.loadViewIfNeeded()
+
+        settings.view.button(titled: "앱 정보")?.sendActions(for: .touchUpInside)
+        navigationController.topViewController?.loadViewIfNeeded()
+
+        XCTAssertTrue(navigationController.topViewController?.view.buttonTitles().contains("문의하기") == true)
+    }
+
     func testProgrammaticRenewedShellFactoryBuildsStatsOverviewWhenSnapshotExists() {
         let factory = ProgrammaticRenewedShellViewControllerFactory(
             statsOverview: {
@@ -842,6 +873,22 @@ final class PresentationModelsTests: XCTestCase {
         controller.view.button(titled: "개인정보 취급방침")?.sendActions(for: .touchUpInside)
 
         XCTAssertTrue(navigationController.topViewController is RenewedPrivacyPolicyViewController)
+    }
+
+    func testRenewedAboutRequestsContactMailWhenPresenterExists() {
+        let presenter = FakeContactMailPresenter()
+        let controller = RenewedAboutViewController(
+            legacyVersionCode: {
+                122
+            },
+            contactMailPresenter: presenter
+        )
+
+        controller.loadViewIfNeeded()
+        controller.view.button(titled: "문의하기")?.sendActions(for: .touchUpInside)
+
+        XCTAssertTrue(presenter.didPresent)
+        XCTAssertTrue(presenter.presentingViewController === controller)
     }
 
     func testRenewedPrivacyPolicyRendersLegacyPolicyTextReadOnly() {
@@ -1229,6 +1276,17 @@ private final class FakeAuthLinkingReadinessUseCase: AuthLinkingReadinessUseCase
     func snapshot() -> AuthLinkingReadinessSnapshot {
         snapshotCallCount += 1
         return snapshotValue
+    }
+}
+
+private final class FakeContactMailPresenter: ContactMailPresenting {
+    private(set) var didPresent = false
+    private(set) weak var presentingViewController: UIViewController?
+
+    func presentContactMail(from viewController: UIViewController) -> Bool {
+        didPresent = true
+        presentingViewController = viewController
+        return true
     }
 }
 
