@@ -631,3 +631,28 @@ Use this after selecting full Xcode on the machine:
 ```text
 Begin Phase 1 build recovery. Do not change signing, bundle identifiers, entitlements, Pods, Storyboards, Realm models, assets, or widget target. First run git status, xcodebuild -list -workspace footage.xcworkspace, and a simulator build if list succeeds. Document exact failures in docs/TECHNICAL_AUDIT.md and propose the smallest build-only fixes before editing project settings.
 ```
+
+## Refactor Phase R15: UI Cutover and Legacy Cleanup
+
+Status: started for QA evidence only. Production cutover has not started.
+
+Goal: collect the evidence required before any renewed UIKit root is enabled for production-facing builds.
+
+Tasks:
+
+- Keep `FeatureFlags.isNewUIRunwayEnabled` disabled by default.
+- Use `docs/REFACTOR_PHASE_R15_QA_EVIDENCE.md` as the R15 evidence ledger.
+- Run automated validation commands and record exact results.
+- Run simulator and physical-device manual QA from `docs/RENEWED_ROOT_QA_PLAN.md`.
+- Keep the current Storyboard root available as the rollback path.
+- Defer Storyboard removal and default-root cutover until manual QA passes.
+
+Current R15 notes:
+
+- Added `docs/REFACTOR_PHASE_R15_QA_EVIDENCE.md`.
+- Manual QA is not yet passed or claimed.
+- No app source, Storyboard, widget, Realm schema, signing, entitlement, bundle identifier, app group, Pod, or asset change was made to start R15.
+
+Next step:
+
+- Run simulator and physical-device manual QA from `docs/RENEWED_ROOT_QA_PLAN.md`, then update the R15 QA evidence table with exact observations.
