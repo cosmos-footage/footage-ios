@@ -136,6 +136,8 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - A twenty-third approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after fixing the UIKit property-name conflict.
 - The renewed shell coordinator placement search confirmed `RenewedShellCoordinator` now lives in `RenewedShellCoordinator.swift` and `StoryboardBackedRenewedShellViewControllerFactory` remains in `RenewedShellStoryboardFactory.swift`.
 - A twenty-fourth approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after splitting the renewed shell coordinator into its own source file.
+- The programmatic shell factory search confirmed `ProgrammaticRenewedShellViewControllerFactory` lives in `ProgrammaticRenewedShellFactory.swift` and is included in `footage.xcodeproj`.
+- A twenty-fifth approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding the programmatic renewed shell factory boundary.
 
 ## Changed
 
@@ -210,6 +212,8 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Added a test proving placeholder factory output carries the expected shell tab and title.
 - Added `RenewedShellCoordinator.swift` and moved renewed shell root assembly out of `RenewedShellStoryboardFactory.swift`.
 - Updated `footage.xcodeproj` target membership for `RenewedShellCoordinator.swift`.
+- Added `ProgrammaticRenewedShellFactory.swift` with `ProgrammaticRenewedShellViewControllerFactory`, establishing the non-storyboard tab factory insertion point for future screen replacements.
+- Added a test proving the programmatic factory currently returns placeholder screens for the default internal tabs.
 
 ## Safety Notes
 
@@ -239,6 +243,7 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Moving renewed shell composition types changed source placement only; the disabled-by-default UIKit shell still has no production launch path.
 - Adding the placeholder controller changed only the disabled-by-default renewed shell fallback path; production launch still uses the existing storyboard root.
 - Moving `RenewedShellCoordinator` changed source placement only; the coordinator remains disabled by default and is not wired into production launch.
+- Adding the programmatic renewed shell factory changed only disabled-by-default scaffolding; existing runtime navigation still uses the storyboard launch path.
 - `Info.plist`, Storyboards, widget target files, signing, entitlements, bundle identifiers, app group keys, Realm schema, backup, restore, and auth behavior were not changed.
 
 ## What Remains
