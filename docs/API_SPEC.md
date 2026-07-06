@@ -43,7 +43,7 @@ Request:
 ```json
 {
   "installationId": "inst_01JZ8Q2Q2Z9R8P9M5RBM2G8K3K",
-  "appBundleId": "co.el.footage",
+  "appBundleId": "co.nyeok.footage",
   "appVersion": "1.2.2",
   "platform": "ios",
   "device": {

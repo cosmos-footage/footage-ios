@@ -17,7 +17,7 @@ class Settings_DonateVC: UIViewController {
     @IBOutlet weak var indicator: UIActivityIndicatorView!
     @IBOutlet weak var message: UILabel!
     
-    let productIDs = ["co.el.iap.bike", "co.el.iap.coffee", "co.el.iap.rice"]
+    let productIDs = ["co.nyeok.iap.bike", "co.nyeok.iap.coffee", "co.nyeok.iap.rice"]
     private var purchaseTask: Task<Void, Never>?
     
     override func viewDidLoad() {

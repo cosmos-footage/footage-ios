@@ -21,8 +21,8 @@ xcodebuild -workspace footage.xcworkspace -scheme footage -configuration Release
 
 ## Release-Sensitive Settings
 
-- App bundle identifier: `co.el.footage`
-- Widget bundle identifier: `co.el.footage.MainWidget`
+- App bundle identifier: `co.nyeok.footage`
+- Widget bundle identifier: `co.nyeok.footage.MainWidget`
 - App group: `group.footage`
 - Main app entitlement: `Entitlements/footage.entitlements`
 - Widget entitlement: `Entitlements/MainWidgetExtension.entitlements`

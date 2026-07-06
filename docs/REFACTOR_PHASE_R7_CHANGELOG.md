@@ -73,7 +73,7 @@ Passing tests:
 
 - No app runtime call sites were intentionally changed.
 - No signing, bundle identifier, entitlement, app group, widget, Storyboard, asset, Pod, or Realm schema changes were made.
-- The new test bundle identifier is `co.el.footage.tests`.
+- The new test bundle identifier is `co.nyeok.footage.tests`.
 
 ## Remaining Work After R7
 

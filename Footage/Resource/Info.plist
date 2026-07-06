@@ -24,7 +24,7 @@
 			<key>CFBundleTypeRole</key>
 			<string>None</string>
 			<key>CFBundleURLName</key>
-			<string>co.el.footage.widget</string>
+			<string>co.nyeok.footage.widget</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>widget</string>

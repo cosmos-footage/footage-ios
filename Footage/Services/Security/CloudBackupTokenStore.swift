@@ -41,7 +41,7 @@ final class KeychainCloudBackupTokenStore: CloudBackupTokenStore {
     private let decoder: JSONDecoder
 
     init(
-        service: String = "co.el.footage.cloud-backup",
+        service: String = "co.nyeok.footage.cloud-backup",
         account: String = "anonymous-device-token",
         accessGroup: String? = nil,
         encoder: JSONEncoder = JSONEncoder(),

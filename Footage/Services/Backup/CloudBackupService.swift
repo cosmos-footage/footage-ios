@@ -52,7 +52,7 @@ final class CloudBackupService {
 
         let request = BootstrapRequest(
             installationId: identityRepository.installationId().rawValue,
-            appBundleId: Bundle.main.bundleIdentifier ?? "co.el.footage",
+            appBundleId: Bundle.main.bundleIdentifier ?? "co.nyeok.footage",
             appVersion: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "unknown",
             platform: "ios",
             device: BootstrapRequest.Device(

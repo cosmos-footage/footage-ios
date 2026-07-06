@@ -1024,8 +1024,8 @@ Native targets found in `footage.xcodeproj/project.pbxproj`:
 
 Identifiers and signing-sensitive settings:
 
-- App bundle identifier: `co.el.footage`
-- Widget bundle identifier: `co.el.footage.MainWidget`
+- App bundle identifier: `co.nyeok.footage`
+- Widget bundle identifier: `co.nyeok.footage.MainWidget`
 - Development team: `M286K6KP2M`
 - App entitlements: `Entitlements/footage.entitlements`
 - Widget entitlements: `Entitlements/MainWidgetExtension.entitlements`

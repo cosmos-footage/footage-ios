@@ -198,7 +198,7 @@ The future IA can reorder tabs after map navigation and date routing stop relyin
 | `Settings_General_PasswordVC` | Passcode setup/change. | `UserDefaults` keys `Password` and `UserState`, parent `Settings_GeneralVC` table reload coupling. |
 | `Settings_General_PushVC` | Notification enablement and time picker. | `UserDefaults` keys `everydayPush`, `etcPush`, `everydayPushHour`, `everydayPushMinute`, legacy `wantPush`; `UNUserNotificationCenter.current().removeAllPendingNotificationRequests()`. |
 | `Settings_NameColorVC` | Edit category names. | App group defaults `group.footage`, color keys, confirmation alert before save. |
-| `Settings_DonateVC` | Donation purchases. | StoreKit 2 `Product.products(for:)`, `product.purchase()`, `Transaction.finish()`, product IDs `co.el.iap.bike`, `co.el.iap.coffee`, `co.el.iap.rice`. |
+| `Settings_DonateVC` | Donation purchases. | StoreKit 2 `Product.products(for:)`, `product.purchase()`, `Transaction.finish()`, product IDs `co.nyeok.iap.bike`, `co.nyeok.iap.coffee`, `co.nyeok.iap.rice`. |
 | `Settings_AboutVC` | Version/privacy/contact menu. | `UserDefaults.standard` key `version`, `MessageUI` / `MFMailComposeViewController`. |
 | `Settings_About_PersonalInformationVC` | Static personal information/privacy screen. | UIKit/storyboard content. |
 
@@ -292,9 +292,9 @@ internal storage keys, tokens, or presigned URLs while extracting these dependen
 
 - `Settings_DonateVC` is StoreKit 2 based and owns donation purchase UI state.
 - Product IDs are hard-coded:
-  - `co.el.iap.bike`
-  - `co.el.iap.coffee`
-  - `co.el.iap.rice`
+  - `co.nyeok.iap.bike`
+  - `co.nyeok.iap.coffee`
+  - `co.nyeok.iap.rice`
 - Keep purchase UI local and avoid analytics or external logging.
 
 ### Biometric And Locking
@@ -405,8 +405,8 @@ review:
   - `MainWidget/Assets.xcassets`
   - app group `group.footage`
 - Bundle identifiers and signing/entitlement files:
-  - app bundle identifier `co.el.footage`
-  - widget bundle identifier `co.el.footage.MainWidget`
+  - app bundle identifier `co.nyeok.footage`
+  - widget bundle identifier `co.nyeok.footage.MainWidget`
   - `Entitlements/*.entitlements`
   - project signing settings in `footage.xcodeproj`
 - CocoaPods and dependencies:

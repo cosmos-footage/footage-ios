@@ -63,33 +63,16 @@ Device:
 - Runtime: iOS 26.5
 - UDID: `95D8FB23-A840-44C9-851E-7CE54603720B`
 
-Commands and results:
+Status after bundle namespace renewal:
 
-| Step | Command | Result |
-| --- | --- | --- |
-| Initial tree check | `git status --short` | Passed; no tracked changes before this evidence update |
-| List devices | `xcrun simctl list devices available` | Passed; iPhone 17 Pro iOS 26.5 simulator was available |
-| Debug simulator build | `xcodebuild -workspace footage.xcworkspace -scheme footage -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' -derivedDataPath build/R15QADerivedData CODE_SIGNING_ALLOWED=NO build` | Passed with `** BUILD SUCCEEDED **` |
-| Boot simulator | `xcrun simctl boot 95D8FB23-A840-44C9-851E-7CE54603720B` | Passed |
-| Wait for boot | `xcrun simctl bootstatus 95D8FB23-A840-44C9-851E-7CE54603720B -b` | Passed |
-| Clean install setup | `xcrun simctl uninstall 95D8FB23-A840-44C9-851E-7CE54603720B co.el.footage` | Passed |
-| Install app | `xcrun simctl install 95D8FB23-A840-44C9-851E-7CE54603720B build/R15QADerivedData/Build/Products/Debug-iphonesimulator/footage.app` | Passed |
-| Launch default flags | `xcrun simctl launch 95D8FB23-A840-44C9-851E-7CE54603720B co.el.footage` | Passed; returned `co.el.footage: 63395` |
-| Terminate app | `xcrun simctl terminate 95D8FB23-A840-44C9-851E-7CE54603720B co.el.footage` | Passed |
-| Clean reinstall setup | `xcrun simctl uninstall 95D8FB23-A840-44C9-851E-7CE54603720B co.el.footage` | Passed |
-| Reinstall app | `xcrun simctl install 95D8FB23-A840-44C9-851E-7CE54603720B build/R15QADerivedData/Build/Products/Debug-iphonesimulator/footage.app` | Passed |
-| Launch QA override | `xcrun simctl launch 95D8FB23-A840-44C9-851E-7CE54603720B co.el.footage --footage-enable-renewed-ui` | Passed; returned `co.el.footage: 64486` |
-| Capture QA screenshot | `xcrun simctl io 95D8FB23-A840-44C9-851E-7CE54603720B screenshot /Users/nyeok/Documents/footage-ios/build/r15-qa-override-fresh-launch.png` | Passed |
-| Capture delayed QA screenshot | `xcrun simctl io 95D8FB23-A840-44C9-851E-7CE54603720B screenshot /Users/nyeok/Documents/footage-ios/build/r15-qa-override-fresh-launch-after-wait.png` | Passed |
-| Inspect delayed QA screenshot size | `sips -g pixelWidth -g pixelHeight build/r15-qa-override-fresh-launch-after-wait.png` | Passed; `1206 x 2622` |
-
-Interpretation:
-
-- The Debug simulator build succeeded.
-- A clean install launched without the QA override and returned a process identifier.
-- A clean install launched with `--footage-enable-renewed-ui` and returned a process identifier.
-- The QA override launch screenshot showed a black screen with only the status bar visible, so FirstLaunch storyboard visual parity is not claimed from this smoke run.
-- This evidence proves build/install/launch viability only. It does not replace manual QA, physical-device QA, widget QA, first-launch visual confirmation, or existing-user Realm parity checks.
+- The earlier launch smoke was captured before the app namespace moved to `co.nyeok`.
+- Treat the earlier smoke result as superseded for R15 cutover purposes.
+- Post-renewal workspace listing passed with `xcodebuild -list -workspace footage.xcworkspace`.
+- Post-renewal Debug simulator build passed with `xcodebuild -workspace footage.xcworkspace -scheme footage -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' -derivedDataPath build/NamespaceRenameDerivedData CODE_SIGNING_ALLOWED=NO build`.
+- The rebuilt app reported `CFBundleIdentifier` as `co.nyeok.footage`, and the embedded widget reported `co.nyeok.footage.MainWidget`.
+- Post-renewal clean install passed with `xcrun simctl install 95D8FB23-A840-44C9-851E-7CE54603720B build/NamespaceRenameDerivedData/Build/Products/Debug-iphonesimulator/footage.app`.
+- Post-renewal default launch passed with `xcrun simctl launch 95D8FB23-A840-44C9-851E-7CE54603720B co.nyeok.footage` and returned `co.nyeok.footage: 79974`.
+- FirstLaunch visual confirmation, existing-user Realm parity, physical-device QA, and widget QA remain unclaimed.
 
 ## Manual QA Evidence Required
 
@@ -97,8 +80,8 @@ These checks require simulator interaction, physical-device interaction, seeded 
 
 | Area | Required Evidence | Result |
 | --- | --- | --- |
-| Fresh install with renewed flag off | Existing FirstLaunch storyboard opens. | Smoke only; simulator launch returned `co.el.footage: 63395`, but visual FirstLaunch confirmation was not completed |
-| Fresh install with renewed flag on for QA | Existing FirstLaunch storyboard still opens. | Smoke only; simulator launch returned `co.el.footage: 64486`, but delayed screenshot showed a black screen with only the status bar visible, so visual FirstLaunch confirmation remains inconclusive |
+| Fresh install with renewed flag off | Existing FirstLaunch storyboard opens. | Smoke only after bundle namespace renewal; simulator launch returned `co.nyeok.footage: 79974`, but visual FirstLaunch confirmation was not completed |
+| Fresh install with renewed flag on for QA | Existing FirstLaunch storyboard still opens. | Not run after bundle namespace renewal |
 | Existing user with renewed flag off | Existing Main storyboard root remains active and local data is visible. | Not run |
 | Existing user with renewed flag on for QA | Renewed UIKit shell opens without crash. | Not run |
 | Existing Realm data parity | Today, Timeline, Stats, Settings read the expected local data. | Not run |

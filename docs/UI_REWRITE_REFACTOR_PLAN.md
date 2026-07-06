@@ -277,7 +277,7 @@ Do not claim a build, test, or manual QA pass unless the command or device pass 
 ## Review Checklist for Every R9-R15 PR
 
 - Does `git status --short` show only intended files?
-- Does the PR preserve `co.el.footage`, `co.el.footage.MainWidget`, and `group.footage`?
+- Does the PR preserve `co.nyeok.footage`, `co.nyeok.footage.MainWidget`, and `group.footage`?
 - Does recording still write locally before sync, backup, widget, or network side effects?
 - Does the PR avoid raw coordinate/photo/note/token/presigned URL/object identifier/internal storage key logging?
 - Does the PR avoid destructive Realm migrations and app group key renames?
