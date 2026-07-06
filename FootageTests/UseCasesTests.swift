@@ -220,6 +220,10 @@ final class UseCasesTests: XCTestCase {
         XCTAssertFalse(coordinator.isWidgetURL(nil))
         XCTAssertEqual(coordinator.widgetTrackingAction(wasTracking: false), .start)
         XCTAssertEqual(coordinator.widgetTrackingAction(wasTracking: true), .stop)
+        XCTAssertEqual(coordinator.homeTrackingCommand(for: .start), .start)
+        XCTAssertEqual(coordinator.homeTrackingCommand(for: .stop), .stop)
+        XCTAssertEqual(coordinator.initialHomeTrackingCommand(shouldStartFromWidget: true), .start)
+        XCTAssertNil(coordinator.initialHomeTrackingCommand(shouldStartFromWidget: false))
     }
 
     func testSceneLifecycleCoordinatorPlansBackgroundRecordingAction() {
@@ -354,6 +358,19 @@ final class UseCasesTests: XCTestCase {
         XCTAssertTrue(loader.didPrepareLegacyHomeData)
     }
 
+    func testSceneHomeViewControllerDispatcherBoundaryCanBeFaked() {
+        let dispatcher = FakeSceneHomeViewControllerDispatcher()
+        let viewController = UIViewController()
+
+        dispatcher.restoreSelectedCategory("#EADE4Cff", on: viewController)
+        dispatcher.dispatchTrackingCommand(.start, to: viewController)
+        dispatcher.dispatchTrackingCommand(.stop, to: viewController)
+
+        XCTAssertEqual(dispatcher.restoredSelectedColor, "#EADE4Cff")
+        XCTAssertEqual(dispatcher.trackingCommands, [.start, .stop])
+        XCTAssertTrue(dispatcher.lastViewController === viewController)
+    }
+
     func testSceneWidgetTimelineReloaderBoundaryCanBeFaked() {
         let reloader = FakeSceneWidgetTimelineReloader()
 
@@ -369,6 +386,22 @@ private final class FakeSceneHomeInitialDataLoader: SceneHomeInitialDataLoading 
 
     func prepareLegacyHomeData() {
         didPrepareLegacyHomeData = true
+    }
+}
+
+private final class FakeSceneHomeViewControllerDispatcher: SceneHomeViewControllerDispatching {
+    private(set) var restoredSelectedColor: String?
+    private(set) var trackingCommands: [SceneHomeTrackingCommand] = []
+    private(set) weak var lastViewController: UIViewController?
+
+    func restoreSelectedCategory(_ selectedColor: String?, on viewController: UIViewController?) {
+        restoredSelectedColor = selectedColor
+        lastViewController = viewController
+    }
+
+    func dispatchTrackingCommand(_ command: SceneHomeTrackingCommand, to viewController: UIViewController?) {
+        trackingCommands.append(command)
+        lastViewController = viewController
     }
 }
 

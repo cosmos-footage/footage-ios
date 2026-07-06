@@ -185,6 +185,11 @@ enum SceneWidgetTrackingAction: Equatable {
     case stop
 }
 
+enum SceneHomeTrackingCommand: Equatable {
+    case start
+    case stop
+}
+
 enum SceneBackgroundRecordingAction: Equatable {
     case none
     case scheduleAlwaysOnLocationRefresh
@@ -233,6 +238,19 @@ struct SceneLifecycleCoordinator: Equatable {
 
     func widgetTrackingAction(wasTracking: Bool) -> SceneWidgetTrackingAction {
         wasTracking ? .stop : .start
+    }
+
+    func homeTrackingCommand(for action: SceneWidgetTrackingAction) -> SceneHomeTrackingCommand {
+        switch action {
+        case .start:
+            return .start
+        case .stop:
+            return .stop
+        }
+    }
+
+    func initialHomeTrackingCommand(shouldStartFromWidget: Bool) -> SceneHomeTrackingCommand? {
+        shouldStartFromWidget ? .start : nil
     }
 
     func backgroundRecordingAction(isRecording: Bool, alwaysOn: Bool) -> SceneBackgroundRecordingAction {
@@ -297,6 +315,30 @@ struct LegacyHomeTabControllerAccessor {
 
     func selectHome(from rootViewController: UIViewController?) -> HomeViewController? {
         selectHomeTab(from: rootViewController) as? HomeViewController
+    }
+}
+
+protocol SceneHomeViewControllerDispatching {
+    func restoreSelectedCategory(_ selectedColor: String?, on viewController: UIViewController?)
+    func dispatchTrackingCommand(_ command: SceneHomeTrackingCommand, to viewController: UIViewController?)
+}
+
+struct LegacySceneHomeViewControllerDispatcher: SceneHomeViewControllerDispatching {
+    func restoreSelectedCategory(_ selectedColor: String?, on viewController: UIViewController?) {
+        guard let homeViewController = viewController as? HomeViewController else { return }
+
+        homeViewController.setToLastCategory(selectedColor: selectedColor)
+    }
+
+    func dispatchTrackingCommand(_ command: SceneHomeTrackingCommand, to viewController: UIViewController?) {
+        guard let homeViewController = viewController as? HomeViewController else { return }
+
+        switch command {
+        case .start:
+            homeViewController.startTracking()
+        case .stop:
+            homeViewController.stopTracking()
+        }
     }
 }
 

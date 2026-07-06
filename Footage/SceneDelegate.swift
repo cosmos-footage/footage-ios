@@ -23,6 +23,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private let widgetTimelineReloader: any SceneWidgetTimelineReloading = WidgetKitSceneWidgetTimelineReloader()
     private let homeInitialDataLoader: any SceneHomeInitialDataLoading = LegacySceneHomeInitialDataLoader()
     private let selectedColorStore = SceneSelectedColorStore()
+    private let homeViewControllerDispatcher: any SceneHomeViewControllerDispatching = LegacySceneHomeViewControllerDispatcher()
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
@@ -35,23 +36,26 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard initialPlan.shouldPrepareLegacyHome else { return }
 
         homeInitialDataLoader.prepareLegacyHomeData()
-        guard let homeVC = homeTabAccessor.selectHome(from: window?.rootViewController) else { return }
-        homeVC.setToLastCategory(selectedColor: selectedColorStore.selectedColor())
-        if initialPlan.shouldStartTrackingFromWidget {
-            homeVC.startTracking()
+        let homeViewController = homeTabAccessor.selectHomeTab(from: window?.rootViewController)
+        homeViewControllerDispatcher.restoreSelectedCategory(
+            selectedColorStore.selectedColor(),
+            on: homeViewController
+        )
+        if let command = sceneLifecycleCoordinator.initialHomeTrackingCommand(
+            shouldStartFromWidget: initialPlan.shouldStartTrackingFromWidget
+        ) {
+            homeViewControllerDispatcher.dispatchTrackingCommand(command, to: homeViewController)
         }
     }
     
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
         // TODO: started before 추가
         guard let wasTracking = widgetTrackingStateStore.toggleTracking() else { return }
-        guard let homeVC = homeTabAccessor.selectHome(from: window?.rootViewController) else { return }
-        switch sceneLifecycleCoordinator.widgetTrackingAction(wasTracking: wasTracking) {
-        case .start:
-            homeVC.startTracking()
-        case .stop:
-            homeVC.stopTracking()
-        }
+        let homeViewController = homeTabAccessor.selectHomeTab(from: window?.rootViewController)
+        let widgetAction = sceneLifecycleCoordinator.widgetTrackingAction(wasTracking: wasTracking)
+        let command = sceneLifecycleCoordinator.homeTrackingCommand(for: widgetAction)
+
+        homeViewControllerDispatcher.dispatchTrackingCommand(command, to: homeViewController)
     }
     
     func sceneDidDisconnect(_ scene: UIScene) {
