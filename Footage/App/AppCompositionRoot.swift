@@ -206,6 +206,9 @@ struct AppCompositionRoot {
                         homeDashboardUseCase: {
                             self.makeHomeDashboardUseCase()
                         },
+                        mapViewController: {
+                            RenewedMapViewController()
+                        },
                         statsOverview: {
                             let days = DateConverter.lastMondayToday()
                             return self.makeStatsOverviewUseCase().loadOverview(

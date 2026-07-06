@@ -481,6 +481,24 @@ final class PresentationModelsTests: XCTestCase {
         XCTAssertTrue(map is RenewedShellPlaceholderViewController)
     }
 
+    func testProgrammaticRenewedShellFactoryBuildsMapWhenProviderExists() {
+        let factory = ProgrammaticRenewedShellViewControllerFactory(
+            mapViewController: {
+                RenewedMapViewController()
+            }
+        )
+
+        let map = factory.makeViewController(
+            for: RenewedShellTab(kind: .map, title: "지도", systemImageName: "map")
+        )
+        let timeline = factory.makeViewController(
+            for: RenewedShellTab(kind: .timeline, title: "기록", systemImageName: "calendar")
+        )
+
+        XCTAssertTrue(map is RenewedMapViewController)
+        XCTAssertTrue(timeline is RenewedShellPlaceholderViewController)
+    }
+
     func testRenewedTodayDashboardRendersHomeSnapshot() {
         let controller = RenewedTodayDashboardViewController {
             HomeDashboardSnapshot(
@@ -573,6 +591,15 @@ final class PresentationModelsTests: XCTestCase {
         XCTAssertTrue(texts.contains("7월 5일"))
         XCTAssertTrue(texts.contains("1.23km"))
         XCTAssertTrue(texts.contains("점 12 / 사진 2 / 글 1"))
+    }
+
+    func testRenewedMapBuildsProgrammaticMapCanvas() {
+        let controller = RenewedMapViewController()
+
+        controller.loadViewIfNeeded()
+
+        XCTAssertTrue(controller.mapView.isDescendant(of: controller.view))
+        XCTAssertEqual(controller.title, "지도")
     }
 
     func testLegacyRenewedShellStoryboardSceneProviderMapsExistingStoryboardTabs() {

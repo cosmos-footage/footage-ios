@@ -10,6 +10,7 @@ import UIKit
 struct ProgrammaticRenewedShellViewControllerFactory: RenewedShellViewControllerFactory {
     private let placeholderFactory: any RenewedShellViewControllerFactory
     private let homeDashboardUseCase: (() -> HomeDashboardUseCase)?
+    private let mapViewController: (() -> UIViewController)?
     private let statsOverview: (() -> StatsOverviewSnapshot)?
     private let timelineJourneys: (() -> [JourneyEntity])?
     private let settingsPreferencesUseCase: (() -> SettingsPreferencesUseCase)?
@@ -17,12 +18,14 @@ struct ProgrammaticRenewedShellViewControllerFactory: RenewedShellViewController
     init(
         placeholderFactory: any RenewedShellViewControllerFactory = PlaceholderRenewedShellViewControllerFactory(),
         homeDashboardUseCase: (() -> HomeDashboardUseCase)? = nil,
+        mapViewController: (() -> UIViewController)? = nil,
         statsOverview: (() -> StatsOverviewSnapshot)? = nil,
         timelineJourneys: (() -> [JourneyEntity])? = nil,
         settingsPreferencesUseCase: (() -> SettingsPreferencesUseCase)? = nil
     ) {
         self.placeholderFactory = placeholderFactory
         self.homeDashboardUseCase = homeDashboardUseCase
+        self.mapViewController = mapViewController
         self.statsOverview = statsOverview
         self.timelineJourneys = timelineJourneys
         self.settingsPreferencesUseCase = settingsPreferencesUseCase
@@ -33,6 +36,10 @@ struct ProgrammaticRenewedShellViewControllerFactory: RenewedShellViewController
             return RenewedTodayDashboardViewController {
                 homeDashboardUseCase().loadSnapshot()
             }
+        }
+
+        if tab.kind == .map, let mapViewController = mapViewController {
+            return mapViewController()
         }
 
         if tab.kind == .stats, let statsOverview = statsOverview {
