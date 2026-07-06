@@ -70,6 +70,7 @@
 		C0D860010000000000000001 /* SceneLifecycleSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D860020000000000000001 /* SceneLifecycleSupport.swift */; };
 		C0D860030000000000000001 /* LegacyStoryboardBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D860040000000000000001 /* LegacyStoryboardBridge.swift */; };
 		C0D860050000000000000001 /* RenewedShellPresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D860060000000000000001 /* RenewedShellPresentation.swift */; };
+		C0D860070000000000000001 /* RenewedShellPlaceholderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D860080000000000000001 /* RenewedShellPlaceholderViewController.swift */; };
 		C0D3A00B0000000000000001 /* SyncOutboxDraft.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3A00C0000000000000001 /* SyncOutboxDraft.swift */; };
 		C0D3A00D0000000000000001 /* MigrationExportModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3A00E0000000000000001 /* MigrationExportModels.swift */; };
 		C0D3A00F0000000000000001 /* LocalDeviceIdentityRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3A0100000000000000001 /* LocalDeviceIdentityRepository.swift */; };
@@ -268,6 +269,7 @@
 		C0D860020000000000000001 /* SceneLifecycleSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneLifecycleSupport.swift; sourceTree = "<group>"; };
 		C0D860040000000000000001 /* LegacyStoryboardBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyStoryboardBridge.swift; sourceTree = "<group>"; };
 		C0D860060000000000000001 /* RenewedShellPresentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenewedShellPresentation.swift; sourceTree = "<group>"; };
+		C0D860080000000000000001 /* RenewedShellPlaceholderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenewedShellPlaceholderViewController.swift; sourceTree = "<group>"; };
 		C0D3A00C0000000000000001 /* SyncOutboxDraft.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncOutboxDraft.swift; sourceTree = "<group>"; };
 		C0D3A00E0000000000000001 /* MigrationExportModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationExportModels.swift; sourceTree = "<group>"; };
 		C0D3A0100000000000000001 /* LocalDeviceIdentityRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalDeviceIdentityRepository.swift; sourceTree = "<group>"; };
@@ -550,6 +552,7 @@
 				C0D850020000000000000001 /* CityDotGrid.swift */,
 				C0D840020000000000000001 /* RenewedShellViewController.swift */,
 				C0D860060000000000000001 /* RenewedShellPresentation.swift */,
+				C0D860080000000000000001 /* RenewedShellPlaceholderViewController.swift */,
 				C0D840040000000000000001 /* RenewedShellStoryboardFactory.swift */,
 				C0D860020000000000000001 /* SceneLifecycleSupport.swift */,
 				C0D860040000000000000001 /* LegacyStoryboardBridge.swift */,
@@ -1113,6 +1116,7 @@
 				C0D850010000000000000001 /* CityDotGrid.swift in Sources */,
 				C0D840010000000000000001 /* RenewedShellViewController.swift in Sources */,
 				C0D860050000000000000001 /* RenewedShellPresentation.swift in Sources */,
+				C0D860070000000000000001 /* RenewedShellPlaceholderViewController.swift in Sources */,
 				C0D840030000000000000001 /* RenewedShellStoryboardFactory.swift in Sources */,
 				C0D860010000000000000001 /* SceneLifecycleSupport.swift in Sources */,
 				C0D860030000000000000001 /* LegacyStoryboardBridge.swift in Sources */,

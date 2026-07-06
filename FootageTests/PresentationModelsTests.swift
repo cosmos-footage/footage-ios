@@ -287,6 +287,15 @@ final class PresentationModelsTests: XCTestCase {
         )
     }
 
+    func testPlaceholderRenewedShellFactoryBuildsTabSpecificPlaceholderController() {
+        let tab = RenewedShellTab(kind: .stats, title: "통계", systemImageName: "chart.bar")
+        let controller = PlaceholderRenewedShellViewControllerFactory().makeViewController(for: tab)
+
+        let placeholder = controller as? RenewedShellPlaceholderViewController
+        XCTAssertEqual(placeholder?.shellTab, tab)
+        XCTAssertEqual(placeholder?.title, "통계")
+    }
+
     func testLegacyRenewedShellStoryboardSceneProviderMapsExistingStoryboardTabs() {
         let provider = LegacyRenewedShellStoryboardSceneProvider()
 

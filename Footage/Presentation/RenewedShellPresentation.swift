@@ -13,22 +13,7 @@ protocol RenewedShellViewControllerFactory {
 
 struct PlaceholderRenewedShellViewControllerFactory: RenewedShellViewControllerFactory {
     func makeViewController(for tab: RenewedShellTab) -> UIViewController {
-        let controller = UIViewController()
-        controller.view.backgroundColor = .systemBackground
-
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .preferredFont(forTextStyle: .headline)
-        label.textColor = .label
-        label.text = tab.title
-        controller.view.addSubview(label)
-
-        NSLayoutConstraint.activate([
-            label.centerXAnchor.constraint(equalTo: controller.view.centerXAnchor),
-            label.centerYAnchor.constraint(equalTo: controller.view.centerYAnchor)
-        ])
-
-        return controller
+        RenewedShellPlaceholderViewController(tab: tab)
     }
 }
 
