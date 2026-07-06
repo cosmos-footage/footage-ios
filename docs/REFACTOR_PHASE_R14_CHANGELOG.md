@@ -435,6 +435,7 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Added `ContactMailPresenting` and `RenewedContactMailPresenter` to isolate `MFMailComposeViewController` setup from `RenewedAboutViewController`.
 - Wired the renewed About "문의하기" entry to request contact mail only when a presenter is injected; without a presenter it remains display-only.
 - Added tests proving the renewed About contact button calls a fake mail presenter and the disabled renewed Settings factory exposes the contact boundary.
+- Added `docs/REFACTOR_PHASE_R14_COMPLETION.md` to close R14 as an automated, disabled-by-default UI runway phase and move production cutover to R15/manual QA.
 
 ## Safety Notes
 
@@ -491,7 +492,7 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - The renewed root QA plan is documentation-only and does not enable the renewed root route or change app runtime behavior.
 - The renewed About screen is limited to the disabled renewed Settings path and is display-only; it does not change legacy About, mail composer, privacy navigation, Storyboards, or production Settings behavior.
 - The renewed privacy policy screen is limited to the disabled renewed Settings path; it preserves the existing Storyboard policy copy for display and does not claim a legal/privacy copy rewrite.
-- The renewed About contact row remains display-only; mail composer/contact side effects remain in the legacy screen and are deferred to a separate boundary task.
+- The renewed About contact row was initially display-only; it is now isolated through `ContactMailPresenting` and remains limited to the disabled renewed Settings path.
 - The renewed About contact mail boundary is limited to the disabled renewed Settings path; legacy `Settings_AboutVC`, `Settings.storyboard`, the privacy segue, and production Settings behavior were not changed.
 - The mail presenter preserves the legacy recipient `el.co.footage@gmail.com` and empty HTML body behavior, returns `false` when mail cannot be sent, and does not log email, user content, coordinates, tokens, or URLs.
 - `Info.plist`, Storyboards, widget target files, signing, entitlements, bundle identifiers, app group keys, Realm schema, backup, restore, and auth behavior were not changed.
@@ -511,10 +512,10 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - The latest `xcodebuild test` succeeded after adding the read-only renewed Settings privacy policy boundary.
 - One `xcodebuild test` run failed because the new factory test referenced a non-existent `RenewedShellPresentation.defaultTabs` member; the test was corrected to use `RenewedShellPresentation.default.tabs[4]`.
 - The latest `xcodebuild test` succeeded after adding the renewed About contact/mail boundary.
+- R14 is complete for the automated repository-owned scope. Manual renewed-root readiness, physical-device background location QA, widget QA, and production cutover are explicitly deferred to R15/manual release readiness.
 
 ## What Remains
 
-- Execute the renewed root manual QA plan before enabling the renewed root route.
-- Continue storyboard-removal runway by extracting one more legacy screen boundary after the QA gate is documented.
-- Continue extracting legacy Settings sub-screen boundaries or begin manual QA for the disabled renewed Settings/About path.
-- Keep the default app launch on the existing UIKit/Storyboard shell until manual QA proves parity.
+- Execute `docs/RENEWED_ROOT_QA_PLAN.md` before enabling the renewed root route.
+- Start R15 only after simulator and physical-device QA evidence exists.
+- Keep the default app launch on the existing UIKit/Storyboard shell until R15 cutover criteria are satisfied.

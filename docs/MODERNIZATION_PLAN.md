@@ -497,7 +497,7 @@ Phase R13 current completion notes:
 
 ## Refactor Phase R14: New UI Runway
 
-Status: started with disabled-by-default routing scaffold.
+Status: completed for the automated disabled-by-default runway. Production cutover remains blocked on manual QA and belongs to R15.
 
 Goal: prepare the actual UI rewrite without cutting over user data paths.
 
@@ -587,6 +587,7 @@ Phase R14 progress:
 - Added a disabled, read-only `RenewedAboutViewController` plus an optional renewed Settings "앱 정보" entry that mirrors legacy About version/privacy/contact labels without changing mail or privacy navigation behavior.
 - Added a disabled, read-only `RenewedPrivacyPolicyViewController` plus renewed About privacy navigation that preserves the existing Storyboard policy copy without changing legacy About or production Settings behavior.
 - Added a disabled renewed About contact/mail boundary using `ContactMailPresenting` and `RenewedContactMailPresenter`, preserving the legacy recipient and empty HTML body while keeping legacy Storyboards unchanged.
+- Added `docs/REFACTOR_PHASE_R14_COMPLETION.md` to close R14 as an automated runway phase and define R15/manual QA entry criteria.
 
 Phase R14 current completion notes:
 
@@ -618,8 +619,10 @@ Phase R14 current completion notes:
 - The latest `xcodebuild test` succeeded after adding the read-only backup status UIKit screen and app target membership.
 - The latest `xcodebuild test` succeeded after adding the optional renewed About privacy policy screen.
 - The latest `xcodebuild test` succeeded after adding the optional renewed About contact/mail boundary.
+- R14 is complete for the automated repository-owned scope.
+- Manual renewed-root readiness, physical-device background location QA, widget QA, and production cutover are not claimed and remain R15/manual release-readiness work.
 - No Storyboard, asset, widget, Realm schema, network, auth, restore, signing, entitlement, bundle identifier, or default root-controller behavior was changed.
-- Next step is to continue the Storyboard-removal runway with another bounded legacy Settings sub-screen boundary, or start manual QA on the disabled renewed Settings/About path.
+- Next step is R15 planning: capture simulator/physical-device manual QA evidence before enabling any renewed root route by default.
 
 ## First Phase 1 Codex Command
 
