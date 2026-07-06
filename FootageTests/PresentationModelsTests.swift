@@ -543,6 +543,27 @@ final class PresentationModelsTests: XCTestCase {
         XCTAssertTrue(texts.contains("계정 연결 비활성"))
     }
 
+    func testRenewedBackupStatusRendersReadOnlyStatusWithoutPreparingBackup() {
+        let useCase = FakeBackupPreparationUseCase(
+            status: LocalBackupStatus(
+                pendingCount: 2,
+                failedCount: 1,
+                lastPreparedAt: Date(timeIntervalSince1970: 100),
+                lastError: "network unavailable"
+            )
+        )
+        let controller = RenewedBackupStatusViewController(backupPreparationUseCase: useCase)
+
+        controller.loadViewIfNeeded()
+
+        let texts = controller.view.labelTexts()
+        XCTAssertTrue(texts.contains("백업 상태"))
+        XCTAssertTrue(texts.contains("대기 2 / 실패 1"))
+        XCTAssertTrue(texts.contains("최근 백업 준비 기록 있음"))
+        XCTAssertTrue(texts.contains("마지막 오류: network unavailable"))
+        XCTAssertFalse(useCase.didPrepare)
+    }
+
     func testRenewedStatsOverviewRendersSnapshot() {
         let controller = RenewedStatsOverviewViewController {
             StatsOverviewSnapshot(
@@ -793,6 +814,27 @@ private final class FakeSettingsPreferencesUseCase: SettingsPreferencesUseCase {
 
     func setCloudBackupOptIn(_ isOptedIn: Bool) {
         snapshotValue.isCloudBackupOptedIn = isOptedIn
+    }
+}
+
+private final class FakeBackupPreparationUseCase: BackupPreparationUseCase {
+    private let statusValue: LocalBackupStatus
+    private(set) var didPrepare = false
+
+    init(status: LocalBackupStatus) {
+        statusValue = status
+    }
+
+    func status() -> LocalBackupStatus {
+        statusValue
+    }
+
+    func prepare(configuration: SyncBatchConfiguration) throws -> ManualBackupPreparationResult {
+        didPrepare = true
+        return ManualBackupPreparationResult(
+            preparedItemCount: 0,
+            localBackupStatus: statusValue
+        )
     }
 }
 
