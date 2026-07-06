@@ -312,6 +312,105 @@ final class UseCasesTests: XCTestCase {
         )
     }
 
+    func testInitialLaunchParityMatrixKeepsDefaultAndFirstLaunchRoutesSafe() {
+        let coordinator = SceneLifecycleCoordinator()
+        let widgetURL = URL(string: "widget://toggle")
+
+        struct LaunchCase {
+            let userState: String?
+            let flags: FeatureFlags
+            let isWindowScene: Bool
+            let url: URL?
+            let expectedRoute: AppRootRoute
+            let expectedPlan: SceneInitialLaunchPlan
+        }
+
+        let cases = [
+            LaunchCase(
+                userState: nil,
+                flags: .disabled,
+                isWindowScene: true,
+                url: nil,
+                expectedRoute: .legacyFirstLaunch,
+                expectedPlan: SceneInitialLaunchPlan(
+                    connectionPlan: SceneInitialConnectionPlan(
+                        shouldPrepareLegacyHome: true,
+                        shouldStartTrackingFromWidget: false
+                    ),
+                    appRootInstallAction: .keepStoryboardRoot
+                )
+            ),
+            LaunchCase(
+                userState: nil,
+                flags: FeatureFlags(isNewUIRunwayEnabled: true),
+                isWindowScene: true,
+                url: nil,
+                expectedRoute: .legacyFirstLaunch,
+                expectedPlan: SceneInitialLaunchPlan(
+                    connectionPlan: SceneInitialConnectionPlan(
+                        shouldPrepareLegacyHome: true,
+                        shouldStartTrackingFromWidget: false
+                    ),
+                    appRootInstallAction: .keepStoryboardRoot
+                )
+            ),
+            LaunchCase(
+                userState: "noPassword",
+                flags: .disabled,
+                isWindowScene: true,
+                url: widgetURL,
+                expectedRoute: .legacyMainTabs,
+                expectedPlan: SceneInitialLaunchPlan(
+                    connectionPlan: SceneInitialConnectionPlan(
+                        shouldPrepareLegacyHome: true,
+                        shouldStartTrackingFromWidget: true
+                    ),
+                    appRootInstallAction: .keepStoryboardRoot
+                )
+            ),
+            LaunchCase(
+                userState: "noPassword",
+                flags: FeatureFlags(isNewUIRunwayEnabled: true),
+                isWindowScene: true,
+                url: widgetURL,
+                expectedRoute: .renewedUIKitShell,
+                expectedPlan: SceneInitialLaunchPlan(
+                    connectionPlan: SceneInitialConnectionPlan(
+                        shouldPrepareLegacyHome: true,
+                        shouldStartTrackingFromWidget: true
+                    ),
+                    appRootInstallAction: .replaceRoot(.renewedUIKitShell)
+                )
+            ),
+            LaunchCase(
+                userState: "noPassword",
+                flags: FeatureFlags(isNewUIRunwayEnabled: true),
+                isWindowScene: false,
+                url: widgetURL,
+                expectedRoute: .renewedUIKitShell,
+                expectedPlan: SceneInitialLaunchPlan(
+                    connectionPlan: SceneInitialConnectionPlan(
+                        shouldPrepareLegacyHome: false,
+                        shouldStartTrackingFromWidget: false
+                    ),
+                    appRootInstallAction: .keepStoryboardRoot
+                )
+            )
+        ]
+
+        cases.forEach { launchCase in
+            let route = AppRootRouter(featureFlags: launchCase.flags).route(userState: launchCase.userState)
+            let plan = coordinator.initialLaunchPlan(
+                isWindowScene: launchCase.isWindowScene,
+                url: launchCase.url,
+                appRootRoute: route
+            )
+
+            XCTAssertEqual(route, launchCase.expectedRoute)
+            XCTAssertEqual(plan, launchCase.expectedPlan)
+        }
+    }
+
     func testSceneLifecycleCoordinatorPlansAppRootInstallAction() {
         let coordinator = SceneLifecycleCoordinator()
 
