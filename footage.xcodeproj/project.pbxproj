@@ -67,6 +67,7 @@
 		C0D850010000000000000001 /* CityDotGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D850020000000000000001 /* CityDotGrid.swift */; };
 		C0D840010000000000000001 /* RenewedShellViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D840020000000000000001 /* RenewedShellViewController.swift */; };
 		C0D840030000000000000001 /* RenewedShellStoryboardFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D840040000000000000001 /* RenewedShellStoryboardFactory.swift */; };
+		C0D860010000000000000001 /* SceneLifecycleSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D860020000000000000001 /* SceneLifecycleSupport.swift */; };
 		C0D3A00B0000000000000001 /* SyncOutboxDraft.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3A00C0000000000000001 /* SyncOutboxDraft.swift */; };
 		C0D3A00D0000000000000001 /* MigrationExportModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3A00E0000000000000001 /* MigrationExportModels.swift */; };
 		C0D3A00F0000000000000001 /* LocalDeviceIdentityRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3A0100000000000000001 /* LocalDeviceIdentityRepository.swift */; };
@@ -262,6 +263,7 @@
 		C0D850020000000000000001 /* CityDotGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CityDotGrid.swift; sourceTree = "<group>"; };
 		C0D840020000000000000001 /* RenewedShellViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenewedShellViewController.swift; sourceTree = "<group>"; };
 		C0D840040000000000000001 /* RenewedShellStoryboardFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenewedShellStoryboardFactory.swift; sourceTree = "<group>"; };
+		C0D860020000000000000001 /* SceneLifecycleSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneLifecycleSupport.swift; sourceTree = "<group>"; };
 		C0D3A00C0000000000000001 /* SyncOutboxDraft.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncOutboxDraft.swift; sourceTree = "<group>"; };
 		C0D3A00E0000000000000001 /* MigrationExportModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationExportModels.swift; sourceTree = "<group>"; };
 		C0D3A0100000000000000001 /* LocalDeviceIdentityRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalDeviceIdentityRepository.swift; sourceTree = "<group>"; };
@@ -544,6 +546,7 @@
 				C0D850020000000000000001 /* CityDotGrid.swift */,
 				C0D840020000000000000001 /* RenewedShellViewController.swift */,
 				C0D840040000000000000001 /* RenewedShellStoryboardFactory.swift */,
+				C0D860020000000000000001 /* SceneLifecycleSupport.swift */,
 			);
 			path = Presentation;
 			sourceTree = "<group>";
@@ -1104,6 +1107,7 @@
 				C0D850010000000000000001 /* CityDotGrid.swift in Sources */,
 				C0D840010000000000000001 /* RenewedShellViewController.swift in Sources */,
 				C0D840030000000000000001 /* RenewedShellStoryboardFactory.swift in Sources */,
+				C0D860010000000000000001 /* SceneLifecycleSupport.swift in Sources */,
 				C0D3A00B0000000000000001 /* SyncOutboxDraft.swift in Sources */,
 				C0D3A00D0000000000000001 /* MigrationExportModels.swift in Sources */,
 				C0D3A00F0000000000000001 /* LocalDeviceIdentityRepository.swift in Sources */,
