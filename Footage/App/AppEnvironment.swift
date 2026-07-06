@@ -25,5 +25,15 @@ struct AppEnvironment: Equatable {
         self.cloudBackupSchemaVersion = cloudBackupSchemaVersion
     }
 
-    static let current = AppEnvironment()
+    static func current(
+        arguments: [String] = ProcessInfo.processInfo.arguments,
+        environment: [String: String] = ProcessInfo.processInfo.environment
+    ) -> AppEnvironment {
+        AppEnvironment(
+            featureFlags: FeatureFlags.r15QAOverride(
+                arguments: arguments,
+                environment: environment
+            )
+        )
+    }
 }

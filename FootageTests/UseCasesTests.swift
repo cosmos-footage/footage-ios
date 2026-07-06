@@ -145,6 +145,56 @@ final class UseCasesTests: XCTestCase {
         XCTAssertFalse(router.route(userState: "noPassword").usesStoryboard)
     }
 
+    func testR15QAOverrideKeepsRenewedUIRunwayDisabledByDefault() {
+        let environment = AppEnvironment.current(
+            arguments: ["footage"],
+            environment: [:]
+        )
+
+        XCTAssertEqual(environment.featureFlags, .disabled)
+    }
+
+    func testR15QAOverrideCanEnableRenewedUIRunwayForManualQA() {
+        let argumentEnvironment = AppEnvironment.current(
+            arguments: ["footage", "--footage-enable-renewed-ui"],
+            environment: [:]
+        )
+        let variableEnvironment = AppEnvironment.current(
+            arguments: ["footage"],
+            environment: ["FOOTAGE_ENABLE_RENEWED_UI": "1"]
+        )
+
+        XCTAssertTrue(argumentEnvironment.featureFlags.isNewUIRunwayEnabled)
+        XCTAssertTrue(variableEnvironment.featureFlags.isNewUIRunwayEnabled)
+        XCTAssertFalse(argumentEnvironment.featureFlags.isCloudBackupEnabled)
+        XCTAssertFalse(variableEnvironment.featureFlags.isCloudBackupEnabled)
+    }
+
+    func testR15QAOverrideIgnoresDisabledOrUnexpectedEnvironmentValues() {
+        let disabledValue = AppEnvironment.current(
+            arguments: ["footage"],
+            environment: ["FOOTAGE_ENABLE_RENEWED_UI": "0"]
+        )
+        let unexpectedValue = AppEnvironment.current(
+            arguments: ["footage"],
+            environment: ["FOOTAGE_ENABLE_RENEWED_UI": "true"]
+        )
+
+        XCTAssertFalse(disabledValue.featureFlags.isNewUIRunwayEnabled)
+        XCTAssertFalse(unexpectedValue.featureFlags.isNewUIRunwayEnabled)
+    }
+
+    func testR15QAOverrideStillProtectsFirstLaunchRoute() {
+        let environment = AppEnvironment.current(
+            arguments: ["footage", "--footage-enable-renewed-ui"],
+            environment: [:]
+        )
+        let router = AppRootRouter(featureFlags: environment.featureFlags)
+
+        XCTAssertEqual(router.route(userState: nil), .legacyFirstLaunch)
+        XCTAssertEqual(router.route(userState: "noPassword"), .renewedUIKitShell)
+    }
+
     func testAppRootViewControllerFactoryBuildsRouteRootsWithoutRuntimeCutover() throws {
         let mainTabs = UITabBarController()
         let firstLaunch = UIViewController()

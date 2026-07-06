@@ -10,7 +10,7 @@ import Foundation
 struct AppCompositionRoot {
     let environment: AppEnvironment
 
-    init(environment: AppEnvironment = .current) {
+    init(environment: AppEnvironment = .current()) {
         self.environment = environment
     }
 

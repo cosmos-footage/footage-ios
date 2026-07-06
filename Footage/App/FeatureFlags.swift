@@ -29,4 +29,14 @@ struct FeatureFlags: Equatable {
     }
 
     static let disabled = FeatureFlags()
+
+    static func r15QAOverride(
+        arguments: [String],
+        environment: [String: String]
+    ) -> FeatureFlags {
+        var flags = FeatureFlags.disabled
+        flags.isNewUIRunwayEnabled = arguments.contains("--footage-enable-renewed-ui")
+            || environment["FOOTAGE_ENABLE_RENEWED_UI"] == "1"
+        return flags
+    }
 }
