@@ -81,6 +81,8 @@ file footage.xcworkspace footage.xcworkspace/contents.xcworkspacedata
 xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
 git diff --check
 xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
+git diff --check
+xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
 ```
 
 ## Results
@@ -108,6 +110,7 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - `pwd`, `ls -la footage.xcworkspace`, `find footage.xcworkspace -maxdepth 2 -type f -print`, and `file footage.xcworkspace footage.xcworkspace/contents.xcworkspacedata` confirmed the workspace package still exists and `contents.xcworkspacedata` is an XML document.
 - A fifteenth approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after extracting Home tracking command dispatch.
 - A sixteenth approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after extracting background recording dispatch.
+- A seventeenth approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after extracting scene user-state reads.
 
 ## Changed
 
@@ -163,6 +166,9 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Added `SceneBackgroundRecordingDispatching` / `LegacySceneBackgroundRecordingDispatcher` to isolate legacy background timer/location-manager side effects.
 - Routed `SceneDelegate.sceneDidEnterBackground(_:)` background recording action dispatch through that boundary.
 - Added a fake background recording dispatcher test.
+- Added `SceneUserStateStore` for legacy `UserState` and `alwaysOn` reads.
+- Routed `SceneDelegate` foreground planning and background recording planning through `SceneUserStateStore`.
+- Added a test proving the legacy foreground keys are read from isolated defaults.
 
 ## Safety Notes
 
@@ -184,10 +190,11 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - `SceneDelegate` still applies the selected category to the existing `HomeViewController` and still prepares the same legacy Home data through `DateManager`.
 - `SceneDelegate` still selects the first legacy tab and still sends the same start/stop/category calls to `HomeViewController`; those calls now pass through `LegacySceneHomeViewControllerDispatcher`.
 - `SceneDelegate` still schedules the same 2.5 second repeating always-on timer and calls the same `HomeViewController.locationManager` methods for background recording.
+- `SceneDelegate` still reads the same `UserState` and `alwaysOn` keys from standard defaults; those reads now pass through `SceneUserStateStore`.
 - `Info.plist`, Storyboards, widget target files, signing, entitlements, bundle identifiers, app group keys, Realm schema, backup, restore, and auth behavior were not changed.
 
 ## What Remains
 
-- Extract remaining `SceneDelegate` side effects in smaller passes, starting with foreground user-default reads and scene lifecycle helper placement cleanup.
+- Extract remaining `SceneDelegate` side effects in smaller passes, starting with foreground route dispatch and scene lifecycle helper placement cleanup.
 - Add manual QA before enabling the renewed root route, with special attention to widget URL start/stop, password unlock, and Map -> Journey navigation.
 - Keep the default app launch on the existing UIKit/Storyboard shell until manual QA proves parity.
