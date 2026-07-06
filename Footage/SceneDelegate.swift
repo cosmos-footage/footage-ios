@@ -11,7 +11,6 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     var window: UIWindow?
-    let homeVC = HomeViewController()
     var alwaysOnTimer = Timer()
     private let sceneLifecycleCoordinator = SceneLifecycleCoordinator()
     private let userStateStore = SceneUserStateStore()
