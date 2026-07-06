@@ -37,23 +37,3 @@ struct StoryboardBackedRenewedShellViewControllerFactory: RenewedShellViewContro
         return storyboardInstantiator.instantiate(descriptor)
     }
 }
-
-final class RenewedShellCoordinator {
-    private let presentation: RenewedShellPresentation
-    private let viewControllerFactory: any RenewedShellViewControllerFactory
-
-    init(
-        presentation: RenewedShellPresentation = .legacyStoryboardBridge,
-        viewControllerFactory: any RenewedShellViewControllerFactory = StoryboardBackedRenewedShellViewControllerFactory()
-    ) {
-        self.presentation = presentation
-        self.viewControllerFactory = viewControllerFactory
-    }
-
-    func makeRootViewController() -> UIViewController {
-        RenewedShellViewController(
-            presentation: presentation,
-            viewControllerFactory: viewControllerFactory
-        )
-    }
-}
