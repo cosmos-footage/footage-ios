@@ -88,6 +88,9 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 rg -n "let homeVC = HomeViewController\(\)|homeVC" Footage/SceneDelegate.swift FootageTests docs/REFACTOR_PHASE_R14_CHANGELOG.md docs/MODERNIZATION_PLAN.md
 git diff --check
 xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
+rg -n "enum SceneForegroundRoute|struct SceneLifecycleCoordinator|struct SceneFullScreenPresenter|WidgetKitSceneWidgetTimelineReloader|SceneLifecycleSupport.swift" Footage/Presentation footage.xcodeproj/project.pbxproj
+git diff --check
+xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
 ```
 
 ## Results
@@ -119,6 +122,8 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - An eighteenth approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after extracting foreground route dispatch.
 - The stale delegate-state search for `let homeVC = HomeViewController()` returned no remaining references after cleanup.
 - A nineteenth approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after removing stale `SceneDelegate.homeVC`.
+- The Scene helper placement search confirmed the lifecycle helper definitions now live in `SceneLifecycleSupport.swift` and the file is included in `footage.xcodeproj`.
+- A twentieth approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after moving Scene lifecycle helpers into their own source file.
 
 ## Changed
 
@@ -181,6 +186,9 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Routed foreground timer invalidation, password unlock presentation, and first-launch root replacement through the foreground route dispatcher.
 - Added a fake foreground route dispatcher test.
 - Removed the unused `SceneDelegate.homeVC` instance property.
+- Added `SceneLifecycleSupport.swift` and moved Scene lifecycle coordinator, stores, dispatchers, presenter, root installer, Home initial data loader, selected-color store, and widget timeline reloader into it.
+- Updated `footage.xcodeproj` target membership for `SceneLifecycleSupport.swift`.
+- Removed the now-unneeded `WidgetKit` import from `RenewedShellStoryboardFactory.swift`.
 
 ## Safety Notes
 
@@ -205,10 +213,11 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - `SceneDelegate` still reads the same `UserState` and `alwaysOn` keys from standard defaults; those reads now pass through `SceneUserStateStore`.
 - `SceneDelegate` still invalidates the always-on timer and performs the same password unlock / first-launch foreground routes; those calls now pass through `LegacySceneForegroundRouteDispatcher`.
 - `SceneDelegate` still uses the storyboard-selected Home tab for category and tracking dispatch; the removed `homeVC` property was not referenced.
+- Moving Scene helper types changed source placement only; production launch still uses the existing `Main` storyboard path and the same helper implementations.
 - `Info.plist`, Storyboards, widget target files, signing, entitlements, bundle identifiers, app group keys, Realm schema, backup, restore, and auth behavior were not changed.
 
 ## What Remains
 
-- Continue SceneDelegate cleanup by moving the accumulated scene helper types into clearer source files once the side-effect boundaries are stable.
+- Continue the storyboard-removal runway by splitting storyboard bridge/root factory concerns from the future renewed shell factory, while keeping the production launch on `Main`.
 - Add manual QA before enabling the renewed root route, with special attention to widget URL start/stop, password unlock, and Map -> Journey navigation.
 - Keep the default app launch on the existing UIKit/Storyboard shell until manual QA proves parity.
