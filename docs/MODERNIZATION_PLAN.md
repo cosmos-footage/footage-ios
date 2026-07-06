@@ -526,13 +526,14 @@ Phase R14 progress:
 - Added `RenewedShellPresentation.legacyStoryboardBridge` to preserve the current tab order and `DateViewController` index expected by existing map flows.
 - Added launch configuration tests proving `UIMainStoryboardFile` and scene `UISceneStoryboardFile` still point to `Main` during the runway.
 - Added `LegacyRootViewControllerFactory` and routed `SceneDelegate` / `FL_LetsStartVC` through it so legacy root storyboard construction is centralized.
+- Added `SceneLifecycleCoordinator` and routed foreground gate and widget URL decisions through it while leaving side effects in `SceneDelegate`.
 
 Phase R14 current completion notes:
 
 - `git diff --check` succeeded.
 - `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` succeeded.
 - No Storyboard, asset, widget, Realm schema, network, auth, restore, signing, entitlement, bundle identifier, or root-controller runtime behavior was changed.
-- Next step is to extract the root selection and foreground gate logic out of `SceneDelegate`, still keeping the default launch on `Main` until parity QA is complete.
+- Next step is to extract remaining `SceneDelegate` side effects, starting with first-launch default initialization and widget tracking state mutation, still keeping the default launch on `Main` until parity QA is complete.
 
 ## First Phase 1 Codex Command
 
