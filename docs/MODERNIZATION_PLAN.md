@@ -537,13 +537,16 @@ Phase R14 progress:
 - Added tests for non-window scene, widget URL, and non-widget URL initial connection plans.
 - Added `SceneFullScreenPresenter` and routed `SceneDelegate` foreground password-unlock modal setup through it.
 - Added tests for top-controller traversal and legacy full-screen size/modal configuration.
+- Added `SceneRootControllerInstaller` and routed first-launch root replacement through it.
+- Added `SceneWidgetTimelineReloading` / `WidgetKitSceneWidgetTimelineReloader` and routed widget timeline reload calls through that boundary.
+- Added tests for root replacement and fake widget timeline reload behavior.
 
 Phase R14 current completion notes:
 
 - `git diff --check` succeeded.
 - `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` succeeded.
 - No Storyboard, asset, widget, Realm schema, network, auth, restore, signing, entitlement, bundle identifier, or root-controller runtime behavior was changed.
-- Next step is to extract remaining `SceneDelegate` side effects, starting with first-launch root replacement and widget timeline reload boundaries, still keeping the default launch on `Main` until parity QA is complete.
+- Next step is to extract remaining `SceneDelegate` side effects, starting with Home initial data loading and category restore boundaries, still keeping the default launch on `Main` until parity QA is complete.
 
 ## First Phase 1 Codex Command
 

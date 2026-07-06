@@ -68,6 +68,8 @@ git diff --check
 xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
 git diff --check
 xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
+git diff --check
+xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
 ```
 
 ## Results
@@ -89,6 +91,7 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - A tenth `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after extracting background recording action decisions.
 - An eleventh `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after extracting initial connection planning.
 - A twelfth `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after extracting foreground full-screen presentation.
+- A thirteenth `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after extracting root replacement and widget timeline reload boundaries.
 
 ## Changed
 
@@ -129,6 +132,10 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Added `SceneFullScreenPresenter` to centralize top-controller lookup and legacy full-screen sizing.
 - Routed `SceneDelegate` password-unlock foreground presentation through the presenter.
 - Added tests for presented-top-controller traversal and full-screen size/modal configuration.
+- Added `SceneRootControllerInstaller` to centralize root view-controller replacement.
+- Added `SceneWidgetTimelineReloading` and `WidgetKitSceneWidgetTimelineReloader` to isolate `WidgetCenter.shared.reloadAllTimelines()`.
+- Routed `SceneDelegate` first-launch root replacement and widget timeline reload calls through the new helpers.
+- Added tests for root replacement and a fake widget timeline reloader boundary.
 
 ## Safety Notes
 
@@ -146,10 +153,11 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - `SceneDelegate` still performs timer scheduling, one-shot location requests, continuous location updates, and widget timeline reloads on background entry.
 - `SceneDelegate` still performs `DateManager.loadTodayData()`, total-distance loading, category restoration, and optional Home tracking start during initial connection.
 - `SceneDelegate` still requests the existing `PasswordVC` from the legacy storyboard root factory; the presenter only centralizes current modal setup.
+- `SceneDelegate` still replaces the root with the same `FirstLaunch` storyboard controller and reloads all widget timelines at the same lifecycle points.
 - `Info.plist`, Storyboards, widget target files, signing, entitlements, bundle identifiers, app group keys, Realm schema, backup, restore, and auth behavior were not changed.
 
 ## What Remains
 
-- Extract remaining `SceneDelegate` side effects in smaller passes, starting with first-launch root replacement and widget timeline reload boundaries.
+- Extract remaining `SceneDelegate` side effects in smaller passes, starting with Home initial data loading and category restore boundaries.
 - Add manual QA before enabling the renewed root route, with special attention to widget URL start/stop, password unlock, and Map -> Journey navigation.
 - Keep the default app launch on the existing UIKit/Storyboard shell until manual QA proves parity.
