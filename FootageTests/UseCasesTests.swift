@@ -326,6 +326,33 @@ final class UseCasesTests: XCTestCase {
             }
         )
     }
+
+    func testSceneRootControllerInstallerReplacesWindowRoot() {
+        let window = UIWindow(frame: .zero)
+        let rootViewController = UIViewController()
+        let installer = SceneRootControllerInstaller()
+
+        installer.installRoot(rootViewController, in: window)
+
+        XCTAssertTrue(window.rootViewController === rootViewController)
+    }
+
+    func testSceneWidgetTimelineReloaderBoundaryCanBeFaked() {
+        let reloader = FakeSceneWidgetTimelineReloader()
+
+        reloader.reloadAllTimelines()
+        reloader.reloadAllTimelines()
+
+        XCTAssertEqual(reloader.reloadCount, 2)
+    }
+}
+
+private final class FakeSceneWidgetTimelineReloader: SceneWidgetTimelineReloading {
+    private(set) var reloadCount = 0
+
+    func reloadAllTimelines() {
+        reloadCount += 1
+    }
 }
 
 private final class FakePresentedViewController: UIViewController {

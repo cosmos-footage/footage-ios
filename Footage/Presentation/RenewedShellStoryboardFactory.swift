@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import WidgetKit
 
 struct StoryboardSceneDescriptor: Equatable, Hashable {
     var storyboardName: String
@@ -324,5 +325,21 @@ struct SceneFullScreenPresenter {
 
         prepareFullScreen(viewController)
         topController.present(viewController, animated: animated, completion: nil)
+    }
+}
+
+struct SceneRootControllerInstaller {
+    func installRoot(_ viewController: UIViewController, in window: UIWindow?) {
+        window?.rootViewController = viewController
+    }
+}
+
+protocol SceneWidgetTimelineReloading {
+    func reloadAllTimelines()
+}
+
+struct WidgetKitSceneWidgetTimelineReloader: SceneWidgetTimelineReloading {
+    func reloadAllTimelines() {
+        WidgetCenter.shared.reloadAllTimelines()
     }
 }

@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import WidgetKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
@@ -20,6 +19,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private let widgetTrackingStateStore = SceneWidgetTrackingStateStore()
     private let homeTabAccessor = LegacyHomeTabControllerAccessor()
     private let fullScreenPresenter = SceneFullScreenPresenter()
+    private let rootControllerInstaller = SceneRootControllerInstaller()
+    private let widgetTimelineReloader: any SceneWidgetTimelineReloading = WidgetKitSceneWidgetTimelineReloader()
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
@@ -58,7 +59,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Release any resources associated with this scene that can be re-created the next time the scene connects.
         // The scene may re-connect later, as its session was not neccessarily discarded (see `application:didDiscardSceneSessions` instead).
         widgetTrackingStateStore.clearTracking()
-        WidgetCenter.shared.reloadAllTimelines()
+        widgetTimelineReloader.reloadAllTimelines()
     }
     
     func sceneDidBecomeActive(_ scene: UIScene) {
@@ -90,7 +91,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             fullScreenPresenter.presentFullScreen(passwordVC, from: window?.rootViewController)
         case .firstLaunch:
             let firstLaunchVC = rootViewControllerFactory.makeFirstLaunch()
-            self.window?.rootViewController = firstLaunchVC
+            rootControllerInstaller.installRoot(firstLaunchVC, in: window)
             firstLaunchDefaultsInitializer.apply()
         case .none:
             break
@@ -118,6 +119,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         case .startUpdatingLocation:
             HomeViewController.locationManager.startUpdatingLocation()
         }
-        WidgetCenter.shared.reloadAllTimelines()
+        widgetTimelineReloader.reloadAllTimelines()
     }
 }
