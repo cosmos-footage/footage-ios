@@ -132,6 +132,14 @@ rg -n "RenewedStatsOverviewViewController|StatsOverviewPresentation|statsOvervie
 git diff --check -- Footage/App/AppCompositionRoot.swift Footage/Presentation/ProgrammaticRenewedShellFactory.swift Footage/Presentation/PresentationModels.swift Footage/Presentation/RenewedStatsOverviewViewController.swift FootageTests/PresentationModelsTests.swift footage.xcodeproj/project.pbxproj
 git status --short
 xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
+sed -n '1,90p' Footage/Domain/DomainModels.swift
+sed -n '90,140p' Footage/Scene/Date/DateViewController.swift
+sed -n '150,175p' Footage/Scene/Date/DateViewController.swift
+sed -n '54,88p' Footage/Domain/UseCases.swift
+rg -n "RenewedTimelineViewController|RenewedTimelineItemPresentation|timelineJourneys" Footage FootageTests footage.xcodeproj/project.pbxproj
+git diff --check -- Footage/App/AppCompositionRoot.swift Footage/Presentation/ProgrammaticRenewedShellFactory.swift Footage/Presentation/PresentationModels.swift Footage/Presentation/RenewedTimelineViewController.swift FootageTests/PresentationModelsTests.swift footage.xcodeproj/project.pbxproj
+git status --short
+xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
 ```
 
 ## Results
@@ -193,6 +201,8 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - A thirty-first approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding the disabled programmatic Settings dashboard screen.
 - The Stats screen inspection confirmed `StatsOverviewUseCase` already provides read-only monthly distance, today/total distance, and ranking summary data suitable for a disabled renewed-shell screen.
 - A thirty-second approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding the disabled programmatic Stats overview screen.
+- The Timeline inspection confirmed `DateTimelineUseCase` can provide `JourneyEntity` values without touching the legacy collection view, image preview cells, or storyboard navigation.
+- A thirty-third approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding the disabled programmatic Timeline screen.
 
 ## Changed
 
@@ -294,6 +304,12 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Updated `AppCompositionRoot.makeAppRootViewControllerFactory(...)` so the disabled renewed shell can inject a `makeStatsOverviewUseCase()` snapshot using the existing `DateConverter.lastMondayToday()` range.
 - Added tests proving Stats presentation text, factory routing, and fake-snapshot rendering.
 - Updated `footage.xcodeproj` target membership for `RenewedStatsOverviewViewController.swift`.
+- Added `RenewedTimelineItemPresentation` for read-only journey date, distance, and count summary text.
+- Added `RenewedTimelineViewController`, a read-only programmatic UIKit Timeline screen backed by `[JourneyEntity]`.
+- Extended `ProgrammaticRenewedShellViewControllerFactory` so the `.timeline` tab returns `RenewedTimelineViewController` when a timeline journey provider is injected.
+- Updated `AppCompositionRoot.makeAppRootViewControllerFactory(...)` so the disabled renewed shell can inject `makeDateTimelineUseCase().loadTimeline(range: .day)`.
+- Added tests proving Timeline item presentation, factory routing, and fake-journey rendering.
+- Updated `footage.xcodeproj` target membership for `RenewedTimelineViewController.swift`.
 
 ## Safety Notes
 
@@ -332,6 +348,7 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - The Xcode project ID collision was corrected before commit; `AppRootRouting.swift` remains in the App group and `RenewedTodayDashboardViewController.swift` is the separate Presentation file.
 - Adding the Settings dashboard changed only the disabled renewed shell path; legacy Settings storyboards, preference mutation flows, auth/password flows, and backup behavior were not changed.
 - Adding the Stats overview changed only the disabled renewed shell path; legacy Stats storyboards, ranking detail navigation, Realm schema, and existing Stats runtime behavior were not changed.
+- Adding the Timeline screen changed only the disabled renewed shell path; legacy Date storyboard, preview image collection view, journey navigation, and current archive runtime behavior were not changed.
 - `Info.plist`, Storyboards, widget target files, signing, entitlements, bundle identifiers, app group keys, Realm schema, backup, restore, and auth behavior were not changed.
 
 ## What Remains
