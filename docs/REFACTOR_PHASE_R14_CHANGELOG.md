@@ -46,6 +46,9 @@ xcodebuild -list -workspace footage.xcworkspace
 git diff --check
 xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
 xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
+rg -n "UIStoryboard\(name: \"Main\"|UIStoryboard\(name: \"FirstLaunch\"|instantiateViewController\(withIdentifier: \"TabBarController\"|instantiateViewController\(withIdentifier: \"PasswordVC\"|instantiateViewController\(withIdentifier: \"FL_VideoVC\"" Footage FootageTests
+git diff --check
+xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
 ```
 
 ## Results
@@ -57,6 +60,8 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - `xcodebuild -list -workspace footage.xcworkspace` succeeded during the coordinator/factory follow-up.
 - A fourth `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding the storyboard-backed renewed shell factory.
 - A fifth `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding the launch storyboard guard test.
+- The direct-storyboard-call search returned no remaining app/test matches for direct `Main` or `FirstLaunch` instantiation of `TabBarController`, `PasswordVC`, or `FL_VideoVC`.
+- A sixth `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after introducing the legacy root factory.
 
 ## Changed
 
@@ -74,6 +79,10 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Added `StoryboardSceneDescriptor`, `LegacyRenewedShellStoryboardSceneProvider`, `StoryboardBackedRenewedShellViewControllerFactory`, and `RenewedShellCoordinator`.
 - Added a direct view-controller provider for the legacy inline Map tab because `MapViewController` has no storyboard identifier in `Main.storyboard`.
 - Added tests for the legacy bridge tab order, storyboard descriptor mapping, direct Map-provider precedence, fallback behavior, coordinator root construction, and the current `Info.plist` Main storyboard launch configuration.
+- Added central legacy root descriptors for `Main/TabBarController`, `FirstLaunch/FL_VideoVC`, and `Main/PasswordVC`.
+- Added `LegacyRootViewControllerFactory` and `StoryboardLegacyRootViewControllerFactory`.
+- Replaced direct storyboard instantiation in `SceneDelegate` and `FL_LetsStartVC` with the root factory while preserving the same storyboard-backed runtime destinations.
+- Added tests proving the root factory uses the central descriptors.
 
 ## Safety Notes
 
@@ -82,12 +91,12 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - First-launch users still route to the existing FirstLaunch Storyboard in the router.
 - The programmatic UIKit shell is compiled but not reachable from the production launch path.
 - SwiftUI was not removed from widget-required or future isolated-use eligibility; only the app shell runway was clarified.
-- `SceneDelegate`, `Info.plist`, `FirstLaunch.storyboard`, `Main.storyboard`, and existing storyboard identifiers were not changed.
+- `Info.plist`, `FirstLaunch.storyboard`, `Main.storyboard`, and existing storyboard identifiers were not changed.
 - The coordinator can build a disabled-by-default UIKit root, but production still launches through the existing Main storyboard.
 - The legacy bridge intentionally preserves `DateViewController` at tab index 3 because map child flows currently assume that index.
+- `SceneDelegate` still preserves current foreground password and first-launch behavior, but now gets those controllers through `LegacyRootViewControllerFactory`.
 
 ## What Remains
 
-- Add a root factory around `SceneDelegate` and `FL_LetsStartVC` so direct `UIStoryboard(name: "Main")` calls can be removed behind tests.
 - Add manual QA before enabling the renewed root route, with special attention to widget URL start/stop, password unlock, and Map -> Journey navigation.
 - Keep the default app launch on the existing UIKit/Storyboard shell until manual QA proves parity.

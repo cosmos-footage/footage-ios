@@ -153,7 +153,7 @@ The future IA can reorder tabs after map navigation and date routing stop relyin
 | `FL_VideoVC` | Intro video. | `AVPlayer`, `AVPlayerLayer`, `NotificationCenter` player-end observer, bundled `Intro.mp4`. |
 | `FL_ProfileSettingsVC` | First-run name/profile setup. | `PHPhotoLibrary`, `UserDefaults` keys `userName` and `profileImage`, `UIApplication.openSettingsURLString`, `ProfileSelectionVC`. |
 | `FL_NameColorVC` | First-run color/category naming. | App group defaults `group.footage`, color keys `#EADE4Cff`, `#F5A997ff`, `#F0E7CFff`, `#FF6B39ff`, `#206491ff`. |
-| `FL_LetsStartVC` | Completes onboarding and opens main tab shell. | `UserDefaults.standard` key `UserState`, `UIStoryboard(name: "Main")`, `TabBarController`. |
+| `FL_LetsStartVC` | Completes onboarding and opens main tab shell. | `UserDefaults.standard` key `UserState`, `LegacyRootViewControllerFactory`, legacy `Main/TabBarController` destination. |
 | `ProfileSelectionVC` | Reusable photo-library grid. | `Photos`, `PHAsset`, `PHCachingImageManager`, `ProfileEditVC`. Imports `MapKit` but no route/location dependency was found. |
 | `ProfileEditVC` | Reusable profile crop/editor. | `Photos` / `PHAsset`, `UserDefaults.standard` key `profileImage`, parent view controller coupling to first-run, settings, or date profile flows. |
 
