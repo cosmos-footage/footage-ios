@@ -13,19 +13,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
     let homeVC = HomeViewController()
     var alwaysOnTimer = Timer()
-    private let rootViewControllerFactory: any LegacyRootViewControllerFactory = StoryboardLegacyRootViewControllerFactory()
     private let sceneLifecycleCoordinator = SceneLifecycleCoordinator()
     private let userStateStore = SceneUserStateStore()
-    private let firstLaunchDefaultsInitializer = FirstLaunchDefaultsInitializer()
     private let widgetTrackingStateStore = SceneWidgetTrackingStateStore()
     private let homeTabAccessor = LegacyHomeTabControllerAccessor()
-    private let fullScreenPresenter = SceneFullScreenPresenter()
-    private let rootControllerInstaller = SceneRootControllerInstaller()
     private let widgetTimelineReloader: any SceneWidgetTimelineReloading = WidgetKitSceneWidgetTimelineReloader()
     private let homeInitialDataLoader: any SceneHomeInitialDataLoading = LegacySceneHomeInitialDataLoader()
     private let selectedColorStore = SceneSelectedColorStore()
     private let homeViewControllerDispatcher: any SceneHomeViewControllerDispatching = LegacySceneHomeViewControllerDispatcher()
     private let backgroundRecordingDispatcher: any SceneBackgroundRecordingDispatching = LegacySceneBackgroundRecordingDispatcher()
+    private let foregroundRouteDispatcher: any SceneForegroundRouteDispatching = LegacySceneForegroundRouteDispatcher()
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
@@ -86,20 +83,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             userState: userStateStore.userState(),
             alwaysOn: userStateStore.isAlwaysOnEnabled()
         )
-        if foregroundPlan.shouldInvalidateAlwaysOnTimer {
+        foregroundRouteDispatcher.dispatch(foregroundPlan, in: window) {
             alwaysOnTimer.invalidate()
-        }
-
-        switch foregroundPlan.route {
-        case .passwordUnlock:
-            guard let passwordVC = rootViewControllerFactory.makePasswordUnlock() else { return }
-            fullScreenPresenter.presentFullScreen(passwordVC, from: window?.rootViewController)
-        case .firstLaunch:
-            let firstLaunchVC = rootViewControllerFactory.makeFirstLaunch()
-            rootControllerInstaller.installRoot(firstLaunchVC, in: window)
-            firstLaunchDefaultsInitializer.apply()
-        case .none:
-            break
         }
         // Widget Color Update
         

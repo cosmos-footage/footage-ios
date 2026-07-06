@@ -398,6 +398,22 @@ final class UseCasesTests: XCTestCase {
         XCTAssertNotNil(assignedTimer)
     }
 
+    func testSceneForegroundRouteDispatcherBoundaryCanBeFaked() {
+        let dispatcher = FakeSceneForegroundRouteDispatcher()
+        let plan = SceneForegroundPlan(
+            shouldInvalidateAlwaysOnTimer: true,
+            route: .passwordUnlock
+        )
+        var didInvalidateTimer = false
+
+        dispatcher.dispatch(plan, in: UIWindow(frame: .zero)) {
+            didInvalidateTimer = true
+        }
+
+        XCTAssertEqual(dispatcher.dispatchedPlans, [plan])
+        XCTAssertTrue(didInvalidateTimer)
+    }
+
     func testSceneWidgetTimelineReloaderBoundaryCanBeFaked() {
         let reloader = FakeSceneWidgetTimelineReloader()
 
@@ -444,6 +460,22 @@ private final class FakeSceneBackgroundRecordingDispatcher: SceneBackgroundRecor
         if action == .scheduleAlwaysOnLocationRefresh {
             let timer = Timer(timeInterval: 2.5, repeats: true) { _ in }
             timerAssignment(timer)
+        }
+    }
+}
+
+private final class FakeSceneForegroundRouteDispatcher: SceneForegroundRouteDispatching {
+    private(set) var dispatchedPlans: [SceneForegroundPlan] = []
+
+    func dispatch(
+        _ plan: SceneForegroundPlan,
+        in window: UIWindow?,
+        timerInvalidation: () -> Void
+    ) {
+        dispatchedPlans.append(plan)
+
+        if plan.shouldInvalidateAlwaysOnTimer {
+            timerInvalidation()
         }
     }
 }

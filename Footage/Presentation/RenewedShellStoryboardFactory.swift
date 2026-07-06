@@ -384,6 +384,55 @@ struct LegacySceneBackgroundRecordingDispatcher: SceneBackgroundRecordingDispatc
     }
 }
 
+protocol SceneForegroundRouteDispatching {
+    func dispatch(
+        _ plan: SceneForegroundPlan,
+        in window: UIWindow?,
+        timerInvalidation: () -> Void
+    )
+}
+
+struct LegacySceneForegroundRouteDispatcher: SceneForegroundRouteDispatching {
+    private let rootViewControllerFactory: any LegacyRootViewControllerFactory
+    private let fullScreenPresenter: SceneFullScreenPresenter
+    private let rootControllerInstaller: SceneRootControllerInstaller
+    private let firstLaunchDefaultsInitializer: FirstLaunchDefaultsInitializer
+
+    init(
+        rootViewControllerFactory: any LegacyRootViewControllerFactory = StoryboardLegacyRootViewControllerFactory(),
+        fullScreenPresenter: SceneFullScreenPresenter = SceneFullScreenPresenter(),
+        rootControllerInstaller: SceneRootControllerInstaller = SceneRootControllerInstaller(),
+        firstLaunchDefaultsInitializer: FirstLaunchDefaultsInitializer = FirstLaunchDefaultsInitializer()
+    ) {
+        self.rootViewControllerFactory = rootViewControllerFactory
+        self.fullScreenPresenter = fullScreenPresenter
+        self.rootControllerInstaller = rootControllerInstaller
+        self.firstLaunchDefaultsInitializer = firstLaunchDefaultsInitializer
+    }
+
+    func dispatch(
+        _ plan: SceneForegroundPlan,
+        in window: UIWindow?,
+        timerInvalidation: () -> Void
+    ) {
+        if plan.shouldInvalidateAlwaysOnTimer {
+            timerInvalidation()
+        }
+
+        switch plan.route {
+        case .passwordUnlock:
+            guard let passwordVC = rootViewControllerFactory.makePasswordUnlock() else { return }
+            fullScreenPresenter.presentFullScreen(passwordVC, from: window?.rootViewController)
+        case .firstLaunch:
+            let firstLaunchVC = rootViewControllerFactory.makeFirstLaunch()
+            rootControllerInstaller.installRoot(firstLaunchVC, in: window)
+            firstLaunchDefaultsInitializer.apply()
+        case .none:
+            break
+        }
+    }
+}
+
 struct SceneFullScreenPresenter {
     func topViewController(from rootViewController: UIViewController?) -> UIViewController? {
         var topController = rootViewController
