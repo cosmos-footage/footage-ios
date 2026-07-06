@@ -112,6 +112,7 @@
 		C0D4A1020000000000000001 /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D4A1050000000000000001 /* AppEnvironment.swift */; };
 		C0D4A1030000000000000001 /* AppCompositionRoot.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D4A1060000000000000001 /* AppCompositionRoot.swift */; };
 		C0D8600D0000000000000001 /* AppRootViewControllerFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D8600E0000000000000001 /* AppRootViewControllerFactory.swift */; };
+		C0D8600F0000000000000001 /* AppRootRouting.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D860100000000000000001 /* AppRootRouting.swift */; };
 		C0D700010000000000000001 /* DistanceCalculatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D700040000000000000001 /* DistanceCalculatorTests.swift */; };
 		C0D700020000000000000001 /* LocationFilterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D700050000000000000001 /* LocationFilterTests.swift */; };
 		C0D700030000000000000001 /* RoutePointNDJSONSerializerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D700060000000000000001 /* RoutePointNDJSONSerializerTests.swift */; };
@@ -314,6 +315,7 @@
 		C0D4A1050000000000000001 /* AppEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEnvironment.swift; sourceTree = "<group>"; };
 		C0D4A1060000000000000001 /* AppCompositionRoot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCompositionRoot.swift; sourceTree = "<group>"; };
 		C0D8600E0000000000000001 /* AppRootViewControllerFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRootViewControllerFactory.swift; sourceTree = "<group>"; };
+		C0D860100000000000000001 /* AppRootRouting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRootRouting.swift; sourceTree = "<group>"; };
 		C0D700040000000000000001 /* DistanceCalculatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DistanceCalculatorTests.swift; sourceTree = "<group>"; };
 		C0D700050000000000000001 /* LocationFilterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationFilterTests.swift; sourceTree = "<group>"; };
 		C0D700060000000000000001 /* RoutePointNDJSONSerializerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutePointNDJSONSerializerTests.swift; sourceTree = "<group>"; };
@@ -599,6 +601,7 @@
 				C0D4A1040000000000000001 /* FeatureFlags.swift */,
 				C0D4A1050000000000000001 /* AppEnvironment.swift */,
 				C0D4A1060000000000000001 /* AppCompositionRoot.swift */,
+				C0D860100000000000000001 /* AppRootRouting.swift */,
 				C0D8600E0000000000000001 /* AppRootViewControllerFactory.swift */,
 			);
 			path = App;
@@ -1170,6 +1173,7 @@
 				C0D4A1020000000000000001 /* AppEnvironment.swift in Sources */,
 				C0D4A1030000000000000001 /* AppCompositionRoot.swift in Sources */,
 				C0D8600D0000000000000001 /* AppRootViewControllerFactory.swift in Sources */,
+				C0D8600F0000000000000001 /* AppRootRouting.swift in Sources */,
 				B93CFCE2259C670B00AEF677 /* ReportVC.swift in Sources */,
 				6E4DE58D249F335700883E7E /* DateManager.swift in Sources */,
 				6E442F3324B2C9570041CAF2 /* JourneyManager.swift in Sources */,
