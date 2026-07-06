@@ -124,6 +124,14 @@ rg -n "RenewedSettingsDashboardViewController|SettingsPreferencesPresentation|se
 git diff --check -- Footage/App/AppCompositionRoot.swift Footage/Presentation/ProgrammaticRenewedShellFactory.swift Footage/Presentation/PresentationModels.swift Footage/Presentation/RenewedSettingsDashboardViewController.swift FootageTests/PresentationModelsTests.swift footage.xcodeproj/project.pbxproj
 git status --short
 xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
+sed -n '89,132p' Footage/Domain/UseCases.swift
+sed -n '35,90p' Footage/Scene/Stats/StatsViewController.swift
+sed -n '36,62p' FootageTests/UseCasesTests.swift
+sed -n '1,80p' Footage/Presentation/ProgrammaticRenewedShellFactory.swift
+rg -n "RenewedStatsOverviewViewController|StatsOverviewPresentation|statsOverview" Footage FootageTests footage.xcodeproj/project.pbxproj
+git diff --check -- Footage/App/AppCompositionRoot.swift Footage/Presentation/ProgrammaticRenewedShellFactory.swift Footage/Presentation/PresentationModels.swift Footage/Presentation/RenewedStatsOverviewViewController.swift FootageTests/PresentationModelsTests.swift footage.xcodeproj/project.pbxproj
+git status --short
+xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
 ```
 
 ## Results
@@ -183,6 +191,8 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - A thirtieth approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding the disabled programmatic Today dashboard screen.
 - The Settings screen inspection confirmed `SettingsPreferencesUseCase` already provides a read-only preferences snapshot suitable for a disabled renewed-shell screen.
 - A thirty-first approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding the disabled programmatic Settings dashboard screen.
+- The Stats screen inspection confirmed `StatsOverviewUseCase` already provides read-only monthly distance, today/total distance, and ranking summary data suitable for a disabled renewed-shell screen.
+- A thirty-second approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding the disabled programmatic Stats overview screen.
 
 ## Changed
 
@@ -278,6 +288,12 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Updated `AppCompositionRoot.makeAppRootViewControllerFactory(...)` so the disabled renewed shell can inject `makeSettingsPreferencesUseCase()` into the programmatic Settings screen.
 - Added tests proving Settings presentation text, factory routing, and fake-snapshot rendering.
 - Updated `footage.xcodeproj` target membership for `RenewedSettingsDashboardViewController.swift`.
+- Added `StatsOverviewPresentation` for read-only today, total, monthly, top color, and top place display text.
+- Added `RenewedStatsOverviewViewController`, a read-only programmatic UIKit Stats screen backed by `StatsOverviewSnapshot`.
+- Extended `ProgrammaticRenewedShellViewControllerFactory` so the `.stats` tab returns `RenewedStatsOverviewViewController` when a stats snapshot provider is injected.
+- Updated `AppCompositionRoot.makeAppRootViewControllerFactory(...)` so the disabled renewed shell can inject a `makeStatsOverviewUseCase()` snapshot using the existing `DateConverter.lastMondayToday()` range.
+- Added tests proving Stats presentation text, factory routing, and fake-snapshot rendering.
+- Updated `footage.xcodeproj` target membership for `RenewedStatsOverviewViewController.swift`.
 
 ## Safety Notes
 
@@ -315,6 +331,7 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Adding the Today dashboard changed only the disabled renewed shell path; `SceneDelegate`, the legacy Home storyboard screen, recording controls, widget files, and launch configuration were not changed.
 - The Xcode project ID collision was corrected before commit; `AppRootRouting.swift` remains in the App group and `RenewedTodayDashboardViewController.swift` is the separate Presentation file.
 - Adding the Settings dashboard changed only the disabled renewed shell path; legacy Settings storyboards, preference mutation flows, auth/password flows, and backup behavior were not changed.
+- Adding the Stats overview changed only the disabled renewed shell path; legacy Stats storyboards, ranking detail navigation, Realm schema, and existing Stats runtime behavior were not changed.
 - `Info.plist`, Storyboards, widget target files, signing, entitlements, bundle identifiers, app group keys, Realm schema, backup, restore, and auth behavior were not changed.
 
 ## What Remains

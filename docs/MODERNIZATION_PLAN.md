@@ -572,6 +572,7 @@ Phase R14 progress:
 - Added the first screen-level programmatic UIKit slice: a disabled Today dashboard screen backed by `HomeDashboardUseCase` / `HomeDistancePresentation`.
 - Wired the Today dashboard only through the disabled `ProgrammaticRenewedShellViewControllerFactory`; remaining renewed tabs still use placeholders and production launch still uses the existing storyboard root.
 - Added a disabled read-only Settings dashboard screen backed by `SettingsPreferencesUseCase` / `SettingsPreferencesPresentation`.
+- Added a disabled read-only Stats overview screen backed by `StatsOverviewUseCase` / `StatsOverviewPresentation`.
 
 Phase R14 current completion notes:
 
@@ -587,6 +588,7 @@ Phase R14 current completion notes:
 - Two intermediate Today-dashboard test runs failed and were fixed: first an Xcode project file ID collision with `AppRootRouting.swift`, then a missing `return` in `ProgrammaticRenewedShellFactory`.
 - The latest `xcodebuild test` succeeded after adding the disabled programmatic Today dashboard screen.
 - The latest `xcodebuild test` succeeded after adding the disabled programmatic Settings dashboard screen.
+- The latest `xcodebuild test` succeeded after adding the disabled programmatic Stats overview screen.
 - No Storyboard, asset, widget, Realm schema, network, auth, restore, signing, entitlement, bundle identifier, or root-controller runtime behavior was changed.
 - Next step is to continue screen-level programmatic UIKit composition behind the disabled renewed shell, still keeping the default launch on `Main` until parity QA is complete.
 
