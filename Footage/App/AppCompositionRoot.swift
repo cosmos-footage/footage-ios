@@ -225,6 +225,9 @@ struct AppCompositionRoot {
                         },
                         backupPreparationUseCase: {
                             self.makeBackupPreparationUseCase()
+                        },
+                        restorePreviewUseCase: {
+                            self.makeRestorePreviewUseCase()
                         }
                     )
                 ).makeRootViewController()

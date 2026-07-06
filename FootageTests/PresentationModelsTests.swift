@@ -467,6 +467,41 @@ final class PresentationModelsTests: XCTestCase {
         XCTAssertFalse(backupUseCase.didPrepare)
     }
 
+    func testProgrammaticRenewedShellFactoryConnectsSettingsRestoreStatusWhenUseCaseExists() {
+        let restoreUseCase = FakeRestorePreviewUseCase(status: .downloading)
+        let factory = ProgrammaticRenewedShellViewControllerFactory(
+            settingsPreferencesUseCase: {
+                FakeSettingsPreferencesUseCase(
+                    snapshot: SettingsPreferencesSnapshot(
+                        isCloudBackupOptedIn: false,
+                        featureFlags: FeatureFlags(
+                            isCloudBackupEnabled: true,
+                            isRestoreEnabled: true,
+                            isAuthEnabled: false,
+                            isDevelopmentUploadEnabled: false,
+                            isNewUIRunwayEnabled: true
+                        )
+                    )
+                )
+            },
+            restorePreviewUseCase: {
+                restoreUseCase
+            }
+        )
+
+        let settings = factory.makeViewController(
+            for: RenewedShellTab(kind: .settings, title: "설정", systemImageName: "gearshape")
+        )
+        let navigationController = UINavigationController(rootViewController: settings)
+        navigationController.loadViewIfNeeded()
+        settings.loadViewIfNeeded()
+
+        settings.view.button(titled: "복원 상태")?.sendActions(for: .touchUpInside)
+
+        XCTAssertTrue(navigationController.topViewController is RenewedRestoreStatusViewController)
+        XCTAssertFalse(restoreUseCase.didPreview)
+    }
+
     func testProgrammaticRenewedShellFactoryBuildsStatsOverviewWhenSnapshotExists() {
         let factory = ProgrammaticRenewedShellViewControllerFactory(
             statsOverview: {
@@ -616,6 +651,32 @@ final class PresentationModelsTests: XCTestCase {
         XCTAssertTrue(controller.view.buttonTitles().contains("백업 상태"))
     }
 
+    func testRenewedSettingsDashboardShowsRestoreStatusEntryWhenFactoryExists() {
+        let controller = RenewedSettingsDashboardViewController(
+            loadSnapshot: {
+                SettingsPreferencesSnapshot(
+                    isCloudBackupOptedIn: true,
+                    featureFlags: FeatureFlags(
+                        isCloudBackupEnabled: true,
+                        isRestoreEnabled: true,
+                        isAuthEnabled: false,
+                        isDevelopmentUploadEnabled: false,
+                        isNewUIRunwayEnabled: true
+                    )
+                )
+            },
+            makeRestoreStatusViewController: {
+                RenewedRestoreStatusViewController {
+                    .idle
+                }
+            }
+        )
+
+        controller.loadViewIfNeeded()
+
+        XCTAssertTrue(controller.view.buttonTitles().contains("복원 상태"))
+    }
+
     func testRenewedBackupStatusRendersReadOnlyStatusWithoutPreparingBackup() {
         let useCase = FakeBackupPreparationUseCase(
             status: LocalBackupStatus(
@@ -635,6 +696,19 @@ final class PresentationModelsTests: XCTestCase {
         XCTAssertTrue(texts.contains("최근 백업 준비 기록 있음"))
         XCTAssertTrue(texts.contains("마지막 오류: network unavailable"))
         XCTAssertFalse(useCase.didPrepare)
+    }
+
+    func testRenewedRestoreStatusRendersReadOnlyStatusWithoutPreviewingManifest() {
+        let useCase = FakeRestorePreviewUseCase(status: .downloading)
+        let controller = RenewedRestoreStatusViewController(restorePreviewUseCase: useCase)
+
+        controller.loadViewIfNeeded()
+
+        let texts = controller.view.labelTexts()
+        XCTAssertTrue(texts.contains("복원 상태"))
+        XCTAssertTrue(texts.contains("복원 데이터 다운로드 중"))
+        XCTAssertTrue(texts.contains("진행 중"))
+        XCTAssertFalse(useCase.didPreview)
     }
 
     func testRenewedStatsOverviewRendersSnapshot() {
@@ -907,6 +981,41 @@ private final class FakeBackupPreparationUseCase: BackupPreparationUseCase {
         return ManualBackupPreparationResult(
             preparedItemCount: 0,
             localBackupStatus: statusValue
+        )
+    }
+}
+
+private final class FakeRestorePreviewUseCase: RestorePreviewUseCase {
+    private let statusValue: RestoreStatus
+    private(set) var didPreview = false
+
+    init(status: RestoreStatus) {
+        statusValue = status
+    }
+
+    func status() -> RestoreStatus {
+        statusValue
+    }
+
+    func previewLocalManifest(
+        _ manifest: RestoreManifestResponse,
+        routeObjectData: [Data],
+        conflictPolicy: RestoreConflictPolicy
+    ) -> Result<RestorePreview, Error> {
+        didPreview = true
+        return .success(
+            RestorePreview(
+                manifest: manifest,
+                routePoints: [],
+                importPlan: RestoreImportPlan(
+                    ownerId: OwnerID(rawValue: manifest.ownerId),
+                    sourceDeviceId: nil,
+                    recordingCount: 0,
+                    routePointCount: 0,
+                    canImport: false,
+                    conflictPolicy: conflictPolicy
+                )
+            )
         )
     }
 }

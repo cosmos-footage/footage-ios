@@ -15,6 +15,7 @@ struct ProgrammaticRenewedShellViewControllerFactory: RenewedShellViewController
     private let timelineJourneys: (() -> [JourneyEntity])?
     private let settingsPreferencesUseCase: (() -> SettingsPreferencesUseCase)?
     private let backupPreparationUseCase: (() -> BackupPreparationUseCase)?
+    private let restorePreviewUseCase: (() -> RestorePreviewUseCase)?
 
     init(
         placeholderFactory: any RenewedShellViewControllerFactory = PlaceholderRenewedShellViewControllerFactory(),
@@ -23,7 +24,8 @@ struct ProgrammaticRenewedShellViewControllerFactory: RenewedShellViewController
         statsOverview: (() -> StatsOverviewSnapshot)? = nil,
         timelineJourneys: (() -> [JourneyEntity])? = nil,
         settingsPreferencesUseCase: (() -> SettingsPreferencesUseCase)? = nil,
-        backupPreparationUseCase: (() -> BackupPreparationUseCase)? = nil
+        backupPreparationUseCase: (() -> BackupPreparationUseCase)? = nil,
+        restorePreviewUseCase: (() -> RestorePreviewUseCase)? = nil
     ) {
         self.placeholderFactory = placeholderFactory
         self.homeDashboardUseCase = homeDashboardUseCase
@@ -32,6 +34,7 @@ struct ProgrammaticRenewedShellViewControllerFactory: RenewedShellViewController
         self.timelineJourneys = timelineJourneys
         self.settingsPreferencesUseCase = settingsPreferencesUseCase
         self.backupPreparationUseCase = backupPreparationUseCase
+        self.restorePreviewUseCase = restorePreviewUseCase
     }
 
     func makeViewController(for tab: RenewedShellTab) -> UIViewController {
@@ -61,6 +64,11 @@ struct ProgrammaticRenewedShellViewControllerFactory: RenewedShellViewController
                 makeBackupStatusViewController: backupPreparationUseCase.map { backupPreparationUseCase in
                     {
                         RenewedBackupStatusViewController(backupPreparationUseCase: backupPreparationUseCase())
+                    }
+                },
+                makeRestoreStatusViewController: restorePreviewUseCase.map { restorePreviewUseCase in
+                    {
+                        RenewedRestoreStatusViewController(restorePreviewUseCase: restorePreviewUseCase())
                     }
                 }
             )

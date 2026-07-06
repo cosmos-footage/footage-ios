@@ -10,19 +10,23 @@ import UIKit
 final class RenewedSettingsDashboardViewController: UIViewController {
     private let loadSnapshot: () -> SettingsPreferencesSnapshot
     private let makeBackupStatusViewController: (() -> UIViewController)?
+    private let makeRestoreStatusViewController: (() -> UIViewController)?
     private let titleLabel = UILabel()
     private let backupOptInLabel = UILabel()
     private let backupFeatureLabel = UILabel()
     private let restoreFeatureLabel = UILabel()
     private let authFeatureLabel = UILabel()
     private let backupStatusButton = UIButton(type: .system)
+    private let restoreStatusButton = UIButton(type: .system)
 
     init(
         loadSnapshot: @escaping () -> SettingsPreferencesSnapshot,
-        makeBackupStatusViewController: (() -> UIViewController)? = nil
+        makeBackupStatusViewController: (() -> UIViewController)? = nil,
+        makeRestoreStatusViewController: (() -> UIViewController)? = nil
     ) {
         self.loadSnapshot = loadSnapshot
         self.makeBackupStatusViewController = makeBackupStatusViewController
+        self.makeRestoreStatusViewController = makeRestoreStatusViewController
         super.init(nibName: nil, bundle: nil)
         title = "설정"
         tabBarItem = UITabBarItem(title: "설정", image: UIImage(systemName: "gearshape"), selectedImage: nil)
@@ -46,7 +50,8 @@ final class RenewedSettingsDashboardViewController: UIViewController {
             backupFeatureLabel,
             restoreFeatureLabel,
             authFeatureLabel,
-            backupStatusButton
+            backupStatusButton,
+            restoreStatusButton
         ])
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical
@@ -67,6 +72,12 @@ final class RenewedSettingsDashboardViewController: UIViewController {
         backupStatusButton.titleLabel?.adjustsFontForContentSizeCategory = true
         backupStatusButton.isHidden = makeBackupStatusViewController == nil
         backupStatusButton.addTarget(self, action: #selector(showBackupStatus), for: .touchUpInside)
+
+        restoreStatusButton.setTitle("복원 상태", for: .normal)
+        restoreStatusButton.titleLabel?.font = .preferredFont(forTextStyle: .body)
+        restoreStatusButton.titleLabel?.adjustsFontForContentSizeCategory = true
+        restoreStatusButton.isHidden = makeRestoreStatusViewController == nil
+        restoreStatusButton.addTarget(self, action: #selector(showRestoreStatus), for: .touchUpInside)
 
         view.addSubview(stackView)
 
@@ -93,6 +104,19 @@ final class RenewedSettingsDashboardViewController: UIViewController {
         }
 
         let viewController = makeBackupStatusViewController()
+        if let navigationController {
+            navigationController.pushViewController(viewController, animated: true)
+        } else {
+            present(viewController, animated: true)
+        }
+    }
+
+    @objc private func showRestoreStatus() {
+        guard let makeRestoreStatusViewController else {
+            return
+        }
+
+        let viewController = makeRestoreStatusViewController()
         if let navigationController {
             navigationController.pushViewController(viewController, animated: true)
         } else {
