@@ -419,6 +419,10 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Added an optional renewed Settings "복원 상태" entry that appears only when a restore-status screen factory is injected.
 - Wired `ProgrammaticRenewedShellViewControllerFactory` and `AppCompositionRoot` so the disabled renewed Settings path can lazily create `RenewedRestoreStatusViewController` from `RestorePreviewUseCase`.
 - Added tests proving the restore status screen and Settings entry do not call restore preview/import behavior.
+- Added `RenewedAuthReadinessViewController`, a read-only UIKit screen that renders `AuthLinkingReadinessUseCase.snapshot()` through `AuthLinkingReadinessPresentation`.
+- Added an optional renewed Settings "계정 연결 상태" entry that appears only when an auth-readiness screen factory is injected.
+- Wired `ProgrammaticRenewedShellViewControllerFactory` and `AppCompositionRoot` so the disabled renewed Settings path can lazily create `RenewedAuthReadinessViewController` from `AuthLinkingReadinessUseCase`.
+- Added tests proving the auth-readiness screen reads snapshot state only and does not start account linking.
 
 ## Safety Notes
 
@@ -470,6 +474,8 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Adding the backup status Settings entry did not add a new tab and did not change `SceneDelegate`, feature flag defaults, Storyboards, signing, entitlements, bundle identifiers, widget files, or Realm schema.
 - The restore status Settings entry is limited to the disabled renewed Settings path and is created lazily on tap; it calls `status()` only and does not fetch manifests, preview imports, import data, access tokens, start auth, or perform networking.
 - Adding the restore status Settings entry did not add a new tab and did not change `SceneDelegate`, feature flag defaults, Storyboards, signing, entitlements, bundle identifiers, widget files, or Realm schema.
+- The auth-readiness Settings entry is limited to the disabled renewed Settings path and is created lazily on tap; it calls `snapshot()` only and does not start linking, request provider tokens, process authorization codes, or perform networking.
+- Adding the auth-readiness Settings entry did not add a new tab and did not change `SceneDelegate`, feature flag defaults, Storyboards, signing, entitlements, bundle identifiers, widget files, or Realm schema.
 - `Info.plist`, Storyboards, widget target files, signing, entitlements, bundle identifiers, app group keys, Realm schema, backup, restore, and auth behavior were not changed.
 - A sandboxed `xcodebuild test` run failed before test execution with CoreSimulator access errors and `xcodebuild: error: 'footage.xcworkspace' is not a workspace file.` The workspace directory and `contents.xcworkspacedata` were inspected and valid, then the same command succeeded with external Xcode/Simulator permissions.
 - One `xcodebuild test` run failed on `UseCasesTests.testAppCompositionRootBuildsRenewedRootForEnabledRouteWithoutLoadingViews()` because the test incorrectly assumed `RenewedShellViewController.isViewLoaded` would remain false after root construction. The assertion was narrowed to route/root identity and non-first-launch root identity, and the next `xcodebuild test` succeeded.
@@ -479,9 +485,11 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - The latest `xcodebuild test` succeeded after adding the optional renewed Settings backup-status entry.
 - A sandboxed `xcodebuild test` attempt failed before compilation with CoreSimulator permission errors and `xcodebuild: error: 'footage.xcworkspace' is not a workspace file.` The same command succeeded after rerunning with external Xcode/Simulator permissions.
 - The latest `xcodebuild test` succeeded after adding the read-only renewed Settings restore-status entry.
+- A sandboxed `xcodebuild test` attempt failed before compilation with CoreSimulator permission errors and `xcodebuild: error: 'footage.xcworkspace' is not a workspace file.` The same command succeeded after rerunning with external Xcode/Simulator permissions.
+- The latest `xcodebuild test` succeeded after adding the read-only renewed Settings auth-readiness entry.
 
 ## What Remains
 
-- Add the next disabled renewed Settings detail slice for auth readiness, or continue storyboard-removal runway by extracting one more legacy screen boundary.
+- Continue storyboard-removal runway by extracting one more legacy screen boundary or begin manual QA planning before enabling the renewed root route.
 - Add manual QA before enabling the renewed root route, with special attention to widget URL start/stop, password unlock, and Map -> Journey navigation.
 - Keep the default app launch on the existing UIKit/Storyboard shell until manual QA proves parity.
