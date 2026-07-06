@@ -371,6 +371,22 @@ final class UseCasesTests: XCTestCase {
         XCTAssertTrue(dispatcher.lastViewController === viewController)
     }
 
+    func testSceneBackgroundRecordingDispatcherBoundaryCanBeFaked() {
+        let dispatcher = FakeSceneBackgroundRecordingDispatcher()
+        var assignedTimer: Timer?
+
+        dispatcher.dispatch(.scheduleAlwaysOnLocationRefresh) { timer in
+            assignedTimer = timer
+        }
+        dispatcher.dispatch(.startUpdatingLocation) { _ in }
+
+        XCTAssertEqual(
+            dispatcher.dispatchedActions,
+            [.scheduleAlwaysOnLocationRefresh, .startUpdatingLocation]
+        )
+        XCTAssertNotNil(assignedTimer)
+    }
+
     func testSceneWidgetTimelineReloaderBoundaryCanBeFaked() {
         let reloader = FakeSceneWidgetTimelineReloader()
 
@@ -402,6 +418,22 @@ private final class FakeSceneHomeViewControllerDispatcher: SceneHomeViewControll
     func dispatchTrackingCommand(_ command: SceneHomeTrackingCommand, to viewController: UIViewController?) {
         trackingCommands.append(command)
         lastViewController = viewController
+    }
+}
+
+private final class FakeSceneBackgroundRecordingDispatcher: SceneBackgroundRecordingDispatching {
+    private(set) var dispatchedActions: [SceneBackgroundRecordingAction] = []
+
+    func dispatch(
+        _ action: SceneBackgroundRecordingAction,
+        timerAssignment: @escaping (Timer) -> Void
+    ) {
+        dispatchedActions.append(action)
+
+        if action == .scheduleAlwaysOnLocationRefresh {
+            let timer = Timer(timeInterval: 2.5, repeats: true) { _ in }
+            timerAssignment(timer)
+        }
     }
 }
 

@@ -24,6 +24,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private let homeInitialDataLoader: any SceneHomeInitialDataLoading = LegacySceneHomeInitialDataLoader()
     private let selectedColorStore = SceneSelectedColorStore()
     private let homeViewControllerDispatcher: any SceneHomeViewControllerDispatching = LegacySceneHomeViewControllerDispatcher()
+    private let backgroundRecordingDispatcher: any SceneBackgroundRecordingDispatching = LegacySceneBackgroundRecordingDispatcher()
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
@@ -113,16 +114,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             isRecording: HomeViewController.currentStartButtonImage == #imageLiteral(resourceName: "stopButton"),
             alwaysOn: UserDefaults.standard.bool(forKey: "alwaysOn")
         )
-        switch backgroundAction {
-        case .none:
-            break
-        case .scheduleAlwaysOnLocationRefresh:
-            Timer.scheduledTimer(withTimeInterval: 2.5, repeats: true) { timer in
-                self.alwaysOnTimer = timer
-                HomeViewController.locationManager.requestLocation()
-            }
-        case .startUpdatingLocation:
-            HomeViewController.locationManager.startUpdatingLocation()
+        backgroundRecordingDispatcher.dispatch(backgroundAction) { [weak self] timer in
+            self?.alwaysOnTimer = timer
         }
         widgetTimelineReloader.reloadAllTimelines()
     }

@@ -342,6 +342,32 @@ struct LegacySceneHomeViewControllerDispatcher: SceneHomeViewControllerDispatchi
     }
 }
 
+protocol SceneBackgroundRecordingDispatching {
+    func dispatch(
+        _ action: SceneBackgroundRecordingAction,
+        timerAssignment: @escaping (Timer) -> Void
+    )
+}
+
+struct LegacySceneBackgroundRecordingDispatcher: SceneBackgroundRecordingDispatching {
+    func dispatch(
+        _ action: SceneBackgroundRecordingAction,
+        timerAssignment: @escaping (Timer) -> Void
+    ) {
+        switch action {
+        case .none:
+            break
+        case .scheduleAlwaysOnLocationRefresh:
+            Timer.scheduledTimer(withTimeInterval: 2.5, repeats: true) { timer in
+                timerAssignment(timer)
+                HomeViewController.locationManager.requestLocation()
+            }
+        case .startUpdatingLocation:
+            HomeViewController.locationManager.startUpdatingLocation()
+        }
+    }
+}
+
 struct SceneFullScreenPresenter {
     func topViewController(from rootViewController: UIViewController?) -> UIViewController? {
         var topController = rootViewController
