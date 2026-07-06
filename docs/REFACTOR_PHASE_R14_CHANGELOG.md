@@ -140,6 +140,8 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - A twenty-fifth approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding the programmatic renewed shell factory boundary.
 - The app root factory search confirmed `AppRootViewControllerFactory` lives under `Footage/App`, maps `AppRootRoute` to legacy first-launch/main roots or the renewed UIKit shell, and is included in `footage.xcodeproj`.
 - A twenty-sixth approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding the route-to-root factory boundary.
+- The app root routing placement search confirmed `AppRootDestination`, `AppRootRoute`, and `AppRootRouter` now live in `AppRootRouting.swift`, with `FeatureFlags.swift` focused on flags.
+- A twenty-seventh approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after splitting app root routing types out of `FeatureFlags.swift`.
 
 ## Changed
 
@@ -218,6 +220,8 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Added a test proving the programmatic factory currently returns placeholder screens for the default internal tabs.
 - Added `AppRootViewControllerFactory.swift`, which converts `AppRootRoute` values into legacy storyboard roots or a disabled-by-default programmatic renewed shell root.
 - Added a test proving the app root factory can build legacy main tabs, legacy first launch, and renewed shell roots without wiring it into runtime launch.
+- Added `AppRootRouting.swift` and moved `AppRootDestination`, `AppRootRoute`, and `AppRootRouter` out of `FeatureFlags.swift`.
+- Updated `footage.xcodeproj` target membership for `AppRootRouting.swift`.
 
 ## Safety Notes
 
@@ -249,6 +253,7 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Moving `RenewedShellCoordinator` changed source placement only; the coordinator remains disabled by default and is not wired into production launch.
 - Adding the programmatic renewed shell factory changed only disabled-by-default scaffolding; existing runtime navigation still uses the storyboard launch path.
 - Adding `AppRootViewControllerFactory` changed only disabled-by-default routing scaffolding; `SceneDelegate` still uses the existing launch path.
+- Moving app root routing types changed source placement only; the default feature flags and launch behavior remain unchanged.
 - `Info.plist`, Storyboards, widget target files, signing, entitlements, bundle identifiers, app group keys, Realm schema, backup, restore, and auth behavior were not changed.
 
 ## What Remains
