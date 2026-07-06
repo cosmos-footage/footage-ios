@@ -197,7 +197,19 @@ struct AppCompositionRoot {
     func makeAppRootViewControllerFactory(
         legacyRootFactory: any LegacyRootViewControllerFactory = StoryboardLegacyRootViewControllerFactory()
     ) -> AppRootViewControllerMaking {
-        AppRootViewControllerFactory(legacyRootFactory: legacyRootFactory)
+        AppRootViewControllerFactory(
+            legacyRootFactory: legacyRootFactory,
+            renewedShellRootFactory: {
+                RenewedShellCoordinator(
+                    presentation: .default,
+                    viewControllerFactory: ProgrammaticRenewedShellViewControllerFactory(
+                        homeDashboardUseCase: {
+                            self.makeHomeDashboardUseCase()
+                        }
+                    )
+                ).makeRootViewController()
+            }
+        )
     }
 
     private func makeCloudBackupConfiguration(

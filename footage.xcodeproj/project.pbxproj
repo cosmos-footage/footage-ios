@@ -73,6 +73,7 @@
 		C0D860070000000000000001 /* RenewedShellPlaceholderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D860080000000000000001 /* RenewedShellPlaceholderViewController.swift */; };
 		C0D860090000000000000001 /* RenewedShellCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D8600A0000000000000001 /* RenewedShellCoordinator.swift */; };
 		C0D8600B0000000000000001 /* ProgrammaticRenewedShellFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D8600C0000000000000001 /* ProgrammaticRenewedShellFactory.swift */; };
+		C0D861010000000000000001 /* RenewedTodayDashboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D861020000000000000001 /* RenewedTodayDashboardViewController.swift */; };
 		C0D3A00B0000000000000001 /* SyncOutboxDraft.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3A00C0000000000000001 /* SyncOutboxDraft.swift */; };
 		C0D3A00D0000000000000001 /* MigrationExportModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3A00E0000000000000001 /* MigrationExportModels.swift */; };
 		C0D3A00F0000000000000001 /* LocalDeviceIdentityRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3A0100000000000000001 /* LocalDeviceIdentityRepository.swift */; };
@@ -316,6 +317,7 @@
 		C0D4A1060000000000000001 /* AppCompositionRoot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCompositionRoot.swift; sourceTree = "<group>"; };
 		C0D8600E0000000000000001 /* AppRootViewControllerFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRootViewControllerFactory.swift; sourceTree = "<group>"; };
 		C0D860100000000000000001 /* AppRootRouting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRootRouting.swift; sourceTree = "<group>"; };
+		C0D861020000000000000001 /* RenewedTodayDashboardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenewedTodayDashboardViewController.swift; sourceTree = "<group>"; };
 		C0D700040000000000000001 /* DistanceCalculatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DistanceCalculatorTests.swift; sourceTree = "<group>"; };
 		C0D700050000000000000001 /* LocationFilterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationFilterTests.swift; sourceTree = "<group>"; };
 		C0D700060000000000000001 /* RoutePointNDJSONSerializerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutePointNDJSONSerializerTests.swift; sourceTree = "<group>"; };
@@ -563,6 +565,7 @@
 				C0D860080000000000000001 /* RenewedShellPlaceholderViewController.swift */,
 				C0D8600A0000000000000001 /* RenewedShellCoordinator.swift */,
 				C0D8600C0000000000000001 /* ProgrammaticRenewedShellFactory.swift */,
+				C0D861020000000000000001 /* RenewedTodayDashboardViewController.swift */,
 				C0D840040000000000000001 /* RenewedShellStoryboardFactory.swift */,
 				C0D860020000000000000001 /* SceneLifecycleSupport.swift */,
 				C0D860040000000000000001 /* LegacyStoryboardBridge.swift */,
@@ -1131,6 +1134,7 @@
 				C0D860070000000000000001 /* RenewedShellPlaceholderViewController.swift in Sources */,
 				C0D860090000000000000001 /* RenewedShellCoordinator.swift in Sources */,
 				C0D8600B0000000000000001 /* ProgrammaticRenewedShellFactory.swift in Sources */,
+				C0D861010000000000000001 /* RenewedTodayDashboardViewController.swift in Sources */,
 				C0D840030000000000000001 /* RenewedShellStoryboardFactory.swift in Sources */,
 				C0D860010000000000000001 /* SceneLifecycleSupport.swift in Sources */,
 				C0D860030000000000000001 /* LegacyStoryboardBridge.swift in Sources */,

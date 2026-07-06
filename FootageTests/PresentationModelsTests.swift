@@ -310,6 +310,52 @@ final class PresentationModelsTests: XCTestCase {
         )
     }
 
+    func testProgrammaticRenewedShellFactoryBuildsTodayDashboardWhenUseCaseExists() {
+        let factory = ProgrammaticRenewedShellViewControllerFactory(
+            homeDashboardUseCase: {
+                FakeHomeDashboardUseCase(
+                    snapshot: HomeDashboardSnapshot(
+                        distanceTodayMeters: 1_230,
+                        distanceTotalMeters: 10_000,
+                        isTracking: true,
+                        selectedColorCategoryId: nil,
+                        generatedAt: Date(timeIntervalSince1970: 100)
+                    )
+                )
+            }
+        )
+
+        let today = factory.makeViewController(
+            for: RenewedShellTab(kind: .today, title: "오늘", systemImageName: "figure.walk")
+        )
+        let settings = factory.makeViewController(
+            for: RenewedShellTab(kind: .settings, title: "설정", systemImageName: "gearshape")
+        )
+
+        XCTAssertTrue(today is RenewedTodayDashboardViewController)
+        XCTAssertTrue(settings is RenewedShellPlaceholderViewController)
+    }
+
+    func testRenewedTodayDashboardRendersHomeSnapshot() {
+        let controller = RenewedTodayDashboardViewController {
+            HomeDashboardSnapshot(
+                distanceTodayMeters: 1_230,
+                distanceTotalMeters: 10_000,
+                isTracking: true,
+                selectedColorCategoryId: nil,
+                generatedAt: Date(timeIntervalSince1970: 100)
+            )
+        }
+
+        controller.loadViewIfNeeded()
+
+        let texts = controller.view.labelTexts()
+        XCTAssertTrue(texts.contains("오늘의 발자취"))
+        XCTAssertTrue(texts.contains("1.23km"))
+        XCTAssertTrue(texts.contains("전체 10km"))
+        XCTAssertTrue(texts.contains("기록 중"))
+    }
+
     func testLegacyRenewedShellStoryboardSceneProviderMapsExistingStoryboardTabs() {
         let provider = LegacyRenewedShellStoryboardSceneProvider()
 
@@ -480,5 +526,22 @@ private struct FakeRenewedShellViewControllerFactory: RenewedShellViewController
     }
 }
 
+private struct FakeHomeDashboardUseCase: HomeDashboardUseCase {
+    var snapshot: HomeDashboardSnapshot
+
+    func loadSnapshot() -> HomeDashboardSnapshot {
+        snapshot
+    }
+}
+
 private final class FakeDirectViewController: UIViewController {}
 private final class FakeFallbackViewController: UIViewController {}
+
+private extension UIView {
+    func labelTexts() -> [String] {
+        let ownText = (self as? UILabel)?.text.map { [$0] } ?? []
+        return subviews.reduce(ownText) { partialResult, subview in
+            partialResult + subview.labelTexts()
+        }
+    }
+}
