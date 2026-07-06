@@ -808,17 +808,52 @@ final class PresentationModelsTests: XCTestCase {
     }
 
     func testRenewedAboutRendersLegacyVersionAndStaticRows() {
-        let controller = RenewedAboutViewController {
-            122
-        }
+        let controller = RenewedAboutViewController(
+            legacyVersionCode: {
+                122
+            },
+            makePrivacyPolicyViewController: {
+                RenewedPrivacyPolicyViewController()
+            }
+        )
 
         controller.loadViewIfNeeded()
 
         let texts = controller.view.labelTexts()
         XCTAssertTrue(texts.contains("앱 정보"))
         XCTAssertTrue(texts.contains("버전정보 v1.2.2"))
-        XCTAssertTrue(texts.contains("개인정보 취급방침"))
         XCTAssertTrue(texts.contains("문의하기"))
+        XCTAssertTrue(controller.view.buttonTitles().contains("개인정보 취급방침"))
+    }
+
+    func testRenewedAboutPushesPrivacyPolicyWhenFactoryExists() {
+        let controller = RenewedAboutViewController(
+            legacyVersionCode: {
+                122
+            },
+            makePrivacyPolicyViewController: {
+                RenewedPrivacyPolicyViewController()
+            }
+        )
+        let navigationController = UINavigationController(rootViewController: controller)
+        navigationController.loadViewIfNeeded()
+        controller.loadViewIfNeeded()
+
+        controller.view.button(titled: "개인정보 취급방침")?.sendActions(for: .touchUpInside)
+
+        XCTAssertTrue(navigationController.topViewController is RenewedPrivacyPolicyViewController)
+    }
+
+    func testRenewedPrivacyPolicyRendersLegacyPolicyTextReadOnly() {
+        let controller = RenewedPrivacyPolicyViewController()
+
+        controller.loadViewIfNeeded()
+
+        let texts = controller.view.labelTexts()
+        let textViews = controller.view.textViewTexts()
+        XCTAssertTrue(texts.contains("개인정보 취급방침"))
+        XCTAssertTrue(textViews.contains { $0.contains("필수항목 : 위치정보") })
+        XCTAssertTrue(textViews.contains { $0.contains("el.co.footage@gmail.com") })
     }
 
     func testRenewedBackupStatusRendersReadOnlyStatusWithoutPreparingBackup() {
@@ -1221,5 +1256,12 @@ private extension UIView {
         }
 
         return subviews.compactMap { $0.button(titled: title) }.first
+    }
+
+    func textViewTexts() -> [String] {
+        let ownText = (self as? UITextView)?.text.map { [$0] } ?? []
+        return subviews.reduce(ownText) { partialResult, subview in
+            partialResult + subview.textViewTexts()
+        }
     }
 }

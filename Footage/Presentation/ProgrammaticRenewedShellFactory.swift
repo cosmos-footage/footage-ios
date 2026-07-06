@@ -84,7 +84,12 @@ struct ProgrammaticRenewedShellViewControllerFactory: RenewedShellViewController
                 },
                 makeAboutViewController: legacyVersionCode.map { legacyVersionCode in
                     {
-                        RenewedAboutViewController(legacyVersionCode: legacyVersionCode)
+                        RenewedAboutViewController(
+                            legacyVersionCode: legacyVersionCode,
+                            makePrivacyPolicyViewController: {
+                                RenewedPrivacyPolicyViewController()
+                            }
+                        )
                     }
                 }
             )
