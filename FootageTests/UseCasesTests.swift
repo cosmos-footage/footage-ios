@@ -295,6 +295,54 @@ final class UseCasesTests: XCTestCase {
         XCTAssertNil(accessor.selectHomeTab(from: UIViewController()))
         XCTAssertNil(accessor.selectHomeTab(from: nil))
     }
+
+    func testSceneFullScreenPresenterFindsPresentedTopController() {
+        let presented = FakePresentedViewController()
+        let root = FakePresentedViewController(presentedViewControllerOverride: presented)
+        let presenter = SceneFullScreenPresenter()
+
+        XCTAssertTrue(presenter.topViewController(from: root) === presented)
+    }
+
+    func testSceneFullScreenPresenterPreparesLegacyFullScreenSizing() {
+        let viewController = UIViewController()
+        let presenter = SceneFullScreenPresenter()
+
+        presenter.prepareFullScreen(
+            viewController,
+            screenBounds: CGRect(x: 0, y: 0, width: 320, height: 640)
+        )
+
+        XCTAssertFalse(viewController.view.translatesAutoresizingMaskIntoConstraints)
+        XCTAssertEqual(viewController.modalPresentationStyle, .fullScreen)
+        XCTAssertTrue(
+            viewController.view.constraints.contains {
+                $0.firstAttribute == .width && $0.constant == 320 && $0.isActive
+            }
+        )
+        XCTAssertTrue(
+            viewController.view.constraints.contains {
+                $0.firstAttribute == .height && $0.constant == 640 && $0.isActive
+            }
+        )
+    }
+}
+
+private final class FakePresentedViewController: UIViewController {
+    private let presentedViewControllerOverride: UIViewController?
+
+    init(presentedViewControllerOverride: UIViewController? = nil) {
+        self.presentedViewControllerOverride = presentedViewControllerOverride
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override var presentedViewController: UIViewController? {
+        presentedViewControllerOverride
+    }
 }
 
 private func makeIsolatedDefaults(name: String) -> UserDefaults {

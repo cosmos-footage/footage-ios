@@ -19,6 +19,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private let firstLaunchDefaultsInitializer = FirstLaunchDefaultsInitializer()
     private let widgetTrackingStateStore = SceneWidgetTrackingStateStore()
     private let homeTabAccessor = LegacyHomeTabControllerAccessor()
+    private let fullScreenPresenter = SceneFullScreenPresenter()
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
@@ -86,17 +87,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         switch foregroundPlan.route {
         case .passwordUnlock:
             guard let passwordVC = rootViewControllerFactory.makePasswordUnlock() else { return }
-            if var topController = window?.rootViewController {
-                while let presentedViewController = topController.presentedViewController {
-                    topController = presentedViewController
-                }
-                let screenSize = UIScreen.main.bounds
-                passwordVC.view.translatesAutoresizingMaskIntoConstraints = false
-                passwordVC.view.widthAnchor.constraint(equalToConstant: screenSize.width).isActive = true
-                passwordVC.view.heightAnchor.constraint(equalToConstant: screenSize.height).isActive = true
-                passwordVC.modalPresentationStyle = .fullScreen
-                topController.present(passwordVC, animated: false, completion: nil)
-            }
+            fullScreenPresenter.presentFullScreen(passwordVC, from: window?.rootViewController)
         case .firstLaunch:
             let firstLaunchVC = rootViewControllerFactory.makeFirstLaunch()
             self.window?.rootViewController = firstLaunchVC

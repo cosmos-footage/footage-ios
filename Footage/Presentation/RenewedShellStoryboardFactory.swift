@@ -298,3 +298,31 @@ struct LegacyHomeTabControllerAccessor {
         selectHomeTab(from: rootViewController) as? HomeViewController
     }
 }
+
+struct SceneFullScreenPresenter {
+    func topViewController(from rootViewController: UIViewController?) -> UIViewController? {
+        var topController = rootViewController
+        while let presentedViewController = topController?.presentedViewController {
+            topController = presentedViewController
+        }
+        return topController
+    }
+
+    func prepareFullScreen(_ viewController: UIViewController, screenBounds: CGRect = UIScreen.main.bounds) {
+        viewController.view.translatesAutoresizingMaskIntoConstraints = false
+        viewController.view.widthAnchor.constraint(equalToConstant: screenBounds.width).isActive = true
+        viewController.view.heightAnchor.constraint(equalToConstant: screenBounds.height).isActive = true
+        viewController.modalPresentationStyle = .fullScreen
+    }
+
+    func presentFullScreen(
+        _ viewController: UIViewController,
+        from rootViewController: UIViewController?,
+        animated: Bool = false
+    ) {
+        guard let topController = topViewController(from: rootViewController) else { return }
+
+        prepareFullScreen(viewController)
+        topController.present(viewController, animated: animated, completion: nil)
+    }
+}
