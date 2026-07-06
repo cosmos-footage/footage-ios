@@ -159,6 +159,42 @@ final class UseCasesTests: XCTestCase {
 
         XCTAssertEqual(defaultScene["UISceneStoryboardFile"] as? String, "Main")
     }
+
+    func testSceneLifecycleCoordinatorPlansForegroundPasswordGate() {
+        let coordinator = SceneLifecycleCoordinator()
+
+        XCTAssertEqual(
+            coordinator.foregroundPlan(userState: "hasPassword", alwaysOn: true),
+            SceneForegroundPlan(shouldInvalidateAlwaysOnTimer: true, route: .passwordUnlock)
+        )
+        XCTAssertEqual(
+            coordinator.foregroundPlan(userState: "hasBioId", alwaysOn: false),
+            SceneForegroundPlan(shouldInvalidateAlwaysOnTimer: false, route: .passwordUnlock)
+        )
+    }
+
+    func testSceneLifecycleCoordinatorPlansFirstLaunchAndDefaultForeground() {
+        let coordinator = SceneLifecycleCoordinator()
+
+        XCTAssertEqual(
+            coordinator.foregroundPlan(userState: nil, alwaysOn: true),
+            SceneForegroundPlan(shouldInvalidateAlwaysOnTimer: true, route: .firstLaunch)
+        )
+        XCTAssertEqual(
+            coordinator.foregroundPlan(userState: "noPassword", alwaysOn: true),
+            SceneForegroundPlan(shouldInvalidateAlwaysOnTimer: true, route: .none)
+        )
+    }
+
+    func testSceneLifecycleCoordinatorHandlesWidgetURLsAndTrackingActions() {
+        let coordinator = SceneLifecycleCoordinator()
+
+        XCTAssertTrue(coordinator.isWidgetURL(URL(string: "widget://toggle")))
+        XCTAssertFalse(coordinator.isWidgetURL(URL(string: "footage://toggle")))
+        XCTAssertFalse(coordinator.isWidgetURL(nil))
+        XCTAssertEqual(coordinator.widgetTrackingAction(wasTracking: false), .start)
+        XCTAssertEqual(coordinator.widgetTrackingAction(wasTracking: true), .stop)
+    }
 }
 
 private final class FakeDaySummaryRepository: DaySummaryRepository {

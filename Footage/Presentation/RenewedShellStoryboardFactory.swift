@@ -162,3 +162,50 @@ struct StoryboardLegacyRootViewControllerFactory: LegacyRootViewControllerFactor
         storyboardInstantiator.instantiate(.legacyPasswordUnlock) as? PasswordVC
     }
 }
+
+enum SceneForegroundRoute: Equatable {
+    case none
+    case passwordUnlock
+    case firstLaunch
+}
+
+struct SceneForegroundPlan: Equatable {
+    var shouldInvalidateAlwaysOnTimer: Bool
+    var route: SceneForegroundRoute
+}
+
+enum SceneWidgetTrackingAction: Equatable {
+    case start
+    case stop
+}
+
+struct SceneLifecycleCoordinator: Equatable {
+    func foregroundPlan(userState: String?, alwaysOn: Bool) -> SceneForegroundPlan {
+        if userState == "hasPassword" || userState == "hasBioId" {
+            return SceneForegroundPlan(
+                shouldInvalidateAlwaysOnTimer: alwaysOn,
+                route: .passwordUnlock
+            )
+        }
+
+        if userState == nil {
+            return SceneForegroundPlan(
+                shouldInvalidateAlwaysOnTimer: alwaysOn,
+                route: .firstLaunch
+            )
+        }
+
+        return SceneForegroundPlan(
+            shouldInvalidateAlwaysOnTimer: alwaysOn,
+            route: .none
+        )
+    }
+
+    func isWidgetURL(_ url: URL?) -> Bool {
+        url?.scheme == "widget"
+    }
+
+    func widgetTrackingAction(wasTracking: Bool) -> SceneWidgetTrackingAction {
+        wasTracking ? .stop : .start
+    }
+}

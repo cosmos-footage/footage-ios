@@ -15,6 +15,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     let homeVC = HomeViewController()
     var alwaysOnTimer = Timer()
     private let rootViewControllerFactory: any LegacyRootViewControllerFactory = StoryboardLegacyRootViewControllerFactory()
+    private let sceneLifecycleCoordinator = SceneLifecycleCoordinator()
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
@@ -27,10 +28,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         tabBarVC.selectedIndex = 0
         guard let homeVC = tabBarVC.selectedViewController as? HomeViewController else { return }
         homeVC.setToLastCategory(selectedColor: UserDefaults(suiteName: "group.footage")?.string(forKey: "selectedColor"))
-        if let url = connectionOptions.urlContexts.first?.url {
-            if url.scheme == "widget" {
-                homeVC.startTracking()
-            }
+        if sceneLifecycleCoordinator.isWidgetURL(connectionOptions.urlContexts.first?.url) {
+            homeVC.startTracking()
         }
     }
     
@@ -42,9 +41,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if let tabBarVC = window?.rootViewController as? UITabBarController {
             tabBarVC.selectedIndex = 0
             if let homeVC = tabBarVC.selectedViewController as? HomeViewController {
-                if !wasTracking {
+                switch sceneLifecycleCoordinator.widgetTrackingAction(wasTracking: wasTracking) {
+                case .start:
                     homeVC.startTracking()
-                } else {
+                case .stop:
                     homeVC.stopTracking()
                 }
             }
@@ -75,10 +75,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Use this method to undo the changes made on entering the background.
         let userState = UserDefaults.standard.string(forKey: "UserState")
         let alwaysOn = UserDefaults.standard.bool(forKey: "alwaysOn")
-        if alwaysOn {
+        let foregroundPlan = sceneLifecycleCoordinator.foregroundPlan(
+            userState: userState,
+            alwaysOn: alwaysOn
+        )
+        if foregroundPlan.shouldInvalidateAlwaysOnTimer {
             alwaysOnTimer.invalidate()
         }
-        if userState == "hasPassword" || userState == "hasBioId"  {
+
+        switch foregroundPlan.route {
+        case .passwordUnlock:
             guard let passwordVC = rootViewControllerFactory.makePasswordUnlock() else { return }
             if var topController = window?.rootViewController {
                 while let presentedViewController = topController.presentedViewController {
@@ -91,7 +97,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 passwordVC.modalPresentationStyle = .fullScreen
                 topController.present(passwordVC, animated: false, completion: nil)
             }
-        } else if userState == nil { // first launch
+        case .firstLaunch:
             let firstLaunchVC = rootViewControllerFactory.makeFirstLaunch()
             self.window?.rootViewController = firstLaunchVC
             UserDefaults.standard.set("", forKey: "todayBadge")
@@ -104,6 +110,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             widgetUD.set("흰  색", forKey: "#F0E7CFff")
             widgetUD.set("주황색", forKey: "#FF6B39ff")
             widgetUD.set("파란색", forKey: "#206491ff")
+        case .none:
+            break
         }
         // Widget Color Update
         
