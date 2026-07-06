@@ -24,6 +24,11 @@ struct SceneInitialConnectionPlan: Equatable {
     var shouldStartTrackingFromWidget: Bool
 }
 
+enum SceneAppRootInstallAction: Equatable {
+    case keepStoryboardRoot
+    case replaceRoot(AppRootRoute)
+}
+
 enum SceneWidgetTrackingAction: Equatable {
     case start
     case stop
@@ -53,6 +58,15 @@ struct SceneLifecycleCoordinator: Equatable {
             shouldPrepareLegacyHome: true,
             shouldStartTrackingFromWidget: isWidgetURL(url)
         )
+    }
+
+    func appRootInstallAction(route: AppRootRoute) -> SceneAppRootInstallAction {
+        switch route.destination {
+        case .legacyFirstLaunch, .legacyMainTabs:
+            return .keepStoryboardRoot
+        case .renewedUIKitShell:
+            return .replaceRoot(route)
+        }
     }
 
     func foregroundPlan(userState: String?, alwaysOn: Bool) -> SceneForegroundPlan {

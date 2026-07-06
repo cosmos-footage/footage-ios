@@ -249,6 +249,17 @@ final class UseCasesTests: XCTestCase {
         )
     }
 
+    func testSceneLifecycleCoordinatorPlansAppRootInstallAction() {
+        let coordinator = SceneLifecycleCoordinator()
+
+        XCTAssertEqual(coordinator.appRootInstallAction(route: .legacyFirstLaunch), .keepStoryboardRoot)
+        XCTAssertEqual(coordinator.appRootInstallAction(route: .legacyMainTabs), .keepStoryboardRoot)
+        XCTAssertEqual(
+            coordinator.appRootInstallAction(route: .renewedUIKitShell),
+            .replaceRoot(.renewedUIKitShell)
+        )
+    }
+
     func testSceneLifecycleCoordinatorHandlesWidgetURLsAndTrackingActions() {
         let coordinator = SceneLifecycleCoordinator()
 
