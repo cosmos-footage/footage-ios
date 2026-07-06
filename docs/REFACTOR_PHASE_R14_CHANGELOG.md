@@ -142,6 +142,8 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - A twenty-sixth approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding the route-to-root factory boundary.
 - The app root routing placement search confirmed `AppRootDestination`, `AppRootRoute`, and `AppRootRouter` now live in `AppRootRouting.swift`, with `FeatureFlags.swift` focused on flags.
 - A twenty-seventh approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after splitting app root routing types out of `FeatureFlags.swift`.
+- The composition-root boundary search confirmed `AppCompositionRoot` can now build `AppRootRouter` and `AppRootViewControllerFactory` from the current environment.
+- A twenty-eighth approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding composition-root factories for app root routing.
 
 ## Changed
 
@@ -222,6 +224,8 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Added a test proving the app root factory can build legacy main tabs, legacy first launch, and renewed shell roots without wiring it into runtime launch.
 - Added `AppRootRouting.swift` and moved `AppRootDestination`, `AppRootRoute`, and `AppRootRouter` out of `FeatureFlags.swift`.
 - Updated `footage.xcodeproj` target membership for `AppRootRouting.swift`.
+- Added `AppCompositionRoot.makeAppRootRouter()` and `makeAppRootViewControllerFactory(...)`.
+- Added a test proving the composition root can create the app root routing boundaries without wiring them into `SceneDelegate`.
 
 ## Safety Notes
 
@@ -254,6 +258,7 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Adding the programmatic renewed shell factory changed only disabled-by-default scaffolding; existing runtime navigation still uses the storyboard launch path.
 - Adding `AppRootViewControllerFactory` changed only disabled-by-default routing scaffolding; `SceneDelegate` still uses the existing launch path.
 - Moving app root routing types changed source placement only; the default feature flags and launch behavior remain unchanged.
+- Adding composition-root factory methods changed only construction boundaries; `SceneDelegate` still uses the existing launch path.
 - `Info.plist`, Storyboards, widget target files, signing, entitlements, bundle identifiers, app group keys, Realm schema, backup, restore, and auth behavior were not changed.
 
 ## What Remains

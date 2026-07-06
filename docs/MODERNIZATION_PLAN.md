@@ -567,6 +567,7 @@ Phase R14 progress:
 - Added `AppRootViewControllerFactory.swift` to map `AppRootRoute` values to legacy storyboard roots or the disabled programmatic renewed shell root.
 - Added a test proving route-to-root creation works without wiring the new factory into `SceneDelegate`.
 - Added `AppRootRouting.swift` and moved root route types out of `FeatureFlags.swift` so feature-flag configuration and launch routing have separate homes.
+- Added composition-root factory methods for app root routing and root view-controller creation, still without wiring them into `SceneDelegate`.
 
 Phase R14 current completion notes:
 
@@ -577,6 +578,7 @@ Phase R14 current completion notes:
 - The latest `xcodebuild test` succeeded after adding `ProgrammaticRenewedShellFactory.swift`.
 - The latest `xcodebuild test` succeeded after adding `AppRootViewControllerFactory.swift`.
 - The latest `xcodebuild test` succeeded after splitting `AppRootRouting.swift`.
+- The latest `xcodebuild test` succeeded after adding app root routing factories to `AppCompositionRoot`.
 - No Storyboard, asset, widget, Realm schema, network, auth, restore, signing, entitlement, bundle identifier, or root-controller runtime behavior was changed.
 - Next step is to add screen-level programmatic UIKit composition behind the disabled renewed shell, still keeping the default launch on `Main` until parity QA is complete.
 
