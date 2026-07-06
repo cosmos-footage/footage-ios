@@ -211,6 +211,15 @@ sed -n '190,260p' Footage/App/AppCompositionRoot.swift
 git diff --check
 xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
 xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
+rg -n "Restore|Auth|Readiness|Renewed.*ViewController|Settings" Footage/Presentation Footage/Domain Footage/App FootageTests
+sed -n '150,225p' Footage/Domain/UseCases.swift
+sed -n '390,490p' Footage/Presentation/PresentationModels.swift
+sed -n '60,110p' Footage/App/AppCompositionRoot.swift
+sed -n '250,320p' FootageTests/PresentationModelsTests.swift
+rg -n "RenewedRestoreStatusViewController" Footage FootageTests footage.xcodeproj/project.pbxproj
+git diff --check
+xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
+xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
 ```
 
 ## Results
@@ -405,6 +414,11 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Added an optional read-only "백업 상태" entry to `RenewedSettingsDashboardViewController`; it appears only when a backup-status screen factory is injected.
 - Wired `ProgrammaticRenewedShellViewControllerFactory` and `AppCompositionRoot` so the disabled renewed Settings path can lazily create `RenewedBackupStatusViewController` from `BackupPreparationUseCase`.
 - Added tests proving the Settings entry navigates to `RenewedBackupStatusViewController` without calling `prepare(configuration:)`.
+- Used a read-only sub-agent to split restore and auth readiness; restore status was selected as the next bounded task, and auth readiness remains separate.
+- Added `RenewedRestoreStatusViewController`, a read-only UIKit screen that renders `RestorePreviewUseCase.status()` through `RestoreStatusPresentation`.
+- Added an optional renewed Settings "복원 상태" entry that appears only when a restore-status screen factory is injected.
+- Wired `ProgrammaticRenewedShellViewControllerFactory` and `AppCompositionRoot` so the disabled renewed Settings path can lazily create `RenewedRestoreStatusViewController` from `RestorePreviewUseCase`.
+- Added tests proving the restore status screen and Settings entry do not call restore preview/import behavior.
 
 ## Safety Notes
 
@@ -454,6 +468,8 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - The backup status screen calls `status()` only; it does not call `prepare(...)`, upload data, change opt-in, start networking, auth, or restore work.
 - The backup status Settings entry is limited to the disabled renewed Settings path and is created lazily on tap; default production launch and legacy Settings remain unchanged.
 - Adding the backup status Settings entry did not add a new tab and did not change `SceneDelegate`, feature flag defaults, Storyboards, signing, entitlements, bundle identifiers, widget files, or Realm schema.
+- The restore status Settings entry is limited to the disabled renewed Settings path and is created lazily on tap; it calls `status()` only and does not fetch manifests, preview imports, import data, access tokens, start auth, or perform networking.
+- Adding the restore status Settings entry did not add a new tab and did not change `SceneDelegate`, feature flag defaults, Storyboards, signing, entitlements, bundle identifiers, widget files, or Realm schema.
 - `Info.plist`, Storyboards, widget target files, signing, entitlements, bundle identifiers, app group keys, Realm schema, backup, restore, and auth behavior were not changed.
 - A sandboxed `xcodebuild test` run failed before test execution with CoreSimulator access errors and `xcodebuild: error: 'footage.xcworkspace' is not a workspace file.` The workspace directory and `contents.xcworkspacedata` were inspected and valid, then the same command succeeded with external Xcode/Simulator permissions.
 - One `xcodebuild test` run failed on `UseCasesTests.testAppCompositionRootBuildsRenewedRootForEnabledRouteWithoutLoadingViews()` because the test incorrectly assumed `RenewedShellViewController.isViewLoaded` would remain false after root construction. The assertion was narrowed to route/root identity and non-first-launch root identity, and the next `xcodebuild test` succeeded.
@@ -461,9 +477,11 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - The latest `xcodebuild test` succeeded after adding `RenewedBackupStatusViewController`.
 - A sandboxed `xcodebuild test` attempt failed before compilation with CoreSimulator permission errors and `xcodebuild: error: 'footage.xcworkspace' is not a workspace file.` The same command succeeded after rerunning with external Xcode/Simulator permissions.
 - The latest `xcodebuild test` succeeded after adding the optional renewed Settings backup-status entry.
+- A sandboxed `xcodebuild test` attempt failed before compilation with CoreSimulator permission errors and `xcodebuild: error: 'footage.xcworkspace' is not a workspace file.` The same command succeeded after rerunning with external Xcode/Simulator permissions.
+- The latest `xcodebuild test` succeeded after adding the read-only renewed Settings restore-status entry.
 
 ## What Remains
 
-- Add the next disabled renewed Settings detail slice for restore/auth readiness, or continue storyboard-removal runway by extracting one more legacy screen boundary.
+- Add the next disabled renewed Settings detail slice for auth readiness, or continue storyboard-removal runway by extracting one more legacy screen boundary.
 - Add manual QA before enabling the renewed root route, with special attention to widget URL start/stop, password unlock, and Map -> Journey navigation.
 - Keep the default app launch on the existing UIKit/Storyboard shell until manual QA proves parity.
