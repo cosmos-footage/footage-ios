@@ -8,6 +8,8 @@ R15 is the UI cutover preparation phase. Its safe automated scope is to keep har
 
 R15 is not the phase that deletes Storyboards or enables the renewed root by default.
 
+This plan has been executed for the automated scope. See `docs/REFACTOR_PHASE_R15_COMPLETION.md` for the closure note and remaining release-readiness gates.
+
 ## Assumptions
 
 - Production launch stays on the existing Storyboard root.

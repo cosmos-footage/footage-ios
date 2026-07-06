@@ -634,7 +634,7 @@ Begin Phase 1 build recovery. Do not change signing, bundle identifiers, entitle
 
 ## Refactor Phase R15: UI Cutover and Legacy Cleanup
 
-Status: started for QA evidence only. Production cutover has not started.
+Status: completed for simulator-safe automated runway work. Production cutover has not started.
 
 Goal: collect the evidence required before any renewed UIKit root is enabled for production-facing builds.
 
@@ -670,9 +670,10 @@ Current R15 notes:
 - Added `docs/REFACTOR_PHASE_R15_COMPLETION_PLAN.md` to split the remaining R15 work into rollback-flagged renewed Settings routing and documentation closure checkpoints.
 - Added a disabled-by-default renewed Settings detail route flag through launch argument `--footage-enable-renewed-settings-details` or environment variable `FOOTAGE_ENABLE_RENEWED_SETTINGS_DETAILS=1`.
 - The renewed root QA flag and renewed Settings detail route flag are independent; enabling the renewed root no longer exposes those read-only detail routes unless the detail flag is also enabled.
+- Added `docs/REFACTOR_PHASE_R15_COMPLETION.md` to close the automated R15 scope and carry physical-device QA into final release-readiness.
 - Manual QA is not yet passed or claimed.
 - No Storyboard, widget, Realm schema, signing, entitlement file, app group, Pod, or asset change was made to start R15. The bundle namespace was later renewed by explicit owner request.
 
 Next step:
 
-- Continue R15 with `R15-C2`, documentation closure for simulator-safe automated work before any Storyboard deletion. Keep physical-device background location QA, password foreground-gate QA, and full widget URL/app-group QA deferred until final release-readiness.
+- Start the next phase from the R15 completion note: physical-device QA evidence, a small production route cutover behind a rollback flag, or another non-device-dependent programmatic UIKit replacement. Keep physical-device background location QA, password foreground-gate QA, and full widget URL/app-group QA deferred until final release-readiness.
