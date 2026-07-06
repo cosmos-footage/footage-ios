@@ -62,6 +62,8 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 xcrun xcresulttool get object --legacy --path /Users/nyeok/Library/Developer/Xcode/DerivedData/footage-fcfkhlxrlvchugggglstbjyxsmlr/Logs/Test/Test-footage-2026.07.06_11-21-16-+0900.xcresult --format json
 git diff --check
 xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
+git diff --check
+xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
 ```
 
 ## Results
@@ -80,6 +82,7 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - The first Home-tab accessor test run failed because the test directly instantiated `HomeViewController`, which crashed in the unit-test environment. The production build phase had succeeded.
 - `xcrun xcresulttool get object --legacy --path /Users/nyeok/Library/Developer/Xcode/DerivedData/footage-fcfkhlxrlvchugggglstbjyxsmlr/Logs/Test/Test-footage-2026.07.06_11-21-16-+0900.xcresult --format json` confirmed `Crash: footage at UseCasesTests.testLegacyHomeTabControllerAccessorSelectsHomeTab()`.
 - A ninth `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after changing the test to avoid direct `HomeViewController` construction.
+- A tenth `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after extracting background recording action decisions.
 
 ## Changed
 
@@ -111,6 +114,9 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Added `LegacyHomeTabControllerAccessor` to centralize legacy root tab selection.
 - Routed `SceneDelegate` initial connection and widget URL handling through the home-tab accessor instead of repeating tab-bar lookup logic.
 - Added tests for first-tab selection and nil behavior without directly constructing `HomeViewController`.
+- Added `SceneBackgroundRecordingAction` and `SceneLifecycleCoordinator.backgroundRecordingAction(isRecording:alwaysOn:)`.
+- Routed `SceneDelegate.sceneDidEnterBackground` through the coordinator for recording/always-on decisions while preserving the existing timer and location-manager side effects.
+- Added tests for background non-recording, always-on refresh, and direct location-update actions.
 
 ## Safety Notes
 
@@ -125,10 +131,11 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - `SceneDelegate` still preserves current foreground password and first-launch behavior, but now gets those controllers through `LegacyRootViewControllerFactory`.
 - `SceneDelegate` still owns presentation and `HomeViewController.startTracking()` / `stopTracking()` calls, but default initialization and widget `isTracking` writes now live behind small helpers.
 - `SceneDelegate` still performs the actual Home start/stop/category side effects; the new accessor only centralizes current tab lookup.
+- `SceneDelegate` still performs timer scheduling, one-shot location requests, continuous location updates, and widget timeline reloads on background entry.
 - `Info.plist`, Storyboards, widget target files, signing, entitlements, bundle identifiers, app group keys, Realm schema, backup, restore, and auth behavior were not changed.
 
 ## What Remains
 
-- Extract remaining `SceneDelegate` side effects in smaller passes, starting with initial connect setup and background always-on handling.
+- Extract remaining `SceneDelegate` side effects in smaller passes, starting with initial connect setup and foreground password presentation.
 - Add manual QA before enabling the renewed root route, with special attention to widget URL start/stop, password unlock, and Map -> Journey navigation.
 - Keep the default app launch on the existing UIKit/Storyboard shell until manual QA proves parity.
