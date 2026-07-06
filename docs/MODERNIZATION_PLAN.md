@@ -560,12 +560,15 @@ Phase R14 progress:
 - Added `RenewedShellPresentation.swift` to the app target in `footage.xcodeproj`.
 - Added `RenewedShellPlaceholderViewController.swift` so disabled-by-default renewed shell fallback tabs have a concrete programmatic UIKit screen boundary.
 - Fixed the new placeholder controller's stored property from `tab` to `shellTab` after `xcodebuild test` exposed a collision with UIKit's `UIViewController.tab` API.
+- Added `RenewedShellCoordinator.swift` and moved renewed shell root assembly out of the storyboard-backed tab factory file.
+- Added `RenewedShellCoordinator.swift` to the app target in `footage.xcodeproj`.
 
 Phase R14 current completion notes:
 
 - `git diff --check` succeeded.
 - `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` succeeded.
 - One intermediate `xcodebuild test` failed because `RenewedShellPlaceholderViewController.tab` collided with UIKit's `UIViewController.tab`; the property was renamed to `shellTab`, and the next `xcodebuild test` succeeded.
+- The latest `xcodebuild test` succeeded after splitting `RenewedShellCoordinator.swift`.
 - No Storyboard, asset, widget, Realm schema, network, auth, restore, signing, entitlement, bundle identifier, or root-controller runtime behavior was changed.
 - Next step is to add screen-level programmatic UIKit composition behind the disabled renewed shell, still keeping the default launch on `Main` until parity QA is complete.
 
