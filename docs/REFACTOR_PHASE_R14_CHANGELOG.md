@@ -424,6 +424,10 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Wired `ProgrammaticRenewedShellViewControllerFactory` and `AppCompositionRoot` so the disabled renewed Settings path can lazily create `RenewedAuthReadinessViewController` from `AuthLinkingReadinessUseCase`.
 - Added tests proving the auth-readiness screen reads snapshot state only and does not start account linking.
 - Added `docs/RENEWED_ROOT_QA_PLAN.md` to define the manual QA gate before enabling the renewed UIKit root for production-facing builds.
+- Added `RenewedAboutViewController`, a read-only UIKit boundary for the legacy Settings About screen's version/privacy/contact labels.
+- Added an optional renewed Settings "앱 정보" entry that appears only when an about screen factory is injected.
+- Wired `ProgrammaticRenewedShellViewControllerFactory` and `AppCompositionRoot` so the disabled renewed Settings path can lazily create `RenewedAboutViewController` from the legacy `version` user default.
+- Added tests proving the renewed About screen renders `AppVersionPresentation` output and static privacy/contact labels.
 
 ## Safety Notes
 
@@ -478,6 +482,7 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - The auth-readiness Settings entry is limited to the disabled renewed Settings path and is created lazily on tap; it calls `snapshot()` only and does not start linking, request provider tokens, process authorization codes, or perform networking.
 - Adding the auth-readiness Settings entry did not add a new tab and did not change `SceneDelegate`, feature flag defaults, Storyboards, signing, entitlements, bundle identifiers, widget files, or Realm schema.
 - The renewed root QA plan is documentation-only and does not enable the renewed root route or change app runtime behavior.
+- The renewed About screen is limited to the disabled renewed Settings path and is display-only; it does not change legacy About, mail composer, privacy navigation, Storyboards, or production Settings behavior.
 - `Info.plist`, Storyboards, widget target files, signing, entitlements, bundle identifiers, app group keys, Realm schema, backup, restore, and auth behavior were not changed.
 - A sandboxed `xcodebuild test` run failed before test execution with CoreSimulator access errors and `xcodebuild: error: 'footage.xcworkspace' is not a workspace file.` The workspace directory and `contents.xcworkspacedata` were inspected and valid, then the same command succeeded with external Xcode/Simulator permissions.
 - One `xcodebuild test` run failed on `UseCasesTests.testAppCompositionRootBuildsRenewedRootForEnabledRouteWithoutLoadingViews()` because the test incorrectly assumed `RenewedShellViewController.isViewLoaded` would remain false after root construction. The assertion was narrowed to route/root identity and non-first-launch root identity, and the next `xcodebuild test` succeeded.
@@ -489,6 +494,8 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - The latest `xcodebuild test` succeeded after adding the read-only renewed Settings restore-status entry.
 - A sandboxed `xcodebuild test` attempt failed before compilation with CoreSimulator permission errors and `xcodebuild: error: 'footage.xcworkspace' is not a workspace file.` The same command succeeded after rerunning with external Xcode/Simulator permissions.
 - The latest `xcodebuild test` succeeded after adding the read-only renewed Settings auth-readiness entry.
+- A sandboxed `xcodebuild test` attempt failed before compilation with CoreSimulator permission errors and `xcodebuild: error: 'footage.xcworkspace' is not a workspace file.` The same command succeeded after rerunning with external Xcode/Simulator permissions.
+- The latest `xcodebuild test` succeeded after adding the read-only renewed Settings About boundary.
 
 ## What Remains
 
