@@ -195,6 +195,26 @@ final class PresentationModelsTests: XCTestCase {
         XCTAssertEqual(SettingsPushTimePresentation.pickerRowText(12), "12")
     }
 
+    func testSettingsPreferencesPresentationFormatsReadOnlyFeatureState() {
+        let presentation = SettingsPreferencesPresentation(
+            snapshot: SettingsPreferencesSnapshot(
+                isCloudBackupOptedIn: true,
+                featureFlags: FeatureFlags(
+                    isCloudBackupEnabled: true,
+                    isRestoreEnabled: false,
+                    isAuthEnabled: true,
+                    isDevelopmentUploadEnabled: false,
+                    isNewUIRunwayEnabled: true
+                )
+            )
+        )
+
+        XCTAssertEqual(presentation.backupOptInText, "백업 사용 중")
+        XCTAssertEqual(presentation.backupFeatureText, "백업 기능 준비됨")
+        XCTAssertEqual(presentation.restoreFeatureText, "복원 기능 비활성")
+        XCTAssertEqual(presentation.authFeatureText, "계정 연결 준비됨")
+    }
+
     func testAppVersionPresentationFormatsLegacyVersionCode() {
         XCTAssertEqual(
             AppVersionPresentation(legacyVersionCode: 122).text,
@@ -336,6 +356,35 @@ final class PresentationModelsTests: XCTestCase {
         XCTAssertTrue(settings is RenewedShellPlaceholderViewController)
     }
 
+    func testProgrammaticRenewedShellFactoryBuildsSettingsDashboardWhenUseCaseExists() {
+        let factory = ProgrammaticRenewedShellViewControllerFactory(
+            settingsPreferencesUseCase: {
+                FakeSettingsPreferencesUseCase(
+                    snapshot: SettingsPreferencesSnapshot(
+                        isCloudBackupOptedIn: false,
+                        featureFlags: FeatureFlags(
+                            isCloudBackupEnabled: false,
+                            isRestoreEnabled: false,
+                            isAuthEnabled: false,
+                            isDevelopmentUploadEnabled: false,
+                            isNewUIRunwayEnabled: true
+                        )
+                    )
+                )
+            }
+        )
+
+        let settings = factory.makeViewController(
+            for: RenewedShellTab(kind: .settings, title: "설정", systemImageName: "gearshape")
+        )
+        let today = factory.makeViewController(
+            for: RenewedShellTab(kind: .today, title: "오늘", systemImageName: "figure.walk")
+        )
+
+        XCTAssertTrue(settings is RenewedSettingsDashboardViewController)
+        XCTAssertTrue(today is RenewedShellPlaceholderViewController)
+    }
+
     func testRenewedTodayDashboardRendersHomeSnapshot() {
         let controller = RenewedTodayDashboardViewController {
             HomeDashboardSnapshot(
@@ -354,6 +403,30 @@ final class PresentationModelsTests: XCTestCase {
         XCTAssertTrue(texts.contains("1.23km"))
         XCTAssertTrue(texts.contains("전체 10km"))
         XCTAssertTrue(texts.contains("기록 중"))
+    }
+
+    func testRenewedSettingsDashboardRendersPreferencesSnapshot() {
+        let controller = RenewedSettingsDashboardViewController {
+            SettingsPreferencesSnapshot(
+                isCloudBackupOptedIn: false,
+                featureFlags: FeatureFlags(
+                    isCloudBackupEnabled: true,
+                    isRestoreEnabled: false,
+                    isAuthEnabled: false,
+                    isDevelopmentUploadEnabled: false,
+                    isNewUIRunwayEnabled: true
+                )
+            )
+        }
+
+        controller.loadViewIfNeeded()
+
+        let texts = controller.view.labelTexts()
+        XCTAssertTrue(texts.contains("설정"))
+        XCTAssertTrue(texts.contains("백업 꺼짐"))
+        XCTAssertTrue(texts.contains("백업 기능 준비됨"))
+        XCTAssertTrue(texts.contains("복원 기능 비활성"))
+        XCTAssertTrue(texts.contains("계정 연결 비활성"))
     }
 
     func testLegacyRenewedShellStoryboardSceneProviderMapsExistingStoryboardTabs() {
@@ -531,6 +604,22 @@ private struct FakeHomeDashboardUseCase: HomeDashboardUseCase {
 
     func loadSnapshot() -> HomeDashboardSnapshot {
         snapshot
+    }
+}
+
+private final class FakeSettingsPreferencesUseCase: SettingsPreferencesUseCase {
+    private var snapshotValue: SettingsPreferencesSnapshot
+
+    init(snapshot: SettingsPreferencesSnapshot) {
+        snapshotValue = snapshot
+    }
+
+    func loadPreferences() -> SettingsPreferencesSnapshot {
+        snapshotValue
+    }
+
+    func setCloudBackupOptIn(_ isOptedIn: Bool) {
+        snapshotValue.isCloudBackupOptedIn = isOptedIn
     }
 }
 

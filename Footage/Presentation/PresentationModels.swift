@@ -312,6 +312,26 @@ struct SettingsPushTimePresentation: Equatable {
     }
 }
 
+struct SettingsPreferencesPresentation: Equatable {
+    var snapshot: SettingsPreferencesSnapshot
+
+    var backupOptInText: String {
+        snapshot.isCloudBackupOptedIn ? "백업 사용 중" : "백업 꺼짐"
+    }
+
+    var backupFeatureText: String {
+        snapshot.featureFlags.isCloudBackupEnabled ? "백업 기능 준비됨" : "백업 기능 비활성"
+    }
+
+    var restoreFeatureText: String {
+        snapshot.featureFlags.isRestoreEnabled ? "복원 기능 준비됨" : "복원 기능 비활성"
+    }
+
+    var authFeatureText: String {
+        snapshot.featureFlags.isAuthEnabled ? "계정 연결 준비됨" : "계정 연결 비활성"
+    }
+}
+
 struct AppVersionPresentation: Equatable {
     var legacyVersionCode: Int
 

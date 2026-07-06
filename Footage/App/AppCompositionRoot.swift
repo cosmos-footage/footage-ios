@@ -205,6 +205,9 @@ struct AppCompositionRoot {
                     viewControllerFactory: ProgrammaticRenewedShellViewControllerFactory(
                         homeDashboardUseCase: {
                             self.makeHomeDashboardUseCase()
+                        },
+                        settingsPreferencesUseCase: {
+                            self.makeSettingsPreferencesUseCase()
                         }
                     )
                 ).makeRootViewController()
