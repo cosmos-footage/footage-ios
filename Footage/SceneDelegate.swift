@@ -16,6 +16,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var alwaysOnTimer = Timer()
     private let rootViewControllerFactory: any LegacyRootViewControllerFactory = StoryboardLegacyRootViewControllerFactory()
     private let sceneLifecycleCoordinator = SceneLifecycleCoordinator()
+    private let firstLaunchDefaultsInitializer = FirstLaunchDefaultsInitializer()
+    private let widgetTrackingStateStore = SceneWidgetTrackingStateStore()
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
@@ -35,9 +37,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
         // TODO: started before 추가
-        guard let userDefault = UserDefaults(suiteName: "group.footage") else { return }
-        let wasTracking = userDefault.bool(forKey: "isTracking")
-        userDefault.set(!wasTracking, forKey: "isTracking")
+        guard let wasTracking = widgetTrackingStateStore.toggleTracking() else { return }
         if let tabBarVC = window?.rootViewController as? UITabBarController {
             tabBarVC.selectedIndex = 0
             if let homeVC = tabBarVC.selectedViewController as? HomeViewController {
@@ -56,7 +56,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // This occurs shortly after the scene enters the background, or when its session is discarded.
         // Release any resources associated with this scene that can be re-created the next time the scene connects.
         // The scene may re-connect later, as its session was not neccessarily discarded (see `application:didDiscardSceneSessions` instead).
-        UserDefaults(suiteName: "group.footage")?.set(false, forKey: "isTracking")
+        widgetTrackingStateStore.clearTracking()
         WidgetCenter.shared.reloadAllTimelines()
     }
     
@@ -100,16 +100,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         case .firstLaunch:
             let firstLaunchVC = rootViewControllerFactory.makeFirstLaunch()
             self.window?.rootViewController = firstLaunchVC
-            UserDefaults.standard.set("", forKey: "todayBadge")
-            UserDefaults.standard.set(0, forKey: "minimumTotalDistance")
-            UserDefaults.standard.set(0, forKey: "minimumTotalRecord")
-            UserDefaults.standard.set(false, forKey: "startedBefore")
-            guard let widgetUD = UserDefaults(suiteName: "group.footage") else { return }
-            widgetUD.set("노란색", forKey: "#EADE4Cff")
-            widgetUD.set("분홍색", forKey: "#F5A997ff")
-            widgetUD.set("흰  색", forKey: "#F0E7CFff")
-            widgetUD.set("주황색", forKey: "#FF6B39ff")
-            widgetUD.set("파란색", forKey: "#206491ff")
+            firstLaunchDefaultsInitializer.apply()
         case .none:
             break
         }

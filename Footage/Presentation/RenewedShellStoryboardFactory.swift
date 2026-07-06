@@ -209,3 +209,48 @@ struct SceneLifecycleCoordinator: Equatable {
         wasTracking ? .stop : .start
     }
 }
+
+struct FirstLaunchDefaultsInitializer {
+    private let standardDefaults: UserDefaults
+    private let widgetDefaults: UserDefaults?
+
+    init(
+        standardDefaults: UserDefaults = .standard,
+        widgetDefaults: UserDefaults? = UserDefaults(suiteName: "group.footage")
+    ) {
+        self.standardDefaults = standardDefaults
+        self.widgetDefaults = widgetDefaults
+    }
+
+    func apply() {
+        standardDefaults.set("", forKey: "todayBadge")
+        standardDefaults.set(0, forKey: "minimumTotalDistance")
+        standardDefaults.set(0, forKey: "minimumTotalRecord")
+        standardDefaults.set(false, forKey: "startedBefore")
+
+        widgetDefaults?.set("노란색", forKey: "#EADE4Cff")
+        widgetDefaults?.set("분홍색", forKey: "#F5A997ff")
+        widgetDefaults?.set("흰  색", forKey: "#F0E7CFff")
+        widgetDefaults?.set("주황색", forKey: "#FF6B39ff")
+        widgetDefaults?.set("파란색", forKey: "#206491ff")
+    }
+}
+
+struct SceneWidgetTrackingStateStore {
+    private let defaults: UserDefaults?
+
+    init(defaults: UserDefaults? = UserDefaults(suiteName: "group.footage")) {
+        self.defaults = defaults
+    }
+
+    func toggleTracking() -> Bool? {
+        guard let defaults else { return nil }
+        let wasTracking = defaults.bool(forKey: "isTracking")
+        defaults.set(!wasTracking, forKey: "isTracking")
+        return wasTracking
+    }
+
+    func clearTracking() {
+        defaults?.set(false, forKey: "isTracking")
+    }
+}

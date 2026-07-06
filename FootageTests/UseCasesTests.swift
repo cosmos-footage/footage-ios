@@ -195,6 +195,49 @@ final class UseCasesTests: XCTestCase {
         XCTAssertEqual(coordinator.widgetTrackingAction(wasTracking: false), .start)
         XCTAssertEqual(coordinator.widgetTrackingAction(wasTracking: true), .stop)
     }
+
+    func testFirstLaunchDefaultsInitializerPreservesLegacyDefaultKeys() {
+        let standardDefaults = makeIsolatedDefaults(name: "first-launch-standard")
+        let widgetDefaults = makeIsolatedDefaults(name: "first-launch-widget")
+        let initializer = FirstLaunchDefaultsInitializer(
+            standardDefaults: standardDefaults,
+            widgetDefaults: widgetDefaults
+        )
+
+        initializer.apply()
+
+        XCTAssertEqual(standardDefaults.string(forKey: "todayBadge"), "")
+        XCTAssertEqual(standardDefaults.integer(forKey: "minimumTotalDistance"), 0)
+        XCTAssertEqual(standardDefaults.integer(forKey: "minimumTotalRecord"), 0)
+        XCTAssertFalse(standardDefaults.bool(forKey: "startedBefore"))
+        XCTAssertEqual(widgetDefaults.string(forKey: "#EADE4Cff"), "노란색")
+        XCTAssertEqual(widgetDefaults.string(forKey: "#F5A997ff"), "분홍색")
+        XCTAssertEqual(widgetDefaults.string(forKey: "#F0E7CFff"), "흰  색")
+        XCTAssertEqual(widgetDefaults.string(forKey: "#FF6B39ff"), "주황색")
+        XCTAssertEqual(widgetDefaults.string(forKey: "#206491ff"), "파란색")
+    }
+
+    func testSceneWidgetTrackingStateStoreTogglesAndClearsLegacyTrackingKey() {
+        let defaults = makeIsolatedDefaults(name: "widget-tracking")
+        let store = SceneWidgetTrackingStateStore(defaults: defaults)
+
+        XCTAssertEqual(store.toggleTracking(), false)
+        XCTAssertTrue(defaults.bool(forKey: "isTracking"))
+        XCTAssertEqual(store.toggleTracking(), true)
+        XCTAssertFalse(defaults.bool(forKey: "isTracking"))
+
+        defaults.set(true, forKey: "isTracking")
+        store.clearTracking()
+
+        XCTAssertFalse(defaults.bool(forKey: "isTracking"))
+    }
+}
+
+private func makeIsolatedDefaults(name: String) -> UserDefaults {
+    let suiteName = "FootageTests.\(name).\(UUID().uuidString)"
+    let defaults = UserDefaults(suiteName: suiteName)!
+    defaults.removePersistentDomain(forName: suiteName)
+    return defaults
 }
 
 private final class FakeDaySummaryRepository: DaySummaryRepository {
