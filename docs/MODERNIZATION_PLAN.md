@@ -578,6 +578,7 @@ Phase R14 progress:
 - Added `SceneAppRootInstaller` and wired `SceneDelegate` to consult the app root route during initial connection; with default flags disabled, it keeps the existing storyboard root and continues the legacy Home preparation path.
 - Added `SceneInitialLaunchPlan` so initial window-scene, widget URL, and app-root installation decisions are planned together before `SceneDelegate` performs side effects.
 - Added a renewed-root smoke test proving an enabled existing-user route can build a `RenewedShellViewController` root while first launch still remains covered by the legacy route tests.
+- Added an initial launch parity matrix covering first-launch, existing-user, widget URL, renewed-flag, and non-window-scene combinations without changing runtime feature flags.
 
 Phase R14 current completion notes:
 
@@ -600,8 +601,9 @@ Phase R14 current completion notes:
 - The latest `xcodebuild test` succeeded after wiring the disabled-by-default app-root install dispatcher into `SceneDelegate`.
 - The latest `xcodebuild test` succeeded after moving initial launch root/action planning into `SceneInitialLaunchPlan`.
 - One renewed-root smoke test run failed because the test incorrectly assumed the UIKit tab-bar root would remain view-unloaded after construction; the assertion was narrowed to route/root identity, and the next `xcodebuild test` succeeded.
+- The latest `xcodebuild test` succeeded after adding the initial launch parity matrix.
 - No Storyboard, asset, widget, Realm schema, network, auth, restore, signing, entitlement, bundle identifier, or default root-controller behavior was changed.
-- Next step is to add the initial launch parity matrix for first-launch, existing-user, widget URL, and renewed-flag combinations before any feature flag can be enabled outside development.
+- Next step is to select the next small screen-level UIKit rewrite slice with sub-agent assistance before making more implementation changes.
 
 ## First Phase 1 Codex Command
 

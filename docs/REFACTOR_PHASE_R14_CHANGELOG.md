@@ -185,6 +185,13 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 xcrun xcresulttool get object --legacy --path /Users/nyeok/Library/Developer/Xcode/DerivedData/footage-fcfkhlxrlvchugggglstbjyxsmlr/Logs/Test/Test-footage-2026.07.06_15-40-12-+0900.xcresult --format json
 git diff --check
 xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
+git status --short
+sed -n '130,310p' FootageTests/UseCasesTests.swift
+sed -n '1,90p' Footage/Presentation/SceneLifecycleSupport.swift
+sed -n '1,80p' Footage/App/AppRootRouting.swift
+git diff --check
+rg -n "testInitialLaunchParityMatrix" FootageTests/UseCasesTests.swift
+xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
 ```
 
 ## Results
@@ -370,6 +377,7 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Added tests proving non-window scenes never request root replacement and widget-launched renewed routes preserve the widget-start signal while planning the renewed root replacement.
 - Added the repository task harness files and committed them before continuing R14 executor tasks.
 - Added a renewed-root smoke test proving `AppCompositionRoot` can build a `RenewedShellViewController` for an enabled existing-user route without returning the legacy first-launch controller.
+- Added an initial launch parity matrix test covering first-launch with flags off/on, existing-user default widget launch, existing-user renewed widget launch, and non-window-scene renewed launch.
 
 ## Safety Notes
 
@@ -414,12 +422,14 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Combining initial launch planning changed only the shape of the decision boundary; default root, widget URL, and legacy Home preparation behavior remain the same.
 - The renewed root replacement path remains behind `FeatureFlags.isNewUIRunwayEnabled` and is not enabled by default.
 - The renewed-root smoke test changes tests only; no feature flag default, `SceneDelegate`, storyboard, or production route behavior was changed.
+- The initial launch parity matrix changes tests only; it does not enable the renewed UI flag, alter `SceneDelegate`, or change widget URL side effects.
 - `Info.plist`, Storyboards, widget target files, signing, entitlements, bundle identifiers, app group keys, Realm schema, backup, restore, and auth behavior were not changed.
 - A sandboxed `xcodebuild test` run failed before test execution with CoreSimulator access errors and `xcodebuild: error: 'footage.xcworkspace' is not a workspace file.` The workspace directory and `contents.xcworkspacedata` were inspected and valid, then the same command succeeded with external Xcode/Simulator permissions.
 - One `xcodebuild test` run failed on `UseCasesTests.testAppCompositionRootBuildsRenewedRootForEnabledRouteWithoutLoadingViews()` because the test incorrectly assumed `RenewedShellViewController.isViewLoaded` would remain false after root construction. The assertion was narrowed to route/root identity and non-first-launch root identity, and the next `xcodebuild test` succeeded.
+- The latest `xcodebuild test` succeeded after adding `UseCasesTests.testInitialLaunchParityMatrixKeepsDefaultAndFirstLaunchRoutesSafe()`.
 
 ## What Remains
 
-- Add the initial launch parity matrix for first-launch, existing-user, widget URL, and renewed-flag combinations.
+- Select the next small screen-level UIKit rewrite slice with sub-agent assistance, then execute one bounded task at a time.
 - Add manual QA before enabling the renewed root route, with special attention to widget URL start/stop, password unlock, and Map -> Journey navigation.
 - Keep the default app launch on the existing UIKit/Storyboard shell until manual QA proves parity.
