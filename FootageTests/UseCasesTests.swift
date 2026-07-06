@@ -145,6 +145,23 @@ final class UseCasesTests: XCTestCase {
         XCTAssertFalse(router.route(userState: "noPassword").usesStoryboard)
     }
 
+    func testAppRootViewControllerFactoryBuildsRouteRootsWithoutRuntimeCutover() throws {
+        let mainTabs = UITabBarController()
+        let firstLaunch = UIViewController()
+        let renewedRoot = UIViewController()
+        let factory = AppRootViewControllerFactory(
+            legacyRootFactory: FakeLegacyRootViewControllerFactory(
+                mainTabs: mainTabs,
+                firstLaunch: firstLaunch
+            ),
+            renewedShellRootFactory: { renewedRoot }
+        )
+
+        XCTAssertTrue(try XCTUnwrap(factory.makeRootViewController(for: .legacyMainTabs)) === mainTabs)
+        XCTAssertTrue(try XCTUnwrap(factory.makeRootViewController(for: .legacyFirstLaunch)) === firstLaunch)
+        XCTAssertTrue(try XCTUnwrap(factory.makeRootViewController(for: .renewedUIKitShell)) === renewedRoot)
+    }
+
     func testAppLaunchConfigurationStillUsesMainStoryboardDuringRenewedShellRunway() throws {
         let info = try XCTUnwrap(Bundle(for: AppDelegate.self).infoDictionary)
 
@@ -502,6 +519,23 @@ private final class FakePresentedViewController: UIViewController {
 
     override var presentedViewController: UIViewController? {
         presentedViewControllerOverride
+    }
+}
+
+private struct FakeLegacyRootViewControllerFactory: LegacyRootViewControllerFactory {
+    let mainTabs: UITabBarController?
+    let firstLaunch: UIViewController
+
+    func makeMainTabs() -> UITabBarController? {
+        mainTabs
+    }
+
+    func makeFirstLaunch() -> UIViewController {
+        firstLaunch
+    }
+
+    func makePasswordUnlock() -> PasswordVC? {
+        nil
     }
 }
 
