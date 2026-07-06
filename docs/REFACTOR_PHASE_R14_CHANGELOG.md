@@ -56,6 +56,12 @@ git status --short
 git diff -- Footage/SceneDelegate.swift Footage/Presentation/RenewedShellStoryboardFactory.swift FootageTests/UseCasesTests.swift
 git diff -- docs/REFACTOR_PHASE_R14_CHANGELOG.md docs/MODERNIZATION_PLAN.md
 xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
+git diff -- Footage/SceneDelegate.swift Footage/Presentation/RenewedShellStoryboardFactory.swift FootageTests/UseCasesTests.swift
+git diff --check
+xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
+xcrun xcresulttool get object --legacy --path /Users/nyeok/Library/Developer/Xcode/DerivedData/footage-fcfkhlxrlvchugggglstbjyxsmlr/Logs/Test/Test-footage-2026.07.06_11-21-16-+0900.xcresult --format json
+git diff --check
+xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
 ```
 
 ## Results
@@ -71,6 +77,9 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - A sixth `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after introducing the legacy root factory.
 - A seventh `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after extracting scene lifecycle decisions.
 - An eighth `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after extracting first-launch defaults and widget tracking state stores.
+- The first Home-tab accessor test run failed because the test directly instantiated `HomeViewController`, which crashed in the unit-test environment. The production build phase had succeeded.
+- `xcrun xcresulttool get object --legacy --path /Users/nyeok/Library/Developer/Xcode/DerivedData/footage-fcfkhlxrlvchugggglstbjyxsmlr/Logs/Test/Test-footage-2026.07.06_11-21-16-+0900.xcresult --format json` confirmed `Crash: footage at UseCasesTests.testLegacyHomeTabControllerAccessorSelectsHomeTab()`.
+- A ninth `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after changing the test to avoid direct `HomeViewController` construction.
 
 ## Changed
 
@@ -99,6 +108,9 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Added `SceneWidgetTrackingStateStore` for legacy app-group `isTracking` toggle/clear writes.
 - Routed first-launch default initialization and widget tracking state mutation through the new helpers.
 - Added tests proving the legacy default keys, color labels, and widget tracking toggle/clear behavior remain intact.
+- Added `LegacyHomeTabControllerAccessor` to centralize legacy root tab selection.
+- Routed `SceneDelegate` initial connection and widget URL handling through the home-tab accessor instead of repeating tab-bar lookup logic.
+- Added tests for first-tab selection and nil behavior without directly constructing `HomeViewController`.
 
 ## Safety Notes
 
@@ -112,10 +124,11 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - The legacy bridge intentionally preserves `DateViewController` at tab index 3 because map child flows currently assume that index.
 - `SceneDelegate` still preserves current foreground password and first-launch behavior, but now gets those controllers through `LegacyRootViewControllerFactory`.
 - `SceneDelegate` still owns presentation and `HomeViewController.startTracking()` / `stopTracking()` calls, but default initialization and widget `isTracking` writes now live behind small helpers.
+- `SceneDelegate` still performs the actual Home start/stop/category side effects; the new accessor only centralizes current tab lookup.
 - `Info.plist`, Storyboards, widget target files, signing, entitlements, bundle identifiers, app group keys, Realm schema, backup, restore, and auth behavior were not changed.
 
 ## What Remains
 
-- Extract remaining `SceneDelegate` side effects in smaller passes, starting with Home tab lookup / initial connect setup and background always-on handling.
+- Extract remaining `SceneDelegate` side effects in smaller passes, starting with initial connect setup and background always-on handling.
 - Add manual QA before enabling the renewed root route, with special attention to widget URL start/stop, password unlock, and Map -> Journey navigation.
 - Keep the default app launch on the existing UIKit/Storyboard shell until manual QA proves parity.
