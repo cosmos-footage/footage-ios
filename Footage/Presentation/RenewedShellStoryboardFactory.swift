@@ -254,3 +254,16 @@ struct SceneWidgetTrackingStateStore {
         defaults?.set(false, forKey: "isTracking")
     }
 }
+
+struct LegacyHomeTabControllerAccessor {
+    func selectHomeTab(from rootViewController: UIViewController?) -> UIViewController? {
+        guard let tabBarController = rootViewController as? UITabBarController else { return nil }
+
+        tabBarController.selectedIndex = 0
+        return tabBarController.viewControllers?.first
+    }
+
+    func selectHome(from rootViewController: UIViewController?) -> HomeViewController? {
+        selectHomeTab(from: rootViewController) as? HomeViewController
+    }
+}

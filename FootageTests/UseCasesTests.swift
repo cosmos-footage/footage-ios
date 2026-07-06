@@ -231,6 +231,27 @@ final class UseCasesTests: XCTestCase {
 
         XCTAssertFalse(defaults.bool(forKey: "isTracking"))
     }
+
+    func testLegacyHomeTabControllerAccessorSelectsFirstTab() {
+        let homeViewController = UIViewController()
+        let otherViewController = UIViewController()
+        let tabBarController = UITabBarController()
+        tabBarController.viewControllers = [homeViewController, otherViewController]
+        tabBarController.selectedIndex = 1
+        let accessor = LegacyHomeTabControllerAccessor()
+
+        let selectedHome = accessor.selectHomeTab(from: tabBarController)
+
+        XCTAssertTrue(selectedHome === homeViewController)
+        XCTAssertEqual(tabBarController.selectedIndex, 0)
+    }
+
+    func testLegacyHomeTabControllerAccessorReturnsNilForNonHomeRoot() {
+        let accessor = LegacyHomeTabControllerAccessor()
+
+        XCTAssertNil(accessor.selectHomeTab(from: UIViewController()))
+        XCTAssertNil(accessor.selectHomeTab(from: nil))
+    }
 }
 
 private func makeIsolatedDefaults(name: String) -> UserDefaults {
