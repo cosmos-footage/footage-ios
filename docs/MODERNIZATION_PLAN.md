@@ -554,13 +554,15 @@ Phase R14 progress:
 - Removed the unused `SceneDelegate.homeVC` instance property after confirming no remaining references.
 - Added `SceneLifecycleSupport.swift` and moved the accumulated Scene lifecycle helper types out of `RenewedShellStoryboardFactory.swift`.
 - Added `SceneLifecycleSupport.swift` to the app target in `footage.xcodeproj`.
+- Added `LegacyStoryboardBridge.swift` and moved legacy storyboard descriptors/providers/root factory out of `RenewedShellStoryboardFactory.swift`.
+- Added `LegacyStoryboardBridge.swift` to the app target in `footage.xcodeproj`.
 
 Phase R14 current completion notes:
 
 - `git diff --check` succeeded.
 - `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` succeeded.
 - No Storyboard, asset, widget, Realm schema, network, auth, restore, signing, entitlement, bundle identifier, or root-controller runtime behavior was changed.
-- Next step is to split storyboard bridge/root factory concerns from the future renewed shell factory, still keeping the default launch on `Main` until parity QA is complete.
+- Next step is to separate future shell composition from legacy storyboard bridging, still keeping the default launch on `Main` until parity QA is complete.
 
 ## First Phase 1 Codex Command
 

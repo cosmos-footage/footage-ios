@@ -91,6 +91,9 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 rg -n "enum SceneForegroundRoute|struct SceneLifecycleCoordinator|struct SceneFullScreenPresenter|WidgetKitSceneWidgetTimelineReloader|SceneLifecycleSupport.swift" Footage/Presentation footage.xcodeproj/project.pbxproj
 git diff --check
 xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
+rg -n "struct StoryboardSceneDescriptor|protocol LegacyRootViewControllerFactory|LegacyStoryboardBridge.swift|struct StoryboardBackedRenewedShellViewControllerFactory" Footage/Presentation footage.xcodeproj/project.pbxproj
+git diff --check
+xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
 ```
 
 ## Results
@@ -124,6 +127,8 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - A nineteenth approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after removing stale `SceneDelegate.homeVC`.
 - The Scene helper placement search confirmed the lifecycle helper definitions now live in `SceneLifecycleSupport.swift` and the file is included in `footage.xcodeproj`.
 - A twentieth approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after moving Scene lifecycle helpers into their own source file.
+- The storyboard bridge placement search confirmed legacy storyboard descriptors/root factory definitions now live in `LegacyStoryboardBridge.swift` and the renewed shell factory remains in `RenewedShellStoryboardFactory.swift`.
+- A twenty-first approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after moving legacy storyboard bridge/root factory types into their own source file.
 
 ## Changed
 
@@ -189,6 +194,8 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Added `SceneLifecycleSupport.swift` and moved Scene lifecycle coordinator, stores, dispatchers, presenter, root installer, Home initial data loader, selected-color store, and widget timeline reloader into it.
 - Updated `footage.xcodeproj` target membership for `SceneLifecycleSupport.swift`.
 - Removed the now-unneeded `WidgetKit` import from `RenewedShellStoryboardFactory.swift`.
+- Added `LegacyStoryboardBridge.swift` and moved storyboard descriptors, storyboard instantiation, legacy renewed-shell storyboard providers, direct legacy Map provider, and legacy root factory into it.
+- Updated `footage.xcodeproj` target membership for `LegacyStoryboardBridge.swift`.
 
 ## Safety Notes
 
@@ -214,10 +221,11 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - `SceneDelegate` still invalidates the always-on timer and performs the same password unlock / first-launch foreground routes; those calls now pass through `LegacySceneForegroundRouteDispatcher`.
 - `SceneDelegate` still uses the storyboard-selected Home tab for category and tracking dispatch; the removed `homeVC` property was not referenced.
 - Moving Scene helper types changed source placement only; production launch still uses the existing `Main` storyboard path and the same helper implementations.
+- Moving legacy storyboard bridge/root factory types changed source placement only; the same storyboard identifiers and direct Map provider remain in use.
 - `Info.plist`, Storyboards, widget target files, signing, entitlements, bundle identifiers, app group keys, Realm schema, backup, restore, and auth behavior were not changed.
 
 ## What Remains
 
-- Continue the storyboard-removal runway by splitting storyboard bridge/root factory concerns from the future renewed shell factory, while keeping the production launch on `Main`.
+- Continue the storyboard-removal runway by separating future shell composition from legacy storyboard bridging, while keeping the production launch on `Main`.
 - Add manual QA before enabling the renewed root route, with special attention to widget URL start/stop, password unlock, and Map -> Journey navigation.
 - Keep the default app launch on the existing UIKit/Storyboard shell until manual QA proves parity.
