@@ -650,8 +650,10 @@ Tasks:
 Current R15 notes:
 
 - Added `docs/REFACTOR_PHASE_R15_QA_EVIDENCE.md`.
+- Added a QA-only renewed root override through launch argument `--footage-enable-renewed-ui` or environment variable `FOOTAGE_ENABLE_RENEWED_UI=1`.
+- The QA override keeps cloud backup, restore, auth, and development upload disabled, and first-launch users still route to the existing FirstLaunch Storyboard.
 - Manual QA is not yet passed or claimed.
-- No app source, Storyboard, widget, Realm schema, signing, entitlement, bundle identifier, app group, Pod, or asset change was made to start R15.
+- No Storyboard, widget, Realm schema, signing, entitlement, bundle identifier, app group, Pod, or asset change was made to start R15.
 
 Next step:
 

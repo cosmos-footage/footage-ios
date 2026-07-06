@@ -17,7 +17,28 @@ Production root status:
 - `FeatureFlags.isNewUIRunwayEnabled` must remain `false` by default.
 - The default app launch must remain on the current UIKit/Storyboard shell.
 - The renewed UIKit root may be exercised only for QA/internal validation.
+- QA can enable the renewed root with launch argument `--footage-enable-renewed-ui` or environment variable `FOOTAGE_ENABLE_RENEWED_UI=1`.
 - Storyboards, widget files, Realm schema, signing, entitlements, bundle identifiers, app group keys, assets, Pods, and existing user data models must not be removed during this gate.
+
+## QA-Only Renewed Root Override
+
+The renewed root override is intended for local simulator/device QA only.
+
+Supported toggles:
+
+```sh
+--footage-enable-renewed-ui
+FOOTAGE_ENABLE_RENEWED_UI=1
+```
+
+Safety rules:
+
+- The default app environment leaves all feature flags disabled.
+- The QA override only enables `isNewUIRunwayEnabled`.
+- The QA override does not enable cloud backup, restore, auth, or development upload.
+- `FOOTAGE_ENABLE_RENEWED_UI=0` and other environment values do not enable the renewed root.
+- First-launch users must still route to the existing FirstLaunch Storyboard even when the QA override is enabled.
+- Do not leave the override in a release scheme or production-facing TestFlight setup unless a separate cutover decision is made.
 
 ## Automated Validation
 
@@ -27,7 +48,7 @@ These commands can be run by the repository agent.
 | --- | --- | --- | --- |
 | Git working tree | `git status --short` | Passed with expected docs-only changes before commit | `M docs/MODERNIZATION_PLAN.md`, `?? docs/REFACTOR_PHASE_R15_QA_EVIDENCE.md` |
 | Workspace schemes | `xcodebuild -list -workspace footage.xcworkspace` | Passed | Schemes listed: `EFCountingLabel`, `footage`, `MainWidgetExtension`, `Pods-footage`, `Pods-MainWidgetExtension`, `Realm`, `Realm-realm_objc_privacy`, `RealmSwift`, `RealmSwift-realm_swift_privacy`, `WidgetColorSelection` |
-| Unit/integration tests | `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` | Passed | `** TEST SUCCEEDED **`; result bundle `/Users/nyeok/Library/Developer/Xcode/DerivedData/footage-fcfkhlxrlvchugggglstbjyxsmlr/Logs/Test/Test-footage-2026.07.06_16-50-38-+0900.xcresult` |
+| Unit/integration tests | `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` | Passed | `** TEST SUCCEEDED **`; result bundle `/Users/nyeok/Library/Developer/Xcode/DerivedData/footage-fcfkhlxrlvchugggglstbjyxsmlr/Logs/Test/Test-footage-2026.07.06_16-55-00-+0900.xcresult` |
 | Whitespace/diff check | `git diff --check` | Passed | No output |
 
 Do not mark a command as passed unless that exact command, or a documented destination substitution, actually ran.
