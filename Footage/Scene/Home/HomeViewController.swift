@@ -106,7 +106,6 @@ class HomeViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        checkUpdateInVDA()
         if !startedBefore {
             Settings_GeneralVC.registerNoti()
             HomeViewController.locationManager.requestWhenInUseAuthorization()
@@ -503,40 +502,9 @@ extension HomeViewController {
         exampleImageView.isHidden = true
     }
     
-    func checkUpdate() { // 어플 실행시 확인하는 것
-        if UserDefaults.standard.object(forKey: "version") == nil {
-            UserDefaults.standard.set(latestVersion, forKey: "version")
-            UserDefaults.standard.set(false, forKey: "isUpdated")
-        } else {
-            UserDefaults.standard.setValue(latestVersion, forKey: "version")
-            UserDefaults.standard.setValue(false, forKey: "isUpdated")
-            // 앞으로 업데이트 시 여기에 integer값으로 버전 입력하고 업데이트 사항 반영
-        }
-        
-        if UserDefaults.standard.integer(forKey: "version") == latestVersion {
-            if !UserDefaults.standard.bool(forKey: "isUpdated") {
-                UserDefaults.standard.set(true, forKey: "isUpdated")
-            }
-        } else if UserDefaults.standard.integer(forKey: "version") == 120 {
-            if !UserDefaults.standard.bool(forKey: "isUpdated") {
-                UserDefaults.standard.set(false, forKey: "alwaysOn")
-                //alwaysOn이 켜져있을 때 연속해서 유효한 위치값이 연속으로 나타나야 isValid를 true로 반환할 수 있도록 하는 userdefaults
-                UserDefaults.standard.set(0, forKey: "alwaysOnCount")
-                UserDefaults.standard.set(0, forKey: "launchingCount")
-                UserDefaults.standard.set(0, forKey: "minimumTotalRecord")
-                guard let widgetUD = UserDefaults(suiteName: "group.footage") else { return }
-                widgetUD.set("#EADE4Cff", forKey: "selectedColor")
-                
-                let hexValues = ["#EADE4Cff", "#F5A997ff", "#F0E7CFff", "#FF6B39ff", "#206491ff"]
-                for hex in hexValues {
-                    guard let categoryName = UserDefaults.standard.string(forKey: hex) else { continue }
-                    widgetUD.set(categoryName, forKey: hex)
-                }
-                
-            }
-        }
-        
-        
+    func checkUpdate() {
+        UserDefaults.standard.set(latestVersion, forKey: "version")
+        UserDefaults.standard.set(true, forKey: "isUpdated")
     }
     
     func checkUpdateInHB() { // 홈버튼 누를때 확인하는 것
@@ -548,25 +516,6 @@ extension HomeViewController {
             UserDefaults.standard.set(0, forKey: "launchingCount")
         } else {
             UserDefaults.standard.set((lauchingCount ?? 0) + 1, forKey: "launchingCount")
-        }
-    }
-    
-    func checkUpdateInVDA(){
-        if !UserDefaults.standard.bool(forKey: "isUpdated") {
-            if UserDefaults.standard.integer(forKey: "version") == 120 {
-                let updatingAlert = UIAlertController.init(title: "업데이트 중", message: "장소별 배지를 조금 손보았어요.", preferredStyle:  .alert)
-                self.present(updatingAlert, animated: true, completion: nil)
-                Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { (timer) in
-                    updatingAlert.dismiss(animated: true, completion: nil)
-                }
-                DispatchQueue.global().sync {
-                    LevelManager.deleteTypeBadge(badgeType: "place")
-                    BadgeGiver.restorePlaceBadge()
-                }
-                UserDefaults.standard.set(true, forKey: "isUpdated")
-            } else if UserDefaults.standard.integer(forKey: "version") == latestVersion {
-                UserDefaults.standard.set(true, forKey: "isUpdated")
-            }
         }
     }
     

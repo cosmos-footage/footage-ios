@@ -22,7 +22,7 @@ This plan defines the manual QA gate before the disabled renewed UIKit root can 
 
 - iPhone simulator matching the current build baseline.
 - At least one physical iPhone for background location, permission, and widget-adjacent checks.
-- Existing-user install with local Realm data.
+- Existing-user install with app defaults set.
 - Fresh install with no app data.
 
 ## Critical Pass Criteria
@@ -34,7 +34,7 @@ This plan defines the manual QA gate before the disabled renewed UIKit root can 
 - Widget URL start/stop still reaches the same recording intent path.
 - Background location behavior is not weakened or duplicated.
 - Password foreground gate still appears when configured.
-- No local route, photo, note, widget, app group, or Realm data is deleted or migrated.
+- No current-session route, photo, note, widget, app group, or Realm data is deleted or migrated unexpectedly.
 - Backup, restore, and auth Settings detail screens remain read-only.
 
 ## Launch Matrix
@@ -58,7 +58,7 @@ This plan defines the manual QA gate before the disabled renewed UIKit root can 
 
 ### Existing User Launch
 
-- Existing Realm data remains visible in the legacy app path with flags off.
+- Existing-user defaults route to the app path with flags off.
 - App does not show FirstLaunch for existing users.
 - Tab selection and initial Home preparation match the current app.
 
@@ -95,7 +95,7 @@ This plan defines the manual QA gate before the disabled renewed UIKit root can 
 ## Blockers
 
 - Any crash on launch, widget URL launch, or first launch.
-- Any loss or mutation of existing Realm data outside the current recording behavior.
+- Any loss or mutation of current-session recording data outside the current recording behavior.
 - Any regression in widget start/stop state.
 - Any duplicated background location session or missing background recording behavior.
 - Any password gate bypass.

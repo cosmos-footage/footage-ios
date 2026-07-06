@@ -107,7 +107,7 @@ These are not R14 completion blockers because they belong to manual QA or later 
 R15 should not begin production cutover until:
 
 - `docs/RENEWED_ROOT_QA_PLAN.md` has simulator and physical-device evidence.
-- Existing-user local Realm data is verified in both legacy and renewed read-only paths.
+- Existing users can enter the app without crash in both legacy and renewed read-only paths.
 - Widget URL start/stop behavior is verified.
 - Background location behavior is verified on a physical device.
 - Password foreground gate behavior is verified.

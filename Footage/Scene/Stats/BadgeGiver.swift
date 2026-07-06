@@ -9,9 +9,7 @@
 import UIKit
 
 class BadgeGiver {
-    
-    static var restorePlaceList: [Place]?
-    
+
     static func checkDistance(view: UIView) {
         switch UserDefaults.standard.integer(forKey: "minimumTotalDistance") {
         case 0:
@@ -245,64 +243,6 @@ class BadgeGiver {
         }
     }
     
-// MARK:- Temporary Code for restoring place badge
-    
-    static func restorePlaceBadge() {
-        PlaceManager.findAllListOfPlace()
-        if restorePlaceList == nil || restorePlaceList!.isEmpty { return }
-        var tempArr = [restorePlaceList?[0].administrativeArea]
-        for place in restorePlaceList ?? [] {
-            if !(tempArr.contains(place.administrativeArea)){
-                tempArr.append(place.administrativeArea)
-            }
-        }
-        for i in 0...tempArr.count-1 {
-            PlaceManager.localityList = []
-            for place in restorePlaceList! {
-                if place.administrativeArea == tempArr[i] {
-                    if !(PlaceManager.localityList?.contains(place.locality) ?? false){
-                        PlaceManager.localityList?.append(place.locality)
-                        PlaceManager.isAppended = true
-                    }
-                }
-                PlaceManager.currentAdministrativeArea = tempArr[i] ?? ""
-                restoredCityCheck()
-            }
-        }
-        
-    }
-    
-    static func restoredCityCheck() {
-        if PlaceManager.currentAdministrativeArea == Korea.jeju.cityName() {
-            if PlaceManager.localityList?.count == 1 && PlaceManager.isAppended == true  {
-                LevelManager.appendBadge(badge: Badge(type: "place", imageName: "Jeju_newb", detail: "제주가 조금 익숙해지기 시작하셨군요!"))
-                LevelManager.appendBadge(badge: Badge(type: "place", imageName: "Jeju_junior", detail: "제주의 반을 본 셈이에요!"))
-                PlaceManager.isAppended = false
-            } else if PlaceManager.localityList?.count == 2 && PlaceManager.isAppended == true {
-                LevelManager.appendBadge(badge: Badge(type: "place", imageName: "Jeju_master", detail: "제주의 모든 행정구역을 만나보았어요!\n제주, 이제 당신의 발자취로 가득합니다."))
-                PlaceManager.isAppended = false
-            }
-        } else {
-            restoredPlaceBadgeCreator(cityName: Korea(rawValue: PlaceManager.currentAdministrativeArea) ?? Korea.sejong)
-        }
-    }
-    
-    
-    
-    static func restoredPlaceBadgeCreator(cityName: Korea) {
-        if PlaceManager.localityList?.count == 2 && PlaceManager.isAppended == true {
-            LevelManager.appendBadge(badge: Badge(type: "place", imageName: "\(cityName.cityNameEN())_newb", detail: "이 지역에 이제 막 발자취를 남기기 시작했습니다."))
-            PlaceManager.isAppended = false
-        }
-        if PlaceManager.localityList?.count == Int(round(Double(cityName.numberOfLocality()/2)))  && PlaceManager.isAppended == true {
-            LevelManager.appendBadge(badge: Badge(type: "place", imageName: "\(cityName.cityNameEN())_junior", detail: "이 지역 행정구역의 반에 발자취를 남겼습니다!"))
-            PlaceManager.isAppended = false
-        }
-        if PlaceManager.localityList?.count == Int(cityName.numberOfLocality())  && PlaceManager.isAppended == true {
-            LevelManager.appendBadge(badge: Badge(type: "place", imageName: "\(cityName.cityNameEN())_master", detail: "이 지역의 모든 행정구역을 만나보았어요!\n이 지역은 당신의 발자취로 가득합니다."))
-            PlaceManager.isAppended = false
-        }
-    }
 }
 
 // MARK:- extension

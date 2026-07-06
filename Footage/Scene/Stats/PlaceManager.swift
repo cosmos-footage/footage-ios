@@ -95,14 +95,4 @@ class PlaceManager {
         }
     }
     
-    static func findAllListOfPlace() { // for restore in 1.2.0
-        let realm = try! Realm()
-        let results = realm.objects(Place.self)
-        BadgeGiver.restorePlaceList = []
-        for result in results {
-            if !(BadgeGiver.restorePlaceList?.contains(result) ?? false){
-                BadgeGiver.restorePlaceList?.append(result)
-            }
-        }
-    }
 }

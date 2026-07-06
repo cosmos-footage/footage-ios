@@ -656,10 +656,11 @@ Current R15 notes:
 - After the namespace renewal, fresh-install simulator visual smoke passed with the renewed flag off and on; both delayed screenshots showed the existing FirstLaunch video screen with the footprint logo and `시작` button.
 - Existing-user simulator visual smoke passed with the renewed flag off and on; the default launch showed the existing Main storyboard Home tab, and the QA override launch showed the renewed UIKit shell Today tab.
 - Widget URL simulator smoke reached the iOS URL-opening confirmation prompt, but in-app widget action after tapping `열기` remains manual because Computer Use permissions were unavailable.
-- Physical-device background location, full widget QA, password foreground gate, and real existing Realm data parity are still not claimed.
+- Physical-device background location, full widget QA, and password foreground gate are still not claimed.
+- Existing Realm data parity is no longer a renewal gate because the app is being rebuilt as a clean service architecture rather than preserving legacy Realm display parity.
 - Manual QA is not yet passed or claimed.
 - No Storyboard, widget, Realm schema, signing, entitlement file, app group, Pod, or asset change was made to start R15. The bundle namespace was later renewed by explicit owner request.
 
 Next step:
 
-- Run physical-device background location QA, password foreground-gate QA, full widget URL/app-group QA, and real existing Realm data parity from `docs/RENEWED_ROOT_QA_PLAN.md` before any production-facing renewed-root cutover.
+- Run physical-device background location QA, password foreground-gate QA, and full widget URL/app-group QA from `docs/RENEWED_ROOT_QA_PLAN.md` before any production-facing renewed-root cutover.
