@@ -94,6 +94,10 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 rg -n "struct StoryboardSceneDescriptor|protocol LegacyRootViewControllerFactory|LegacyStoryboardBridge.swift|struct StoryboardBackedRenewedShellViewControllerFactory" Footage/Presentation footage.xcodeproj/project.pbxproj
 git diff --check
 xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
+rg -n "SceneAppRootInstallAction|appRootInstallAction|testSceneLifecycleCoordinatorPlansAppRootInstallAction" Footage FootageTests
+git diff -- Footage/Presentation/SceneLifecycleSupport.swift FootageTests/UseCasesTests.swift
+git diff --check -- Footage/Presentation/SceneLifecycleSupport.swift FootageTests/UseCasesTests.swift
+xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
 ```
 
 ## Results
@@ -144,6 +148,8 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - A twenty-seventh approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after splitting app root routing types out of `FeatureFlags.swift`.
 - The composition-root boundary search confirmed `AppCompositionRoot` can now build `AppRootRouter` and `AppRootViewControllerFactory` from the current environment.
 - A twenty-eighth approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding composition-root factories for app root routing.
+- The Scene app-root install policy search confirmed `SceneAppRootInstallAction`, `SceneLifecycleCoordinator.appRootInstallAction(route:)`, and its test live in the expected files.
+- A twenty-ninth approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after adding the pure Scene app-root install policy.
 
 ## Changed
 
@@ -226,6 +232,8 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Updated `footage.xcodeproj` target membership for `AppRootRouting.swift`.
 - Added `AppCompositionRoot.makeAppRootRouter()` and `makeAppRootViewControllerFactory(...)`.
 - Added a test proving the composition root can create the app root routing boundaries without wiring them into `SceneDelegate`.
+- Added `SceneAppRootInstallAction` and `SceneLifecycleCoordinator.appRootInstallAction(route:)` to describe whether a planned route should keep the storyboard root or request a root replacement.
+- Added a test proving legacy routes keep the storyboard root while the disabled renewed UIKit shell route requests replacement.
 
 ## Safety Notes
 
@@ -259,6 +267,7 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Adding `AppRootViewControllerFactory` changed only disabled-by-default routing scaffolding; `SceneDelegate` still uses the existing launch path.
 - Moving app root routing types changed source placement only; the default feature flags and launch behavior remain unchanged.
 - Adding composition-root factory methods changed only construction boundaries; `SceneDelegate` still uses the existing launch path.
+- Adding the Scene app-root install policy changed pure planning only; `SceneDelegate` does not consume it yet, so production launch still uses the existing storyboard root.
 - `Info.plist`, Storyboards, widget target files, signing, entitlements, bundle identifiers, app group keys, Realm schema, backup, restore, and auth behavior were not changed.
 
 ## What Remains
