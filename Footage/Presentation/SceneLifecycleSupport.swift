@@ -325,6 +325,39 @@ struct SceneRootControllerInstaller {
     }
 }
 
+protocol SceneAppRootInstalling {
+    func dispatch(
+        _ action: SceneAppRootInstallAction,
+        rootFactory: any AppRootViewControllerMaking,
+        in window: UIWindow?
+    ) -> Bool
+}
+
+struct SceneAppRootInstaller: SceneAppRootInstalling {
+    private let rootControllerInstaller: SceneRootControllerInstaller
+
+    init(rootControllerInstaller: SceneRootControllerInstaller = SceneRootControllerInstaller()) {
+        self.rootControllerInstaller = rootControllerInstaller
+    }
+
+    func dispatch(
+        _ action: SceneAppRootInstallAction,
+        rootFactory: any AppRootViewControllerMaking,
+        in window: UIWindow?
+    ) -> Bool {
+        switch action {
+        case .keepStoryboardRoot:
+            return false
+        case .replaceRoot(let route):
+            guard let viewController = rootFactory.makeRootViewController(for: route) else {
+                return false
+            }
+            rootControllerInstaller.installRoot(viewController, in: window)
+            return true
+        }
+    }
+}
+
 protocol SceneHomeInitialDataLoading {
     func prepareLegacyHomeData()
 }

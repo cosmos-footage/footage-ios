@@ -12,6 +12,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     var window: UIWindow?
     var alwaysOnTimer = Timer()
+    private let appCompositionRoot = AppCompositionRoot()
     private let sceneLifecycleCoordinator = SceneLifecycleCoordinator()
     private let userStateStore = SceneUserStateStore()
     private let widgetTrackingStateStore = SceneWidgetTrackingStateStore()
@@ -22,6 +23,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private let homeViewControllerDispatcher: any SceneHomeViewControllerDispatching = LegacySceneHomeViewControllerDispatcher()
     private let backgroundRecordingDispatcher: any SceneBackgroundRecordingDispatching = LegacySceneBackgroundRecordingDispatcher()
     private let foregroundRouteDispatcher: any SceneForegroundRouteDispatching = LegacySceneForegroundRouteDispatcher()
+    private let appRootInstaller: any SceneAppRootInstalling = SceneAppRootInstaller()
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
@@ -32,6 +34,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             url: connectionOptions.urlContexts.first?.url
         )
         guard initialPlan.shouldPrepareLegacyHome else { return }
+
+        let appRootRoute = appCompositionRoot.makeAppRootRouter().route(userState: userStateStore.userState())
+        let appRootAction = sceneLifecycleCoordinator.appRootInstallAction(route: appRootRoute)
+        let didReplaceRoot = appRootInstaller.dispatch(
+            appRootAction,
+            rootFactory: appCompositionRoot.makeAppRootViewControllerFactory(),
+            in: window
+        )
+        guard !didReplaceRoot else { return }
 
         homeInitialDataLoader.prepareLegacyHomeData()
         let homeViewController = homeTabAccessor.selectHomeTab(from: window?.rootViewController)

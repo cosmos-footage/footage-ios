@@ -400,6 +400,42 @@ final class UseCasesTests: XCTestCase {
         XCTAssertTrue(window.rootViewController === rootViewController)
     }
 
+    func testSceneAppRootInstallerKeepsStoryboardRootByDefault() {
+        let window = UIWindow(frame: .zero)
+        let existingRoot = UIViewController()
+        let replacementRoot = UIViewController()
+        let factory = FakeAppRootViewControllerFactory(rootViewController: replacementRoot)
+        let installer = SceneAppRootInstaller()
+        window.rootViewController = existingRoot
+
+        let didInstall = installer.dispatch(
+            .keepStoryboardRoot,
+            rootFactory: factory,
+            in: window
+        )
+
+        XCTAssertFalse(didInstall)
+        XCTAssertTrue(window.rootViewController === existingRoot)
+        XCTAssertNil(factory.lastRoute)
+    }
+
+    func testSceneAppRootInstallerReplacesRootForRenewedRoute() {
+        let window = UIWindow(frame: .zero)
+        let replacementRoot = UIViewController()
+        let factory = FakeAppRootViewControllerFactory(rootViewController: replacementRoot)
+        let installer = SceneAppRootInstaller()
+
+        let didInstall = installer.dispatch(
+            .replaceRoot(.renewedUIKitShell),
+            rootFactory: factory,
+            in: window
+        )
+
+        XCTAssertTrue(didInstall)
+        XCTAssertTrue(window.rootViewController === replacementRoot)
+        XCTAssertEqual(factory.lastRoute, .renewedUIKitShell)
+    }
+
     func testSceneSelectedColorStoreReadsLegacyAppGroupKey() {
         let defaults = makeIsolatedDefaults(name: "selected-color")
         let store = SceneSelectedColorStore(defaults: defaults)
@@ -567,6 +603,20 @@ private struct FakeLegacyRootViewControllerFactory: LegacyRootViewControllerFact
 
     func makePasswordUnlock() -> PasswordVC? {
         nil
+    }
+}
+
+private final class FakeAppRootViewControllerFactory: AppRootViewControllerMaking {
+    private let rootViewController: UIViewController?
+    private(set) var lastRoute: AppRootRoute?
+
+    init(rootViewController: UIViewController?) {
+        self.rootViewController = rootViewController
+    }
+
+    func makeRootViewController(for route: AppRootRoute) -> UIViewController? {
+        lastRoute = route
+        return rootViewController
     }
 }
 
