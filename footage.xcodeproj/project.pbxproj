@@ -80,6 +80,7 @@
 		C0D861090000000000000001 /* RenewedMapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D8610A0000000000000001 /* RenewedMapViewController.swift */; };
 		C0D8610B0000000000000001 /* RenewedBackupStatusViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D8610C0000000000000001 /* RenewedBackupStatusViewController.swift */; };
 		C0D8610D000000000000001 /* RenewedRestoreStatusViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D8610E000000000000001 /* RenewedRestoreStatusViewController.swift */; };
+		C0D8610F000000000000001 /* RenewedAuthReadinessViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D86110000000000000001 /* RenewedAuthReadinessViewController.swift */; };
 		C0D3A00B0000000000000001 /* SyncOutboxDraft.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3A00C0000000000000001 /* SyncOutboxDraft.swift */; };
 		C0D3A00D0000000000000001 /* MigrationExportModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3A00E0000000000000001 /* MigrationExportModels.swift */; };
 		C0D3A00F0000000000000001 /* LocalDeviceIdentityRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0D3A0100000000000000001 /* LocalDeviceIdentityRepository.swift */; };
@@ -330,6 +331,7 @@
 		C0D8610A0000000000000001 /* RenewedMapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenewedMapViewController.swift; sourceTree = "<group>"; };
 		C0D8610C0000000000000001 /* RenewedBackupStatusViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenewedBackupStatusViewController.swift; sourceTree = "<group>"; };
 		C0D8610E000000000000001 /* RenewedRestoreStatusViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenewedRestoreStatusViewController.swift; sourceTree = "<group>"; };
+		C0D86110000000000000001 /* RenewedAuthReadinessViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenewedAuthReadinessViewController.swift; sourceTree = "<group>"; };
 		C0D700040000000000000001 /* DistanceCalculatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DistanceCalculatorTests.swift; sourceTree = "<group>"; };
 		C0D700050000000000000001 /* LocationFilterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationFilterTests.swift; sourceTree = "<group>"; };
 		C0D700060000000000000001 /* RoutePointNDJSONSerializerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutePointNDJSONSerializerTests.swift; sourceTree = "<group>"; };
@@ -584,6 +586,7 @@
 				C0D861040000000000000001 /* RenewedSettingsDashboardViewController.swift */,
 				C0D8610C0000000000000001 /* RenewedBackupStatusViewController.swift */,
 				C0D8610E000000000000001 /* RenewedRestoreStatusViewController.swift */,
+				C0D86110000000000000001 /* RenewedAuthReadinessViewController.swift */,
 				C0D840040000000000000001 /* RenewedShellStoryboardFactory.swift */,
 				C0D860020000000000000001 /* SceneLifecycleSupport.swift */,
 				C0D860040000000000000001 /* LegacyStoryboardBridge.swift */,
@@ -1159,6 +1162,7 @@
 				C0D861030000000000000001 /* RenewedSettingsDashboardViewController.swift in Sources */,
 				C0D8610B0000000000000001 /* RenewedBackupStatusViewController.swift in Sources */,
 				C0D8610D000000000000001 /* RenewedRestoreStatusViewController.swift in Sources */,
+				C0D8610F000000000000001 /* RenewedAuthReadinessViewController.swift in Sources */,
 				C0D840030000000000000001 /* RenewedShellStoryboardFactory.swift in Sources */,
 				C0D860010000000000000001 /* SceneLifecycleSupport.swift in Sources */,
 				C0D860030000000000000001 /* LegacyStoryboardBridge.swift in Sources */,

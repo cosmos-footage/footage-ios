@@ -16,6 +16,7 @@ struct ProgrammaticRenewedShellViewControllerFactory: RenewedShellViewController
     private let settingsPreferencesUseCase: (() -> SettingsPreferencesUseCase)?
     private let backupPreparationUseCase: (() -> BackupPreparationUseCase)?
     private let restorePreviewUseCase: (() -> RestorePreviewUseCase)?
+    private let authLinkingReadinessUseCase: (() -> AuthLinkingReadinessUseCase)?
 
     init(
         placeholderFactory: any RenewedShellViewControllerFactory = PlaceholderRenewedShellViewControllerFactory(),
@@ -25,7 +26,8 @@ struct ProgrammaticRenewedShellViewControllerFactory: RenewedShellViewController
         timelineJourneys: (() -> [JourneyEntity])? = nil,
         settingsPreferencesUseCase: (() -> SettingsPreferencesUseCase)? = nil,
         backupPreparationUseCase: (() -> BackupPreparationUseCase)? = nil,
-        restorePreviewUseCase: (() -> RestorePreviewUseCase)? = nil
+        restorePreviewUseCase: (() -> RestorePreviewUseCase)? = nil,
+        authLinkingReadinessUseCase: (() -> AuthLinkingReadinessUseCase)? = nil
     ) {
         self.placeholderFactory = placeholderFactory
         self.homeDashboardUseCase = homeDashboardUseCase
@@ -35,6 +37,7 @@ struct ProgrammaticRenewedShellViewControllerFactory: RenewedShellViewController
         self.settingsPreferencesUseCase = settingsPreferencesUseCase
         self.backupPreparationUseCase = backupPreparationUseCase
         self.restorePreviewUseCase = restorePreviewUseCase
+        self.authLinkingReadinessUseCase = authLinkingReadinessUseCase
     }
 
     func makeViewController(for tab: RenewedShellTab) -> UIViewController {
@@ -69,6 +72,11 @@ struct ProgrammaticRenewedShellViewControllerFactory: RenewedShellViewController
                 makeRestoreStatusViewController: restorePreviewUseCase.map { restorePreviewUseCase in
                     {
                         RenewedRestoreStatusViewController(restorePreviewUseCase: restorePreviewUseCase())
+                    }
+                },
+                makeAuthReadinessViewController: authLinkingReadinessUseCase.map { authLinkingReadinessUseCase in
+                    {
+                        RenewedAuthReadinessViewController(authLinkingReadinessUseCase: authLinkingReadinessUseCase())
                     }
                 }
             )

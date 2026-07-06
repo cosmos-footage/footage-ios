@@ -11,6 +11,7 @@ final class RenewedSettingsDashboardViewController: UIViewController {
     private let loadSnapshot: () -> SettingsPreferencesSnapshot
     private let makeBackupStatusViewController: (() -> UIViewController)?
     private let makeRestoreStatusViewController: (() -> UIViewController)?
+    private let makeAuthReadinessViewController: (() -> UIViewController)?
     private let titleLabel = UILabel()
     private let backupOptInLabel = UILabel()
     private let backupFeatureLabel = UILabel()
@@ -18,15 +19,18 @@ final class RenewedSettingsDashboardViewController: UIViewController {
     private let authFeatureLabel = UILabel()
     private let backupStatusButton = UIButton(type: .system)
     private let restoreStatusButton = UIButton(type: .system)
+    private let authReadinessButton = UIButton(type: .system)
 
     init(
         loadSnapshot: @escaping () -> SettingsPreferencesSnapshot,
         makeBackupStatusViewController: (() -> UIViewController)? = nil,
-        makeRestoreStatusViewController: (() -> UIViewController)? = nil
+        makeRestoreStatusViewController: (() -> UIViewController)? = nil,
+        makeAuthReadinessViewController: (() -> UIViewController)? = nil
     ) {
         self.loadSnapshot = loadSnapshot
         self.makeBackupStatusViewController = makeBackupStatusViewController
         self.makeRestoreStatusViewController = makeRestoreStatusViewController
+        self.makeAuthReadinessViewController = makeAuthReadinessViewController
         super.init(nibName: nil, bundle: nil)
         title = "설정"
         tabBarItem = UITabBarItem(title: "설정", image: UIImage(systemName: "gearshape"), selectedImage: nil)
@@ -51,7 +55,8 @@ final class RenewedSettingsDashboardViewController: UIViewController {
             restoreFeatureLabel,
             authFeatureLabel,
             backupStatusButton,
-            restoreStatusButton
+            restoreStatusButton,
+            authReadinessButton
         ])
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical
@@ -78,6 +83,12 @@ final class RenewedSettingsDashboardViewController: UIViewController {
         restoreStatusButton.titleLabel?.adjustsFontForContentSizeCategory = true
         restoreStatusButton.isHidden = makeRestoreStatusViewController == nil
         restoreStatusButton.addTarget(self, action: #selector(showRestoreStatus), for: .touchUpInside)
+
+        authReadinessButton.setTitle("계정 연결 상태", for: .normal)
+        authReadinessButton.titleLabel?.font = .preferredFont(forTextStyle: .body)
+        authReadinessButton.titleLabel?.adjustsFontForContentSizeCategory = true
+        authReadinessButton.isHidden = makeAuthReadinessViewController == nil
+        authReadinessButton.addTarget(self, action: #selector(showAuthReadiness), for: .touchUpInside)
 
         view.addSubview(stackView)
 
@@ -117,6 +128,19 @@ final class RenewedSettingsDashboardViewController: UIViewController {
         }
 
         let viewController = makeRestoreStatusViewController()
+        if let navigationController {
+            navigationController.pushViewController(viewController, animated: true)
+        } else {
+            present(viewController, animated: true)
+        }
+    }
+
+    @objc private func showAuthReadiness() {
+        guard let makeAuthReadinessViewController else {
+            return
+        }
+
+        let viewController = makeAuthReadinessViewController()
         if let navigationController {
             navigationController.pushViewController(viewController, animated: true)
         } else {

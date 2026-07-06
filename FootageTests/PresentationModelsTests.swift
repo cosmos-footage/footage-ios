@@ -502,6 +502,47 @@ final class PresentationModelsTests: XCTestCase {
         XCTAssertFalse(restoreUseCase.didPreview)
     }
 
+    func testProgrammaticRenewedShellFactoryConnectsSettingsAuthReadinessWhenUseCaseExists() {
+        let authUseCase = FakeAuthLinkingReadinessUseCase(
+            snapshot: AuthLinkingReadinessSnapshot(
+                ownerId: OwnerID(rawValue: "own_1"),
+                authLinkState: .anonymous,
+                isAuthFeatureEnabled: true
+            )
+        )
+        let factory = ProgrammaticRenewedShellViewControllerFactory(
+            settingsPreferencesUseCase: {
+                FakeSettingsPreferencesUseCase(
+                    snapshot: SettingsPreferencesSnapshot(
+                        isCloudBackupOptedIn: false,
+                        featureFlags: FeatureFlags(
+                            isCloudBackupEnabled: true,
+                            isRestoreEnabled: true,
+                            isAuthEnabled: true,
+                            isDevelopmentUploadEnabled: false,
+                            isNewUIRunwayEnabled: true
+                        )
+                    )
+                )
+            },
+            authLinkingReadinessUseCase: {
+                authUseCase
+            }
+        )
+
+        let settings = factory.makeViewController(
+            for: RenewedShellTab(kind: .settings, title: "설정", systemImageName: "gearshape")
+        )
+        let navigationController = UINavigationController(rootViewController: settings)
+        navigationController.loadViewIfNeeded()
+        settings.loadViewIfNeeded()
+
+        settings.view.button(titled: "계정 연결 상태")?.sendActions(for: .touchUpInside)
+
+        XCTAssertTrue(navigationController.topViewController is RenewedAuthReadinessViewController)
+        XCTAssertEqual(authUseCase.snapshotCallCount, 0)
+    }
+
     func testProgrammaticRenewedShellFactoryBuildsStatsOverviewWhenSnapshotExists() {
         let factory = ProgrammaticRenewedShellViewControllerFactory(
             statsOverview: {
@@ -677,6 +718,36 @@ final class PresentationModelsTests: XCTestCase {
         XCTAssertTrue(controller.view.buttonTitles().contains("복원 상태"))
     }
 
+    func testRenewedSettingsDashboardShowsAuthReadinessEntryWhenFactoryExists() {
+        let controller = RenewedSettingsDashboardViewController(
+            loadSnapshot: {
+                SettingsPreferencesSnapshot(
+                    isCloudBackupOptedIn: true,
+                    featureFlags: FeatureFlags(
+                        isCloudBackupEnabled: true,
+                        isRestoreEnabled: true,
+                        isAuthEnabled: true,
+                        isDevelopmentUploadEnabled: false,
+                        isNewUIRunwayEnabled: true
+                    )
+                )
+            },
+            makeAuthReadinessViewController: {
+                RenewedAuthReadinessViewController {
+                    AuthLinkingReadinessSnapshot(
+                        ownerId: OwnerID(rawValue: "own_1"),
+                        authLinkState: .anonymous,
+                        isAuthFeatureEnabled: true
+                    )
+                }
+            }
+        )
+
+        controller.loadViewIfNeeded()
+
+        XCTAssertTrue(controller.view.buttonTitles().contains("계정 연결 상태"))
+    }
+
     func testRenewedBackupStatusRendersReadOnlyStatusWithoutPreparingBackup() {
         let useCase = FakeBackupPreparationUseCase(
             status: LocalBackupStatus(
@@ -709,6 +780,25 @@ final class PresentationModelsTests: XCTestCase {
         XCTAssertTrue(texts.contains("복원 데이터 다운로드 중"))
         XCTAssertTrue(texts.contains("진행 중"))
         XCTAssertFalse(useCase.didPreview)
+    }
+
+    func testRenewedAuthReadinessRendersReadOnlySnapshotWithoutStartingLinking() {
+        let useCase = FakeAuthLinkingReadinessUseCase(
+            snapshot: AuthLinkingReadinessSnapshot(
+                ownerId: OwnerID(rawValue: "own_1"),
+                authLinkState: .anonymous,
+                isAuthFeatureEnabled: true
+            )
+        )
+        let controller = RenewedAuthReadinessViewController(authLinkingReadinessUseCase: useCase)
+
+        controller.loadViewIfNeeded()
+
+        let texts = controller.view.labelTexts()
+        XCTAssertTrue(texts.contains("계정 연결 상태"))
+        XCTAssertTrue(texts.contains("익명 백업 사용 중"))
+        XCTAssertTrue(texts.contains("계정 연결"))
+        XCTAssertEqual(useCase.snapshotCallCount, 1)
     }
 
     func testRenewedStatsOverviewRendersSnapshot() {
@@ -1017,6 +1107,20 @@ private final class FakeRestorePreviewUseCase: RestorePreviewUseCase {
                 )
             )
         )
+    }
+}
+
+private final class FakeAuthLinkingReadinessUseCase: AuthLinkingReadinessUseCase {
+    private let snapshotValue: AuthLinkingReadinessSnapshot
+    private(set) var snapshotCallCount = 0
+
+    init(snapshot: AuthLinkingReadinessSnapshot) {
+        snapshotValue = snapshot
+    }
+
+    func snapshot() -> AuthLinkingReadinessSnapshot {
+        snapshotCallCount += 1
+        return snapshotValue
     }
 }
 

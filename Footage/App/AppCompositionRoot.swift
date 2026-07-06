@@ -228,6 +228,9 @@ struct AppCompositionRoot {
                         },
                         restorePreviewUseCase: {
                             self.makeRestorePreviewUseCase()
+                        },
+                        authLinkingReadinessUseCase: {
+                            self.makeAuthLinkingReadinessUseCase()
                         }
                     )
                 ).makeRootViewController()
