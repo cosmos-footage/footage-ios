@@ -527,13 +527,15 @@ Phase R14 progress:
 - Added launch configuration tests proving `UIMainStoryboardFile` and scene `UISceneStoryboardFile` still point to `Main` during the runway.
 - Added `LegacyRootViewControllerFactory` and routed `SceneDelegate` / `FL_LetsStartVC` through it so legacy root storyboard construction is centralized.
 - Added `SceneLifecycleCoordinator` and routed foreground gate and widget URL decisions through it while leaving side effects in `SceneDelegate`.
+- Added `FirstLaunchDefaultsInitializer` and `SceneWidgetTrackingStateStore`, then routed legacy first-launch default setup and widget `isTracking` mutation through those helpers.
+- Added tests for the first-launch default keys, app-group color labels, and widget tracking toggle/clear behavior.
 
 Phase R14 current completion notes:
 
 - `git diff --check` succeeded.
 - `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` succeeded.
 - No Storyboard, asset, widget, Realm schema, network, auth, restore, signing, entitlement, bundle identifier, or root-controller runtime behavior was changed.
-- Next step is to extract remaining `SceneDelegate` side effects, starting with first-launch default initialization and widget tracking state mutation, still keeping the default launch on `Main` until parity QA is complete.
+- Next step is to extract remaining `SceneDelegate` side effects, starting with Home tab lookup / initial connect setup and background always-on handling, still keeping the default launch on `Main` until parity QA is complete.
 
 ## First Phase 1 Codex Command
 
