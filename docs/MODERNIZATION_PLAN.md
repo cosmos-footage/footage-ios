@@ -545,13 +545,15 @@ Phase R14 progress:
 - Added tests for selected-color app-group reads and fake Home initial-data loader behavior.
 - Added `SceneHomeTrackingCommand` and routed initial/widget URL Home start-stop dispatch through `SceneHomeViewControllerDispatching`.
 - Added tests for Home tracking command mapping and fake Home view-controller dispatch.
+- Added `SceneBackgroundRecordingDispatching` and routed background timer/location-manager side effects through it.
+- Added a fake background recording dispatcher test.
 
 Phase R14 current completion notes:
 
 - `git diff --check` succeeded.
 - `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` succeeded.
 - No Storyboard, asset, widget, Realm schema, network, auth, restore, signing, entitlement, bundle identifier, or root-controller runtime behavior was changed.
-- Next step is to extract remaining `SceneDelegate` side effects, starting with background location refresh/timer dispatch and scene lifecycle helper placement cleanup, still keeping the default launch on `Main` until parity QA is complete.
+- Next step is to extract remaining `SceneDelegate` side effects, starting with foreground user-default reads and scene lifecycle helper placement cleanup, still keeping the default launch on `Main` until parity QA is complete.
 
 ## First Phase 1 Codex Command
 

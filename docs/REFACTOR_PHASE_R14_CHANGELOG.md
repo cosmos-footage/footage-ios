@@ -79,6 +79,8 @@ ls -la footage.xcworkspace
 find footage.xcworkspace -maxdepth 2 -type f -print
 file footage.xcworkspace footage.xcworkspace/contents.xcworkspacedata
 xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
+git diff --check
+xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
 ```
 
 ## Results
@@ -105,6 +107,7 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - The next sandboxed `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` attempt failed with CoreSimulator connection/log permission errors and `xcodebuild: error: 'footage.xcworkspace' is not a workspace file.`
 - `pwd`, `ls -la footage.xcworkspace`, `find footage.xcworkspace -maxdepth 2 -type f -print`, and `file footage.xcworkspace footage.xcworkspace/contents.xcworkspacedata` confirmed the workspace package still exists and `contents.xcworkspacedata` is an XML document.
 - A fifteenth approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after extracting Home tracking command dispatch.
+- A sixteenth approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after extracting background recording dispatch.
 
 ## Changed
 
@@ -157,6 +160,9 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Added `SceneHomeViewControllerDispatching` / `LegacySceneHomeViewControllerDispatcher` to isolate legacy Home category restore and start/stop calls.
 - Routed widget URL and initial widget-start Home tracking dispatch through the new dispatcher.
 - Added tests for Home tracking command mapping and a fake Home view-controller dispatcher boundary.
+- Added `SceneBackgroundRecordingDispatching` / `LegacySceneBackgroundRecordingDispatcher` to isolate legacy background timer/location-manager side effects.
+- Routed `SceneDelegate.sceneDidEnterBackground(_:)` background recording action dispatch through that boundary.
+- Added a fake background recording dispatcher test.
 
 ## Safety Notes
 
@@ -177,10 +183,11 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - `SceneDelegate` still replaces the root with the same `FirstLaunch` storyboard controller and reloads all widget timelines at the same lifecycle points.
 - `SceneDelegate` still applies the selected category to the existing `HomeViewController` and still prepares the same legacy Home data through `DateManager`.
 - `SceneDelegate` still selects the first legacy tab and still sends the same start/stop/category calls to `HomeViewController`; those calls now pass through `LegacySceneHomeViewControllerDispatcher`.
+- `SceneDelegate` still schedules the same 2.5 second repeating always-on timer and calls the same `HomeViewController.locationManager` methods for background recording.
 - `Info.plist`, Storyboards, widget target files, signing, entitlements, bundle identifiers, app group keys, Realm schema, backup, restore, and auth behavior were not changed.
 
 ## What Remains
 
-- Extract remaining `SceneDelegate` side effects in smaller passes, starting with background location refresh/timer dispatch and scene lifecycle helper placement cleanup.
+- Extract remaining `SceneDelegate` side effects in smaller passes, starting with foreground user-default reads and scene lifecycle helper placement cleanup.
 - Add manual QA before enabling the renewed root route, with special attention to widget URL start/stop, password unlock, and Map -> Journey navigation.
 - Keep the default app launch on the existing UIKit/Storyboard shell until manual QA proves parity.
