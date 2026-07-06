@@ -586,6 +586,7 @@ Phase R14 progress:
 - Added `docs/RENEWED_ROOT_QA_PLAN.md` as the manual QA gate before any production-facing renewed root enablement.
 - Added a disabled, read-only `RenewedAboutViewController` plus an optional renewed Settings "앱 정보" entry that mirrors legacy About version/privacy/contact labels without changing mail or privacy navigation behavior.
 - Added a disabled, read-only `RenewedPrivacyPolicyViewController` plus renewed About privacy navigation that preserves the existing Storyboard policy copy without changing legacy About or production Settings behavior.
+- Added a disabled renewed About contact/mail boundary using `ContactMailPresenting` and `RenewedContactMailPresenter`, preserving the legacy recipient and empty HTML body while keeping legacy Storyboards unchanged.
 
 Phase R14 current completion notes:
 
@@ -616,8 +617,9 @@ Phase R14 current completion notes:
 - The latest `xcodebuild test` succeeded after adding the optional renewed Settings About entry.
 - The latest `xcodebuild test` succeeded after adding the read-only backup status UIKit screen and app target membership.
 - The latest `xcodebuild test` succeeded after adding the optional renewed About privacy policy screen.
+- The latest `xcodebuild test` succeeded after adding the optional renewed About contact/mail boundary.
 - No Storyboard, asset, widget, Realm schema, network, auth, restore, signing, entitlement, bundle identifier, or default root-controller behavior was changed.
-- Next step is to continue the Storyboard-removal runway with another bounded legacy screen boundary, or extract the renewed About contact/mail boundary separately.
+- Next step is to continue the Storyboard-removal runway with another bounded legacy Settings sub-screen boundary, or start manual QA on the disabled renewed Settings/About path.
 
 ## First Phase 1 Codex Command
 

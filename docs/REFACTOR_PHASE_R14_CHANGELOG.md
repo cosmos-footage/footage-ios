@@ -431,6 +431,10 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Added `RenewedPrivacyPolicyViewController`, a read-only UIKit boundary for the legacy About privacy policy display copy.
 - Wired the renewed About privacy entry to lazily push the read-only privacy policy screen inside the disabled renewed Settings path.
 - Added tests proving the renewed About screen opens the privacy policy screen and the policy view renders legacy policy text without editing.
+- Used a read-only sub-agent to confirm the smallest safe renewed About contact/mail boundary before adding side-effect wiring.
+- Added `ContactMailPresenting` and `RenewedContactMailPresenter` to isolate `MFMailComposeViewController` setup from `RenewedAboutViewController`.
+- Wired the renewed About "문의하기" entry to request contact mail only when a presenter is injected; without a presenter it remains display-only.
+- Added tests proving the renewed About contact button calls a fake mail presenter and the disabled renewed Settings factory exposes the contact boundary.
 
 ## Safety Notes
 
@@ -488,6 +492,8 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - The renewed About screen is limited to the disabled renewed Settings path and is display-only; it does not change legacy About, mail composer, privacy navigation, Storyboards, or production Settings behavior.
 - The renewed privacy policy screen is limited to the disabled renewed Settings path; it preserves the existing Storyboard policy copy for display and does not claim a legal/privacy copy rewrite.
 - The renewed About contact row remains display-only; mail composer/contact side effects remain in the legacy screen and are deferred to a separate boundary task.
+- The renewed About contact mail boundary is limited to the disabled renewed Settings path; legacy `Settings_AboutVC`, `Settings.storyboard`, the privacy segue, and production Settings behavior were not changed.
+- The mail presenter preserves the legacy recipient `el.co.footage@gmail.com` and empty HTML body behavior, returns `false` when mail cannot be sent, and does not log email, user content, coordinates, tokens, or URLs.
 - `Info.plist`, Storyboards, widget target files, signing, entitlements, bundle identifiers, app group keys, Realm schema, backup, restore, and auth behavior were not changed.
 - A sandboxed `xcodebuild test` run failed before test execution with CoreSimulator access errors and `xcodebuild: error: 'footage.xcworkspace' is not a workspace file.` The workspace directory and `contents.xcworkspacedata` were inspected and valid, then the same command succeeded with external Xcode/Simulator permissions.
 - One `xcodebuild test` run failed on `UseCasesTests.testAppCompositionRootBuildsRenewedRootForEnabledRouteWithoutLoadingViews()` because the test incorrectly assumed `RenewedShellViewController.isViewLoaded` would remain false after root construction. The assertion was narrowed to route/root identity and non-first-launch root identity, and the next `xcodebuild test` succeeded.
@@ -503,10 +509,12 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - The latest `xcodebuild test` succeeded after adding the read-only renewed Settings About boundary.
 - A sandboxed `xcodebuild test` attempt failed before compilation with CoreSimulator permission errors and `xcodebuild: error: 'footage.xcworkspace' is not a workspace file.` The same command succeeded after rerunning with external Xcode/Simulator permissions.
 - The latest `xcodebuild test` succeeded after adding the read-only renewed Settings privacy policy boundary.
+- One `xcodebuild test` run failed because the new factory test referenced a non-existent `RenewedShellPresentation.defaultTabs` member; the test was corrected to use `RenewedShellPresentation.default.tabs[4]`.
+- The latest `xcodebuild test` succeeded after adding the renewed About contact/mail boundary.
 
 ## What Remains
 
 - Execute the renewed root manual QA plan before enabling the renewed root route.
 - Continue storyboard-removal runway by extracting one more legacy screen boundary after the QA gate is documented.
-- Extract the renewed About contact/mail boundary separately if the renewed Settings path needs to preserve the legacy mail composer side effect.
+- Continue extracting legacy Settings sub-screen boundaries or begin manual QA for the disabled renewed Settings/About path.
 - Keep the default app launch on the existing UIKit/Storyboard shell until manual QA proves parity.
