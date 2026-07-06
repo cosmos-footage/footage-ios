@@ -21,6 +21,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private let fullScreenPresenter = SceneFullScreenPresenter()
     private let rootControllerInstaller = SceneRootControllerInstaller()
     private let widgetTimelineReloader: any SceneWidgetTimelineReloading = WidgetKitSceneWidgetTimelineReloader()
+    private let homeInitialDataLoader: any SceneHomeInitialDataLoading = LegacySceneHomeInitialDataLoader()
+    private let selectedColorStore = SceneSelectedColorStore()
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
@@ -32,10 +34,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         )
         guard initialPlan.shouldPrepareLegacyHome else { return }
 
-        HomeViewController.distanceTotal = DateManager.loadDistance(total: true)
-        DateManager.loadTodayData()
+        homeInitialDataLoader.prepareLegacyHomeData()
         guard let homeVC = homeTabAccessor.selectHome(from: window?.rootViewController) else { return }
-        homeVC.setToLastCategory(selectedColor: UserDefaults(suiteName: "group.footage")?.string(forKey: "selectedColor"))
+        homeVC.setToLastCategory(selectedColor: selectedColorStore.selectedColor())
         if initialPlan.shouldStartTrackingFromWidget {
             homeVC.startTracking()
         }

@@ -334,6 +334,29 @@ struct SceneRootControllerInstaller {
     }
 }
 
+protocol SceneHomeInitialDataLoading {
+    func prepareLegacyHomeData()
+}
+
+struct LegacySceneHomeInitialDataLoader: SceneHomeInitialDataLoading {
+    func prepareLegacyHomeData() {
+        HomeViewController.distanceTotal = DateManager.loadDistance(total: true)
+        DateManager.loadTodayData()
+    }
+}
+
+struct SceneSelectedColorStore {
+    private let defaults: UserDefaults?
+
+    init(defaults: UserDefaults? = UserDefaults(suiteName: "group.footage")) {
+        self.defaults = defaults
+    }
+
+    func selectedColor() -> String? {
+        defaults?.string(forKey: "selectedColor")
+    }
+}
+
 protocol SceneWidgetTimelineReloading {
     func reloadAllTimelines()
 }

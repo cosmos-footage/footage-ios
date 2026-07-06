@@ -337,6 +337,23 @@ final class UseCasesTests: XCTestCase {
         XCTAssertTrue(window.rootViewController === rootViewController)
     }
 
+    func testSceneSelectedColorStoreReadsLegacyAppGroupKey() {
+        let defaults = makeIsolatedDefaults(name: "selected-color")
+        let store = SceneSelectedColorStore(defaults: defaults)
+
+        defaults.set("#EADE4Cff", forKey: "selectedColor")
+
+        XCTAssertEqual(store.selectedColor(), "#EADE4Cff")
+    }
+
+    func testSceneHomeInitialDataLoadingBoundaryCanBeFaked() {
+        let loader = FakeSceneHomeInitialDataLoader()
+
+        loader.prepareLegacyHomeData()
+
+        XCTAssertTrue(loader.didPrepareLegacyHomeData)
+    }
+
     func testSceneWidgetTimelineReloaderBoundaryCanBeFaked() {
         let reloader = FakeSceneWidgetTimelineReloader()
 
@@ -344,6 +361,14 @@ final class UseCasesTests: XCTestCase {
         reloader.reloadAllTimelines()
 
         XCTAssertEqual(reloader.reloadCount, 2)
+    }
+}
+
+private final class FakeSceneHomeInitialDataLoader: SceneHomeInitialDataLoading {
+    private(set) var didPrepareLegacyHomeData = false
+
+    func prepareLegacyHomeData() {
+        didPrepareLegacyHomeData = true
     }
 }
 
