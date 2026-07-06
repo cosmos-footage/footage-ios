@@ -661,6 +661,7 @@ Current R15 notes:
 - Physical-device-dependent paths are deferred to the final release-readiness gate; do not split widget URL handling, password foreground gating, or background location lifecycle only for abstraction before device QA.
 - Added `docs/REFACTOR_PHASE_R15_DEVICE_DEFERRED_PLAN.md` to define the device-deferred policy and the next simulator-safe UIKit cutover task.
 - Hardened the renewed Settings/About programmatic UIKit layout with scroll-backed content so the read-only replacement path is less dependent on Storyboard-sized static screens.
+- Hardened the renewed Settings detail screens for backup status, restore status, and auth readiness with the same scroll-backed programmatic UIKit layout.
 - Manual QA is not yet passed or claimed.
 - No Storyboard, widget, Realm schema, signing, entitlement file, app group, Pod, or asset change was made to start R15. The bundle namespace was later renewed by explicit owner request.
 
