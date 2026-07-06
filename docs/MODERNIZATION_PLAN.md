@@ -551,13 +551,14 @@ Phase R14 progress:
 - Added a test for isolated legacy user-state defaults reads.
 - Added `SceneForegroundRouteDispatching` and routed foreground timer invalidation, password unlock, and first-launch root replacement through it.
 - Added a fake foreground route dispatcher test.
+- Removed the unused `SceneDelegate.homeVC` instance property after confirming no remaining references.
 
 Phase R14 current completion notes:
 
 - `git diff --check` succeeded.
 - `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` succeeded.
 - No Storyboard, asset, widget, Realm schema, network, auth, restore, signing, entitlement, bundle identifier, or root-controller runtime behavior was changed.
-- Next step is to extract remaining `SceneDelegate` side effects, starting with scene lifecycle helper placement cleanup and stale delegate state removal where safe, still keeping the default launch on `Main` until parity QA is complete.
+- Next step is to move the accumulated scene helper types into clearer source files once the side-effect boundaries are stable, still keeping the default launch on `Main` until parity QA is complete.
 
 ## First Phase 1 Codex Command
 

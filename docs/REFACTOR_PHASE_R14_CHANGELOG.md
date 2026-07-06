@@ -85,6 +85,9 @@ git diff --check
 xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
 git diff --check
 xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
+rg -n "let homeVC = HomeViewController\(\)|homeVC" Footage/SceneDelegate.swift FootageTests docs/REFACTOR_PHASE_R14_CHANGELOG.md docs/MODERNIZATION_PLAN.md
+git diff --check
+xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
 ```
 
 ## Results
@@ -114,6 +117,8 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - A sixteenth approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after extracting background recording dispatch.
 - A seventeenth approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after extracting scene user-state reads.
 - An eighteenth approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after extracting foreground route dispatch.
+- The stale delegate-state search for `let homeVC = HomeViewController()` returned no remaining references after cleanup.
+- A nineteenth approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after removing stale `SceneDelegate.homeVC`.
 
 ## Changed
 
@@ -175,6 +180,7 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Added `SceneForegroundRouteDispatching` / `LegacySceneForegroundRouteDispatcher`.
 - Routed foreground timer invalidation, password unlock presentation, and first-launch root replacement through the foreground route dispatcher.
 - Added a fake foreground route dispatcher test.
+- Removed the unused `SceneDelegate.homeVC` instance property.
 
 ## Safety Notes
 
@@ -198,10 +204,11 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - `SceneDelegate` still schedules the same 2.5 second repeating always-on timer and calls the same `HomeViewController.locationManager` methods for background recording.
 - `SceneDelegate` still reads the same `UserState` and `alwaysOn` keys from standard defaults; those reads now pass through `SceneUserStateStore`.
 - `SceneDelegate` still invalidates the always-on timer and performs the same password unlock / first-launch foreground routes; those calls now pass through `LegacySceneForegroundRouteDispatcher`.
+- `SceneDelegate` still uses the storyboard-selected Home tab for category and tracking dispatch; the removed `homeVC` property was not referenced.
 - `Info.plist`, Storyboards, widget target files, signing, entitlements, bundle identifiers, app group keys, Realm schema, backup, restore, and auth behavior were not changed.
 
 ## What Remains
 
-- Extract remaining `SceneDelegate` side effects in smaller passes, starting with scene lifecycle helper placement cleanup and removing stale delegate state where safe.
+- Continue SceneDelegate cleanup by moving the accumulated scene helper types into clearer source files once the side-effect boundaries are stable.
 - Add manual QA before enabling the renewed root route, with special attention to widget URL start/stop, password unlock, and Map -> Journey navigation.
 - Keep the default app launch on the existing UIKit/Storyboard shell until manual QA proves parity.
