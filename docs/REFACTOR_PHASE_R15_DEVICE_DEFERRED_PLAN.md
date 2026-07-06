@@ -59,6 +59,7 @@ Current R15-S1 checkpoint:
 - Their programmatic UIKit layouts now use scroll-backed content instead of center-fixed stacks, preparing them for Storyboard removal without touching production routing.
 - Renewed backup status, restore status, and auth readiness detail screens now use the same scroll-backed read-only layout pattern.
 - Renewed Stats overview now uses the same scroll-backed read-only layout pattern without changing the production Stats Storyboard path.
+- Renewed Timeline now uses the same scroll-backed read-only layout pattern without changing the production Date Storyboard path.
 
 Suggested first candidate:
 

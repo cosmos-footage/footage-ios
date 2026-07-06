@@ -10,6 +10,8 @@ import UIKit
 final class RenewedTimelineViewController: UIViewController {
     private let loadJourneys: () -> [JourneyEntity]
     private let stackView = UIStackView()
+    private let scrollView = UIScrollView()
+    private let contentView = UIView()
 
     init(loadJourneys: @escaping () -> [JourneyEntity]) {
         self.loadJourneys = loadJourneys
@@ -33,13 +35,30 @@ final class RenewedTimelineViewController: UIViewController {
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical
         stackView.alignment = .leading
-        stackView.spacing = 10
-        view.addSubview(stackView)
+        stackView.spacing = 12
+
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(scrollView)
+        scrollView.addSubview(contentView)
+        contentView.addSubview(stackView)
 
         NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+
+            contentView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
+            contentView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
+
+            stackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 32),
             stackView.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
             stackView.trailingAnchor.constraint(lessThanOrEqualTo: view.layoutMarginsGuide.trailingAnchor),
-            stackView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+            stackView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -32)
         ])
     }
 
@@ -71,6 +90,7 @@ final class RenewedTimelineViewController: UIViewController {
         label.adjustsFontForContentSizeCategory = true
         label.textColor = color
         label.text = text
+        label.numberOfLines = 0
         return label
     }
 }
