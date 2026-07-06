@@ -215,6 +215,25 @@ final class PresentationModelsTests: XCTestCase {
         XCTAssertEqual(presentation.authFeatureText, "계정 연결 준비됨")
     }
 
+    func testStatsOverviewPresentationFormatsReadOnlySummary() {
+        let presentation = StatsOverviewPresentation(
+            snapshot: StatsOverviewSnapshot(
+                distanceTodayMeters: 1_200,
+                distanceTotalMeters: 10_000,
+                distanceThisMonthMeters: 3_500,
+                topColorCategoryId: "yellow",
+                topPlaceName: "Seoul",
+                generatedAt: Date(timeIntervalSince1970: 100)
+            )
+        )
+
+        XCTAssertEqual(presentation.todayDistanceText, "1km")
+        XCTAssertEqual(presentation.totalDistanceText, "10km")
+        XCTAssertEqual(presentation.monthlyDistanceText, "4km")
+        XCTAssertEqual(presentation.topColorText, "yellow")
+        XCTAssertEqual(presentation.topPlaceText, "Seoul")
+    }
+
     func testAppVersionPresentationFormatsLegacyVersionCode() {
         XCTAssertEqual(
             AppVersionPresentation(legacyVersionCode: 122).text,
@@ -385,6 +404,31 @@ final class PresentationModelsTests: XCTestCase {
         XCTAssertTrue(today is RenewedShellPlaceholderViewController)
     }
 
+    func testProgrammaticRenewedShellFactoryBuildsStatsOverviewWhenSnapshotExists() {
+        let factory = ProgrammaticRenewedShellViewControllerFactory(
+            statsOverview: {
+                StatsOverviewSnapshot(
+                    distanceTodayMeters: 1_200,
+                    distanceTotalMeters: 10_000,
+                    distanceThisMonthMeters: 3_500,
+                    topColorCategoryId: "yellow",
+                    topPlaceName: "Seoul",
+                    generatedAt: Date(timeIntervalSince1970: 100)
+                )
+            }
+        )
+
+        let stats = factory.makeViewController(
+            for: RenewedShellTab(kind: .stats, title: "통계", systemImageName: "chart.bar")
+        )
+        let map = factory.makeViewController(
+            for: RenewedShellTab(kind: .map, title: "지도", systemImageName: "map")
+        )
+
+        XCTAssertTrue(stats is RenewedStatsOverviewViewController)
+        XCTAssertTrue(map is RenewedShellPlaceholderViewController)
+    }
+
     func testRenewedTodayDashboardRendersHomeSnapshot() {
         let controller = RenewedTodayDashboardViewController {
             HomeDashboardSnapshot(
@@ -427,6 +471,29 @@ final class PresentationModelsTests: XCTestCase {
         XCTAssertTrue(texts.contains("백업 기능 준비됨"))
         XCTAssertTrue(texts.contains("복원 기능 비활성"))
         XCTAssertTrue(texts.contains("계정 연결 비활성"))
+    }
+
+    func testRenewedStatsOverviewRendersSnapshot() {
+        let controller = RenewedStatsOverviewViewController {
+            StatsOverviewSnapshot(
+                distanceTodayMeters: 1_200,
+                distanceTotalMeters: 10_000,
+                distanceThisMonthMeters: 3_500,
+                topColorCategoryId: "yellow",
+                topPlaceName: "Seoul",
+                generatedAt: Date(timeIntervalSince1970: 100)
+            )
+        }
+
+        controller.loadViewIfNeeded()
+
+        let texts = controller.view.labelTexts()
+        XCTAssertTrue(texts.contains("통계"))
+        XCTAssertTrue(texts.contains("이번 달 4km"))
+        XCTAssertTrue(texts.contains("오늘 1km"))
+        XCTAssertTrue(texts.contains("전체 10km"))
+        XCTAssertTrue(texts.contains("이번 달 대표 색 yellow"))
+        XCTAssertTrue(texts.contains("이번 달 대표 장소 Seoul"))
     }
 
     func testLegacyRenewedShellStoryboardSceneProviderMapsExistingStoryboardTabs() {

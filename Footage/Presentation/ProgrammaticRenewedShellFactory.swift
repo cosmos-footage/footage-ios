@@ -10,15 +10,18 @@ import UIKit
 struct ProgrammaticRenewedShellViewControllerFactory: RenewedShellViewControllerFactory {
     private let placeholderFactory: any RenewedShellViewControllerFactory
     private let homeDashboardUseCase: (() -> HomeDashboardUseCase)?
+    private let statsOverview: (() -> StatsOverviewSnapshot)?
     private let settingsPreferencesUseCase: (() -> SettingsPreferencesUseCase)?
 
     init(
         placeholderFactory: any RenewedShellViewControllerFactory = PlaceholderRenewedShellViewControllerFactory(),
         homeDashboardUseCase: (() -> HomeDashboardUseCase)? = nil,
+        statsOverview: (() -> StatsOverviewSnapshot)? = nil,
         settingsPreferencesUseCase: (() -> SettingsPreferencesUseCase)? = nil
     ) {
         self.placeholderFactory = placeholderFactory
         self.homeDashboardUseCase = homeDashboardUseCase
+        self.statsOverview = statsOverview
         self.settingsPreferencesUseCase = settingsPreferencesUseCase
     }
 
@@ -27,6 +30,10 @@ struct ProgrammaticRenewedShellViewControllerFactory: RenewedShellViewController
             return RenewedTodayDashboardViewController {
                 homeDashboardUseCase().loadSnapshot()
             }
+        }
+
+        if tab.kind == .stats, let statsOverview = statsOverview {
+            return RenewedStatsOverviewViewController(loadSnapshot: statsOverview)
         }
 
         if tab.kind == .settings, let settingsPreferencesUseCase = settingsPreferencesUseCase {

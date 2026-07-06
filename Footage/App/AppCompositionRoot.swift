@@ -206,6 +206,14 @@ struct AppCompositionRoot {
                         homeDashboardUseCase: {
                             self.makeHomeDashboardUseCase()
                         },
+                        statsOverview: {
+                            let days = DateConverter.lastMondayToday()
+                            return self.makeStatsOverviewUseCase().loadOverview(
+                                todayKey: days.1,
+                                monthStartKey: days.0,
+                                monthEndKey: days.1
+                            )
+                        },
                         settingsPreferencesUseCase: {
                             self.makeSettingsPreferencesUseCase()
                         }

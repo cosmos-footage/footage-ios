@@ -332,6 +332,30 @@ struct SettingsPreferencesPresentation: Equatable {
     }
 }
 
+struct StatsOverviewPresentation: Equatable {
+    var snapshot: StatsOverviewSnapshot
+
+    var todayDistanceText: String {
+        DistanceTextPresentation(meters: snapshot.distanceTodayMeters, style: .integerWithKm).text
+    }
+
+    var totalDistanceText: String {
+        DistanceTextPresentation(meters: snapshot.distanceTotalMeters, style: .integerWithKm).text
+    }
+
+    var monthlyDistanceText: String {
+        DistanceTextPresentation(meters: snapshot.distanceThisMonthMeters, style: .integerWithKm).text
+    }
+
+    var topColorText: String {
+        snapshot.topColorCategoryId ?? "-"
+    }
+
+    var topPlaceText: String {
+        snapshot.topPlaceName ?? "-"
+    }
+}
+
 struct AppVersionPresentation: Equatable {
     var legacyVersionCode: Int
 
