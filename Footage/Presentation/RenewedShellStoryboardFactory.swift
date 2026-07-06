@@ -7,9 +7,24 @@
 
 import UIKit
 
-struct StoryboardSceneDescriptor: Equatable {
+struct StoryboardSceneDescriptor: Equatable, Hashable {
     var storyboardName: String
     var viewControllerIdentifier: String
+
+    static let legacyMainTabs = StoryboardSceneDescriptor(
+        storyboardName: "Main",
+        viewControllerIdentifier: "TabBarController"
+    )
+
+    static let legacyFirstLaunch = StoryboardSceneDescriptor(
+        storyboardName: "FirstLaunch",
+        viewControllerIdentifier: "FL_VideoVC"
+    )
+
+    static let legacyPasswordUnlock = StoryboardSceneDescriptor(
+        storyboardName: "Main",
+        viewControllerIdentifier: "PasswordVC"
+    )
 }
 
 protocol RenewedShellStoryboardSceneProviding {
@@ -119,5 +134,31 @@ final class RenewedShellCoordinator {
             presentation: presentation,
             viewControllerFactory: viewControllerFactory
         )
+    }
+}
+
+protocol LegacyRootViewControllerFactory {
+    func makeMainTabs() -> UITabBarController?
+    func makeFirstLaunch() -> UIViewController
+    func makePasswordUnlock() -> PasswordVC?
+}
+
+struct StoryboardLegacyRootViewControllerFactory: LegacyRootViewControllerFactory {
+    private let storyboardInstantiator: any StoryboardSceneInstantiating
+
+    init(storyboardInstantiator: any StoryboardSceneInstantiating = UIKitStoryboardSceneInstantiator()) {
+        self.storyboardInstantiator = storyboardInstantiator
+    }
+
+    func makeMainTabs() -> UITabBarController? {
+        storyboardInstantiator.instantiate(.legacyMainTabs) as? UITabBarController
+    }
+
+    func makeFirstLaunch() -> UIViewController {
+        storyboardInstantiator.instantiate(.legacyFirstLaunch)
+    }
+
+    func makePasswordUnlock() -> PasswordVC? {
+        storyboardInstantiator.instantiate(.legacyPasswordUnlock) as? PasswordVC
     }
 }

@@ -10,6 +10,7 @@ import UIKit
 import MapKit
 
 class FL_LetsStartVC: UIViewController {
+    private let rootViewControllerFactory: any LegacyRootViewControllerFactory = StoryboardLegacyRootViewControllerFactory()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -17,8 +18,7 @@ class FL_LetsStartVC: UIViewController {
     
     @IBAction func startButtonPressed(_ sender: UIButton) {
         UserDefaults.standard.set("noPassword", forKey: "UserState")
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        guard let tabBarController = storyboard.instantiateViewController(withIdentifier: "TabBarController") as? UITabBarController else { return }
+        guard let tabBarController = rootViewControllerFactory.makeMainTabs() else { return }
         view.window?.rootViewController = tabBarController
     }
 }

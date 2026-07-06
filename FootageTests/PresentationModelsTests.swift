@@ -309,6 +309,21 @@ final class PresentationModelsTests: XCTestCase {
         XCTAssertNil(provider.sceneDescriptor(for: RenewedShellTab(kind: .map, title: "", systemImageName: "")))
     }
 
+    func testLegacyRootStoryboardDescriptorsPreserveCurrentLaunchSources() {
+        XCTAssertEqual(
+            StoryboardSceneDescriptor.legacyMainTabs,
+            StoryboardSceneDescriptor(storyboardName: "Main", viewControllerIdentifier: "TabBarController")
+        )
+        XCTAssertEqual(
+            StoryboardSceneDescriptor.legacyFirstLaunch,
+            StoryboardSceneDescriptor(storyboardName: "FirstLaunch", viewControllerIdentifier: "FL_VideoVC")
+        )
+        XCTAssertEqual(
+            StoryboardSceneDescriptor.legacyPasswordUnlock,
+            StoryboardSceneDescriptor(storyboardName: "Main", viewControllerIdentifier: "PasswordVC")
+        )
+    }
+
     func testStoryboardBackedRenewedShellFactoryUsesStoryboardInstantiatorForMappedTab() {
         let instantiator = FakeStoryboardSceneInstantiator()
         let expectedController = UIViewController()
@@ -375,6 +390,27 @@ final class PresentationModelsTests: XCTestCase {
 
         XCTAssertTrue(root is RenewedShellViewController)
     }
+
+    func testStoryboardLegacyRootFactoryUsesCentralStoryboardDescriptors() {
+        let instantiator = RoutingStoryboardSceneInstantiator()
+        let mainTabs = UITabBarController()
+        let firstLaunch = UIViewController()
+        let password = PasswordVC()
+        instantiator.controllers = [
+            .legacyMainTabs: mainTabs,
+            .legacyFirstLaunch: firstLaunch,
+            .legacyPasswordUnlock: password
+        ]
+        let factory = StoryboardLegacyRootViewControllerFactory(storyboardInstantiator: instantiator)
+
+        XCTAssertTrue(factory.makeMainTabs() === mainTabs)
+        XCTAssertTrue(factory.makeFirstLaunch() === firstLaunch)
+        XCTAssertTrue(factory.makePasswordUnlock() === password)
+        XCTAssertEqual(
+            instantiator.instantiatedDescriptors,
+            [.legacyMainTabs, .legacyFirstLaunch, .legacyPasswordUnlock]
+        )
+    }
 }
 
 private final class FakeStoryboardSceneInstantiator: StoryboardSceneInstantiating {
@@ -384,6 +420,16 @@ private final class FakeStoryboardSceneInstantiator: StoryboardSceneInstantiatin
     func instantiate(_ descriptor: StoryboardSceneDescriptor) -> UIViewController {
         instantiatedDescriptors.append(descriptor)
         return controller
+    }
+}
+
+private final class RoutingStoryboardSceneInstantiator: StoryboardSceneInstantiating {
+    var controllers: [StoryboardSceneDescriptor: UIViewController] = [:]
+    private(set) var instantiatedDescriptors: [StoryboardSceneDescriptor] = []
+
+    func instantiate(_ descriptor: StoryboardSceneDescriptor) -> UIViewController {
+        instantiatedDescriptors.append(descriptor)
+        return controllers[descriptor] ?? UIViewController()
     }
 }
 

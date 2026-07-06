@@ -14,6 +14,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
     let homeVC = HomeViewController()
     var alwaysOnTimer = Timer()
+    private let rootViewControllerFactory: any LegacyRootViewControllerFactory = StoryboardLegacyRootViewControllerFactory()
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
@@ -78,8 +79,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             alwaysOnTimer.invalidate()
         }
         if userState == "hasPassword" || userState == "hasBioId"  {
-            let storyBoard = UIStoryboard(name: "Main", bundle: nil)
-            let passwordVC = storyBoard.instantiateViewController(withIdentifier: "PasswordVC") as! PasswordVC
+            guard let passwordVC = rootViewControllerFactory.makePasswordUnlock() else { return }
             if var topController = window?.rootViewController {
                 while let presentedViewController = topController.presentedViewController {
                     topController = presentedViewController
@@ -92,8 +92,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 topController.present(passwordVC, animated: false, completion: nil)
             }
         } else if userState == nil { // first launch
-            let storyBoard = UIStoryboard(name: "FirstLaunch", bundle: nil)
-            let firstLaunchVC = storyBoard.instantiateViewController(withIdentifier: "FL_VideoVC") as! FL_VideoVC
+            let firstLaunchVC = rootViewControllerFactory.makeFirstLaunch()
             self.window?.rootViewController = firstLaunchVC
             UserDefaults.standard.set("", forKey: "todayBadge")
             UserDefaults.standard.set(0, forKey: "minimumTotalDistance")
