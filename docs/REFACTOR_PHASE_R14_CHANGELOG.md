@@ -428,6 +428,9 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Added an optional renewed Settings "앱 정보" entry that appears only when an about screen factory is injected.
 - Wired `ProgrammaticRenewedShellViewControllerFactory` and `AppCompositionRoot` so the disabled renewed Settings path can lazily create `RenewedAboutViewController` from the legacy `version` user default.
 - Added tests proving the renewed About screen renders `AppVersionPresentation` output and static privacy/contact labels.
+- Added `RenewedPrivacyPolicyViewController`, a read-only UIKit boundary for the legacy About privacy policy display copy.
+- Wired the renewed About privacy entry to lazily push the read-only privacy policy screen inside the disabled renewed Settings path.
+- Added tests proving the renewed About screen opens the privacy policy screen and the policy view renders legacy policy text without editing.
 
 ## Safety Notes
 
@@ -483,6 +486,8 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Adding the auth-readiness Settings entry did not add a new tab and did not change `SceneDelegate`, feature flag defaults, Storyboards, signing, entitlements, bundle identifiers, widget files, or Realm schema.
 - The renewed root QA plan is documentation-only and does not enable the renewed root route or change app runtime behavior.
 - The renewed About screen is limited to the disabled renewed Settings path and is display-only; it does not change legacy About, mail composer, privacy navigation, Storyboards, or production Settings behavior.
+- The renewed privacy policy screen is limited to the disabled renewed Settings path; it preserves the existing Storyboard policy copy for display and does not claim a legal/privacy copy rewrite.
+- The renewed About contact row remains display-only; mail composer/contact side effects remain in the legacy screen and are deferred to a separate boundary task.
 - `Info.plist`, Storyboards, widget target files, signing, entitlements, bundle identifiers, app group keys, Realm schema, backup, restore, and auth behavior were not changed.
 - A sandboxed `xcodebuild test` run failed before test execution with CoreSimulator access errors and `xcodebuild: error: 'footage.xcworkspace' is not a workspace file.` The workspace directory and `contents.xcworkspacedata` were inspected and valid, then the same command succeeded with external Xcode/Simulator permissions.
 - One `xcodebuild test` run failed on `UseCasesTests.testAppCompositionRootBuildsRenewedRootForEnabledRouteWithoutLoadingViews()` because the test incorrectly assumed `RenewedShellViewController.isViewLoaded` would remain false after root construction. The assertion was narrowed to route/root identity and non-first-launch root identity, and the next `xcodebuild test` succeeded.
@@ -496,9 +501,12 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - The latest `xcodebuild test` succeeded after adding the read-only renewed Settings auth-readiness entry.
 - A sandboxed `xcodebuild test` attempt failed before compilation with CoreSimulator permission errors and `xcodebuild: error: 'footage.xcworkspace' is not a workspace file.` The same command succeeded after rerunning with external Xcode/Simulator permissions.
 - The latest `xcodebuild test` succeeded after adding the read-only renewed Settings About boundary.
+- A sandboxed `xcodebuild test` attempt failed before compilation with CoreSimulator permission errors and `xcodebuild: error: 'footage.xcworkspace' is not a workspace file.` The same command succeeded after rerunning with external Xcode/Simulator permissions.
+- The latest `xcodebuild test` succeeded after adding the read-only renewed Settings privacy policy boundary.
 
 ## What Remains
 
 - Execute the renewed root manual QA plan before enabling the renewed root route.
 - Continue storyboard-removal runway by extracting one more legacy screen boundary after the QA gate is documented.
+- Extract the renewed About contact/mail boundary separately if the renewed Settings path needs to preserve the legacy mail composer side effect.
 - Keep the default app launch on the existing UIKit/Storyboard shell until manual QA proves parity.
