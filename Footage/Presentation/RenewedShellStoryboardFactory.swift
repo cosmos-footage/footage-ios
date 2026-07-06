@@ -174,6 +174,11 @@ struct SceneForegroundPlan: Equatable {
     var route: SceneForegroundRoute
 }
 
+struct SceneInitialConnectionPlan: Equatable {
+    var shouldPrepareLegacyHome: Bool
+    var shouldStartTrackingFromWidget: Bool
+}
+
 enum SceneWidgetTrackingAction: Equatable {
     case start
     case stop
@@ -186,6 +191,20 @@ enum SceneBackgroundRecordingAction: Equatable {
 }
 
 struct SceneLifecycleCoordinator: Equatable {
+    func initialConnectionPlan(isWindowScene: Bool, url: URL?) -> SceneInitialConnectionPlan {
+        guard isWindowScene else {
+            return SceneInitialConnectionPlan(
+                shouldPrepareLegacyHome: false,
+                shouldStartTrackingFromWidget: false
+            )
+        }
+
+        return SceneInitialConnectionPlan(
+            shouldPrepareLegacyHome: true,
+            shouldStartTrackingFromWidget: isWidgetURL(url)
+        )
+    }
+
     func foregroundPlan(userState: String?, alwaysOn: Bool) -> SceneForegroundPlan {
         if userState == "hasPassword" || userState == "hasBioId" {
             return SceneForegroundPlan(

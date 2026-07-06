@@ -186,6 +186,32 @@ final class UseCasesTests: XCTestCase {
         )
     }
 
+    func testSceneLifecycleCoordinatorPlansInitialConnection() {
+        let coordinator = SceneLifecycleCoordinator()
+
+        XCTAssertEqual(
+            coordinator.initialConnectionPlan(isWindowScene: false, url: URL(string: "widget://toggle")),
+            SceneInitialConnectionPlan(
+                shouldPrepareLegacyHome: false,
+                shouldStartTrackingFromWidget: false
+            )
+        )
+        XCTAssertEqual(
+            coordinator.initialConnectionPlan(isWindowScene: true, url: URL(string: "widget://toggle")),
+            SceneInitialConnectionPlan(
+                shouldPrepareLegacyHome: true,
+                shouldStartTrackingFromWidget: true
+            )
+        )
+        XCTAssertEqual(
+            coordinator.initialConnectionPlan(isWindowScene: true, url: URL(string: "footage://toggle")),
+            SceneInitialConnectionPlan(
+                shouldPrepareLegacyHome: true,
+                shouldStartTrackingFromWidget: false
+            )
+        )
+    }
+
     func testSceneLifecycleCoordinatorHandlesWidgetURLsAndTrackingActions() {
         let coordinator = SceneLifecycleCoordinator()
 
