@@ -162,6 +162,26 @@ final class UseCasesTests: XCTestCase {
         XCTAssertTrue(try XCTUnwrap(factory.makeRootViewController(for: .renewedUIKitShell)) === renewedRoot)
     }
 
+    func testAppCompositionRootBuildsAppRootRoutingBoundaries() throws {
+        let compositionRoot = AppCompositionRoot(
+            environment: AppEnvironment(
+                featureFlags: FeatureFlags(isNewUIRunwayEnabled: true)
+            )
+        )
+        let mainTabs = UITabBarController()
+        let firstLaunch = UIViewController()
+        let factory = compositionRoot.makeAppRootViewControllerFactory(
+            legacyRootFactory: FakeLegacyRootViewControllerFactory(
+                mainTabs: mainTabs,
+                firstLaunch: firstLaunch
+            )
+        )
+
+        XCTAssertEqual(compositionRoot.makeAppRootRouter().route(userState: "noPassword"), .renewedUIKitShell)
+        XCTAssertTrue(try XCTUnwrap(factory.makeRootViewController(for: .legacyMainTabs)) === mainTabs)
+        XCTAssertTrue(try XCTUnwrap(factory.makeRootViewController(for: .legacyFirstLaunch)) === firstLaunch)
+    }
+
     func testAppLaunchConfigurationStillUsesMainStoryboardDuringRenewedShellRunway() throws {
         let info = try XCTUnwrap(Bundle(for: AppDelegate.self).infoDictionary)
 

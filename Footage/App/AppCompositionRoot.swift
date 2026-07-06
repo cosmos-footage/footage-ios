@@ -190,6 +190,16 @@ struct AppCompositionRoot {
         DefaultRecordingLifecycleUseCase()
     }
 
+    func makeAppRootRouter() -> AppRootRouter {
+        AppRootRouter(featureFlags: environment.featureFlags)
+    }
+
+    func makeAppRootViewControllerFactory(
+        legacyRootFactory: any LegacyRootViewControllerFactory = StoryboardLegacyRootViewControllerFactory()
+    ) -> AppRootViewControllerMaking {
+        AppRootViewControllerFactory(legacyRootFactory: legacyRootFactory)
+    }
+
     private func makeCloudBackupConfiguration(
         isCloudBackupEnabled: Bool,
         isDevelopmentUploadEnabled: Bool
