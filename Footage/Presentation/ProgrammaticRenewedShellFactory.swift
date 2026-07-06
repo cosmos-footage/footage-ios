@@ -17,6 +17,7 @@ struct ProgrammaticRenewedShellViewControllerFactory: RenewedShellViewController
     private let backupPreparationUseCase: (() -> BackupPreparationUseCase)?
     private let restorePreviewUseCase: (() -> RestorePreviewUseCase)?
     private let authLinkingReadinessUseCase: (() -> AuthLinkingReadinessUseCase)?
+    private let legacyVersionCode: (() -> Int)?
 
     init(
         placeholderFactory: any RenewedShellViewControllerFactory = PlaceholderRenewedShellViewControllerFactory(),
@@ -27,7 +28,8 @@ struct ProgrammaticRenewedShellViewControllerFactory: RenewedShellViewController
         settingsPreferencesUseCase: (() -> SettingsPreferencesUseCase)? = nil,
         backupPreparationUseCase: (() -> BackupPreparationUseCase)? = nil,
         restorePreviewUseCase: (() -> RestorePreviewUseCase)? = nil,
-        authLinkingReadinessUseCase: (() -> AuthLinkingReadinessUseCase)? = nil
+        authLinkingReadinessUseCase: (() -> AuthLinkingReadinessUseCase)? = nil,
+        legacyVersionCode: (() -> Int)? = nil
     ) {
         self.placeholderFactory = placeholderFactory
         self.homeDashboardUseCase = homeDashboardUseCase
@@ -38,6 +40,7 @@ struct ProgrammaticRenewedShellViewControllerFactory: RenewedShellViewController
         self.backupPreparationUseCase = backupPreparationUseCase
         self.restorePreviewUseCase = restorePreviewUseCase
         self.authLinkingReadinessUseCase = authLinkingReadinessUseCase
+        self.legacyVersionCode = legacyVersionCode
     }
 
     func makeViewController(for tab: RenewedShellTab) -> UIViewController {
@@ -77,6 +80,11 @@ struct ProgrammaticRenewedShellViewControllerFactory: RenewedShellViewController
                 makeAuthReadinessViewController: authLinkingReadinessUseCase.map { authLinkingReadinessUseCase in
                     {
                         RenewedAuthReadinessViewController(authLinkingReadinessUseCase: authLinkingReadinessUseCase())
+                    }
+                },
+                makeAboutViewController: legacyVersionCode.map { legacyVersionCode in
+                    {
+                        RenewedAboutViewController(legacyVersionCode: legacyVersionCode)
                     }
                 }
             )

@@ -543,6 +543,39 @@ final class PresentationModelsTests: XCTestCase {
         XCTAssertEqual(authUseCase.snapshotCallCount, 0)
     }
 
+    func testProgrammaticRenewedShellFactoryConnectsSettingsAboutWhenVersionProviderExists() {
+        let factory = ProgrammaticRenewedShellViewControllerFactory(
+            settingsPreferencesUseCase: {
+                FakeSettingsPreferencesUseCase(
+                    snapshot: SettingsPreferencesSnapshot(
+                        isCloudBackupOptedIn: false,
+                        featureFlags: FeatureFlags(
+                            isCloudBackupEnabled: false,
+                            isRestoreEnabled: false,
+                            isAuthEnabled: false,
+                            isDevelopmentUploadEnabled: false,
+                            isNewUIRunwayEnabled: true
+                        )
+                    )
+                )
+            },
+            legacyVersionCode: {
+                122
+            }
+        )
+
+        let settings = factory.makeViewController(
+            for: RenewedShellTab(kind: .settings, title: "설정", systemImageName: "gearshape")
+        )
+        let navigationController = UINavigationController(rootViewController: settings)
+        navigationController.loadViewIfNeeded()
+        settings.loadViewIfNeeded()
+
+        settings.view.button(titled: "앱 정보")?.sendActions(for: .touchUpInside)
+
+        XCTAssertTrue(navigationController.topViewController is RenewedAboutViewController)
+    }
+
     func testProgrammaticRenewedShellFactoryBuildsStatsOverviewWhenSnapshotExists() {
         let factory = ProgrammaticRenewedShellViewControllerFactory(
             statsOverview: {
@@ -746,6 +779,46 @@ final class PresentationModelsTests: XCTestCase {
         controller.loadViewIfNeeded()
 
         XCTAssertTrue(controller.view.buttonTitles().contains("계정 연결 상태"))
+    }
+
+    func testRenewedSettingsDashboardShowsAboutEntryWhenFactoryExists() {
+        let controller = RenewedSettingsDashboardViewController(
+            loadSnapshot: {
+                SettingsPreferencesSnapshot(
+                    isCloudBackupOptedIn: true,
+                    featureFlags: FeatureFlags(
+                        isCloudBackupEnabled: true,
+                        isRestoreEnabled: true,
+                        isAuthEnabled: true,
+                        isDevelopmentUploadEnabled: false,
+                        isNewUIRunwayEnabled: true
+                    )
+                )
+            },
+            makeAboutViewController: {
+                RenewedAboutViewController {
+                    122
+                }
+            }
+        )
+
+        controller.loadViewIfNeeded()
+
+        XCTAssertTrue(controller.view.buttonTitles().contains("앱 정보"))
+    }
+
+    func testRenewedAboutRendersLegacyVersionAndStaticRows() {
+        let controller = RenewedAboutViewController {
+            122
+        }
+
+        controller.loadViewIfNeeded()
+
+        let texts = controller.view.labelTexts()
+        XCTAssertTrue(texts.contains("앱 정보"))
+        XCTAssertTrue(texts.contains("버전정보 v1.2.2"))
+        XCTAssertTrue(texts.contains("개인정보 취급방침"))
+        XCTAssertTrue(texts.contains("문의하기"))
     }
 
     func testRenewedBackupStatusRendersReadOnlyStatusWithoutPreparingBackup() {

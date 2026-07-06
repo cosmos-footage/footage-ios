@@ -12,6 +12,7 @@ final class RenewedSettingsDashboardViewController: UIViewController {
     private let makeBackupStatusViewController: (() -> UIViewController)?
     private let makeRestoreStatusViewController: (() -> UIViewController)?
     private let makeAuthReadinessViewController: (() -> UIViewController)?
+    private let makeAboutViewController: (() -> UIViewController)?
     private let titleLabel = UILabel()
     private let backupOptInLabel = UILabel()
     private let backupFeatureLabel = UILabel()
@@ -20,17 +21,20 @@ final class RenewedSettingsDashboardViewController: UIViewController {
     private let backupStatusButton = UIButton(type: .system)
     private let restoreStatusButton = UIButton(type: .system)
     private let authReadinessButton = UIButton(type: .system)
+    private let aboutButton = UIButton(type: .system)
 
     init(
         loadSnapshot: @escaping () -> SettingsPreferencesSnapshot,
         makeBackupStatusViewController: (() -> UIViewController)? = nil,
         makeRestoreStatusViewController: (() -> UIViewController)? = nil,
-        makeAuthReadinessViewController: (() -> UIViewController)? = nil
+        makeAuthReadinessViewController: (() -> UIViewController)? = nil,
+        makeAboutViewController: (() -> UIViewController)? = nil
     ) {
         self.loadSnapshot = loadSnapshot
         self.makeBackupStatusViewController = makeBackupStatusViewController
         self.makeRestoreStatusViewController = makeRestoreStatusViewController
         self.makeAuthReadinessViewController = makeAuthReadinessViewController
+        self.makeAboutViewController = makeAboutViewController
         super.init(nibName: nil, bundle: nil)
         title = "설정"
         tabBarItem = UITabBarItem(title: "설정", image: UIImage(systemName: "gearshape"), selectedImage: nil)
@@ -56,7 +60,8 @@ final class RenewedSettingsDashboardViewController: UIViewController {
             authFeatureLabel,
             backupStatusButton,
             restoreStatusButton,
-            authReadinessButton
+            authReadinessButton,
+            aboutButton
         ])
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical
@@ -89,6 +94,12 @@ final class RenewedSettingsDashboardViewController: UIViewController {
         authReadinessButton.titleLabel?.adjustsFontForContentSizeCategory = true
         authReadinessButton.isHidden = makeAuthReadinessViewController == nil
         authReadinessButton.addTarget(self, action: #selector(showAuthReadiness), for: .touchUpInside)
+
+        aboutButton.setTitle("앱 정보", for: .normal)
+        aboutButton.titleLabel?.font = .preferredFont(forTextStyle: .body)
+        aboutButton.titleLabel?.adjustsFontForContentSizeCategory = true
+        aboutButton.isHidden = makeAboutViewController == nil
+        aboutButton.addTarget(self, action: #selector(showAbout), for: .touchUpInside)
 
         view.addSubview(stackView)
 
@@ -141,6 +152,19 @@ final class RenewedSettingsDashboardViewController: UIViewController {
         }
 
         let viewController = makeAuthReadinessViewController()
+        if let navigationController {
+            navigationController.pushViewController(viewController, animated: true)
+        } else {
+            present(viewController, animated: true)
+        }
+    }
+
+    @objc private func showAbout() {
+        guard let makeAboutViewController else {
+            return
+        }
+
+        let viewController = makeAboutViewController()
         if let navigationController {
             navigationController.pushViewController(viewController, animated: true)
         } else {

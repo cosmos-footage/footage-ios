@@ -231,6 +231,9 @@ struct AppCompositionRoot {
                         },
                         authLinkingReadinessUseCase: {
                             self.makeAuthLinkingReadinessUseCase()
+                        },
+                        legacyVersionCode: {
+                            UserDefaults.standard.integer(forKey: "version")
                         }
                     )
                 ).makeRootViewController()
