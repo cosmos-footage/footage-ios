@@ -144,6 +144,29 @@ rg -n "RenewedMapViewController|mapViewController" Footage FootageTests footage.
 git diff --check -- Footage/App/AppCompositionRoot.swift Footage/Presentation/ProgrammaticRenewedShellFactory.swift Footage/Presentation/RenewedMapViewController.swift FootageTests/PresentationModelsTests.swift footage.xcodeproj/project.pbxproj
 git status --short
 xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
+git status --short
+sed -n '1,260p' Footage/SceneDelegate.swift
+sed -n '1,260p' Footage/Presentation/SceneLifecycleSupport.swift
+rg -n "SceneLifecycle|AppRoot|RootController|isNewUIRunwayEnabled|SceneDelegate" Footage FootageTests docs/REFACTOR_PHASE_R14_CHANGELOG.md docs/MODERNIZATION_PLAN.md
+sed -n '240,360p' Footage/Presentation/SceneLifecycleSupport.swift
+sed -n '1,260p' Footage/App/AppRootViewControllerFactory.swift
+sed -n '1,260p' Footage/App/AppRootRouting.swift
+sed -n '360,430p' FootageTests/UseCasesTests.swift
+sed -n '130,190p' FootageTests/UseCasesTests.swift
+sed -n '1,260p' Footage/App/AppCompositionRoot.swift
+sed -n '1,120p' Footage/App/FeatureFlags.swift
+sed -n '1,130p' FootageTests/UseCasesTests.swift
+rg -n "FakeLegacyRootViewControllerFactory|Fake.*AppRoot|Fake.*Factory" FootageTests/UseCasesTests.swift FootageTests/PresentationModelsTests.swift
+sed -n '520,610p' FootageTests/UseCasesTests.swift
+git diff -- Footage/SceneDelegate.swift Footage/Presentation/SceneLifecycleSupport.swift FootageTests/UseCasesTests.swift
+git diff --check
+rg -n "SceneAppRootInstaller|appRootInstaller|testSceneAppRootInstaller" Footage FootageTests
+xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
+ls -la footage.xcworkspace
+find footage.xcworkspace -maxdepth 2 -type f -print
+file footage.xcworkspace footage.xcworkspace/contents.xcworkspacedata
+sed -n '1,80p' footage.xcworkspace/contents.xcworkspacedata
+xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
 ```
 
 ## Results
@@ -321,6 +344,9 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Updated `AppCompositionRoot.makeAppRootViewControllerFactory(...)` so the disabled renewed shell can inject `RenewedMapViewController()`.
 - Added tests proving Map factory routing and programmatic `MKMapView` layout.
 - Updated `footage.xcodeproj` target membership for `RenewedMapViewController.swift`.
+- Added `SceneAppRootInstaller`, a small side-effect boundary that either keeps the current storyboard root or installs a routed replacement root.
+- Wired `SceneDelegate.scene(_:willConnectTo:options:)` to consult `AppCompositionRoot.makeAppRootRouter()` and dispatch `SceneLifecycleCoordinator.appRootInstallAction(route:)` before legacy Home preparation.
+- Added tests proving the app-root installer leaves the existing root untouched for `.keepStoryboardRoot` and replaces the root for `.renewedUIKitShell`.
 
 ## Safety Notes
 
@@ -361,10 +387,13 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Adding the Stats overview changed only the disabled renewed shell path; legacy Stats storyboards, ranking detail navigation, Realm schema, and existing Stats runtime behavior were not changed.
 - Adding the Timeline screen changed only the disabled renewed shell path; legacy Date storyboard, preview image collection view, journey navigation, and current archive runtime behavior were not changed.
 - Adding the Map canvas changed only the disabled renewed shell path; legacy Map storyboard, live route rendering, annotations, map bottom sheet, and location behavior were not changed.
+- Wiring the app-root installer into `SceneDelegate` changed the initial connection path only to ask the disabled-by-default router first; with default flags, it returns `.keepStoryboardRoot`, does not replace the root, and continues existing legacy Home preparation.
+- The renewed root replacement path remains behind `FeatureFlags.isNewUIRunwayEnabled` and is not enabled by default.
 - `Info.plist`, Storyboards, widget target files, signing, entitlements, bundle identifiers, app group keys, Realm schema, backup, restore, and auth behavior were not changed.
+- A sandboxed `xcodebuild test` run failed before test execution with CoreSimulator access errors and `xcodebuild: error: 'footage.xcworkspace' is not a workspace file.` The workspace directory and `contents.xcworkspacedata` were inspected and valid, then the same command succeeded with external Xcode/Simulator permissions.
 
 ## What Remains
 
-- Continue the storyboard-removal runway by adding screen-level programmatic UIKit composition behind the disabled renewed shell, while keeping the production launch on `Main`.
+- Add parity smoke checks for the disabled renewed root route before any feature flag can be enabled outside development.
 - Add manual QA before enabling the renewed root route, with special attention to widget URL start/stop, password unlock, and Map -> Journey navigation.
 - Keep the default app launch on the existing UIKit/Storyboard shell until manual QA proves parity.

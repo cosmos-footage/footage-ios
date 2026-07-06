@@ -517,7 +517,7 @@ Phase R14 progress:
 - Added pure routing scaffolding: `AppRootDestination`, `AppRootRoute`, and `AppRootRouter`.
 - Added tests proving existing users still default to the legacy `Main` Storyboard `TabBarController`.
 - Added tests proving first-launch users still route to the legacy `FirstLaunch` Storyboard even when the new UI flag is enabled.
-- The router is not wired into `SceneDelegate` yet, so current runtime behavior is unchanged.
+- The router is now consulted by `SceneDelegate` during initial connection, but the default feature flags still keep the existing storyboard root, so current runtime behavior is unchanged.
 - Initially added a SwiftUI shell scaffold, then replaced it with `RenewedShellViewController`, a minimal internal programmatic UIKit `UITabBarController` shell.
 - Added `RenewedShellPresentation`, `RenewedShellTab`, and `RenewedShellTabKind` for the future shell tab model.
 - Added the UIKit shell file to the app target without wiring it into launch.
@@ -575,6 +575,7 @@ Phase R14 progress:
 - Added a disabled read-only Stats overview screen backed by `StatsOverviewUseCase` / `StatsOverviewPresentation`.
 - Added a disabled read-only Timeline screen backed by `DateTimelineUseCase` / `RenewedTimelineItemPresentation`.
 - Added a disabled programmatic Map canvas screen backed by `MKMapView`, with route overlays and annotation behavior intentionally deferred.
+- Added `SceneAppRootInstaller` and wired `SceneDelegate` to consult the app root route during initial connection; with default flags disabled, it keeps the existing storyboard root and continues the legacy Home preparation path.
 
 Phase R14 current completion notes:
 
@@ -593,8 +594,10 @@ Phase R14 current completion notes:
 - The latest `xcodebuild test` succeeded after adding the disabled programmatic Stats overview screen.
 - The latest `xcodebuild test` succeeded after adding the disabled programmatic Timeline screen.
 - The latest `xcodebuild test` succeeded after adding the disabled programmatic Map canvas screen.
-- No Storyboard, asset, widget, Realm schema, network, auth, restore, signing, entitlement, bundle identifier, or root-controller runtime behavior was changed.
-- Next step is to continue screen-level programmatic UIKit composition behind the disabled renewed shell, still keeping the default launch on `Main` until parity QA is complete.
+- The latest sandboxed `xcodebuild test` failed before build/test execution because CoreSimulator was unavailable and xcodebuild reported `footage.xcworkspace is not a workspace file`; the workspace XML was inspected and valid, then the same test command succeeded with external Xcode/Simulator permissions.
+- The latest `xcodebuild test` succeeded after wiring the disabled-by-default app-root install dispatcher into `SceneDelegate`.
+- No Storyboard, asset, widget, Realm schema, network, auth, restore, signing, entitlement, bundle identifier, or default root-controller behavior was changed.
+- Next step is to add parity smoke checks for the disabled renewed root route before any feature flag can be enabled outside development.
 
 ## First Phase 1 Codex Command
 
