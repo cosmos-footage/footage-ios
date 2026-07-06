@@ -58,6 +58,7 @@ Current R15-S1 checkpoint:
 - Renewed Settings and About remain read-only and disabled by default.
 - Their programmatic UIKit layouts now use scroll-backed content instead of center-fixed stacks, preparing them for Storyboard removal without touching production routing.
 - Renewed backup status, restore status, and auth readiness detail screens now use the same scroll-backed read-only layout pattern.
+- Renewed Stats overview now uses the same scroll-backed read-only layout pattern without changing the production Stats Storyboard path.
 
 Suggested first candidate:
 
