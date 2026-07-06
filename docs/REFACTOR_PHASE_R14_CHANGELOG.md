@@ -167,6 +167,14 @@ find footage.xcworkspace -maxdepth 2 -type f -print
 file footage.xcworkspace footage.xcworkspace/contents.xcworkspacedata
 sed -n '1,80p' footage.xcworkspace/contents.xcworkspacedata
 xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
+git status --short
+sed -n '1,90p' Footage/SceneDelegate.swift
+sed -n '1,110p' Footage/Presentation/SceneLifecycleSupport.swift
+sed -n '220,280p' FootageTests/UseCasesTests.swift
+git diff -- Footage/SceneDelegate.swift Footage/Presentation/SceneLifecycleSupport.swift FootageTests/UseCasesTests.swift
+git diff --check
+rg -n "SceneInitialLaunchPlan|initialLaunchPlan|connectionPlan" Footage FootageTests
+xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO
 ```
 
 ## Results
@@ -347,6 +355,9 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Added `SceneAppRootInstaller`, a small side-effect boundary that either keeps the current storyboard root or installs a routed replacement root.
 - Wired `SceneDelegate.scene(_:willConnectTo:options:)` to consult `AppCompositionRoot.makeAppRootRouter()` and dispatch `SceneLifecycleCoordinator.appRootInstallAction(route:)` before legacy Home preparation.
 - Added tests proving the app-root installer leaves the existing root untouched for `.keepStoryboardRoot` and replaces the root for `.renewedUIKitShell`.
+- Added `SceneInitialLaunchPlan` so the initial window-scene, widget URL, and app-root action are planned together.
+- Updated `SceneDelegate` to consume the combined initial launch plan instead of stitching the initial connection and app-root install decisions inline.
+- Added tests proving non-window scenes never request root replacement and widget-launched renewed routes preserve the widget-start signal while planning the renewed root replacement.
 
 ## Safety Notes
 
@@ -388,6 +399,7 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Adding the Timeline screen changed only the disabled renewed shell path; legacy Date storyboard, preview image collection view, journey navigation, and current archive runtime behavior were not changed.
 - Adding the Map canvas changed only the disabled renewed shell path; legacy Map storyboard, live route rendering, annotations, map bottom sheet, and location behavior were not changed.
 - Wiring the app-root installer into `SceneDelegate` changed the initial connection path only to ask the disabled-by-default router first; with default flags, it returns `.keepStoryboardRoot`, does not replace the root, and continues existing legacy Home preparation.
+- Combining initial launch planning changed only the shape of the decision boundary; default root, widget URL, and legacy Home preparation behavior remain the same.
 - The renewed root replacement path remains behind `FeatureFlags.isNewUIRunwayEnabled` and is not enabled by default.
 - `Info.plist`, Storyboards, widget target files, signing, entitlements, bundle identifiers, app group keys, Realm schema, backup, restore, and auth behavior were not changed.
 - A sandboxed `xcodebuild test` run failed before test execution with CoreSimulator access errors and `xcodebuild: error: 'footage.xcworkspace' is not a workspace file.` The workspace directory and `contents.xcworkspacedata` were inspected and valid, then the same command succeeded with external Xcode/Simulator permissions.

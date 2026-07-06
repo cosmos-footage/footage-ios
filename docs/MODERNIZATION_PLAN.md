@@ -576,6 +576,7 @@ Phase R14 progress:
 - Added a disabled read-only Timeline screen backed by `DateTimelineUseCase` / `RenewedTimelineItemPresentation`.
 - Added a disabled programmatic Map canvas screen backed by `MKMapView`, with route overlays and annotation behavior intentionally deferred.
 - Added `SceneAppRootInstaller` and wired `SceneDelegate` to consult the app root route during initial connection; with default flags disabled, it keeps the existing storyboard root and continues the legacy Home preparation path.
+- Added `SceneInitialLaunchPlan` so initial window-scene, widget URL, and app-root installation decisions are planned together before `SceneDelegate` performs side effects.
 
 Phase R14 current completion notes:
 
@@ -596,6 +597,7 @@ Phase R14 current completion notes:
 - The latest `xcodebuild test` succeeded after adding the disabled programmatic Map canvas screen.
 - The latest sandboxed `xcodebuild test` failed before build/test execution because CoreSimulator was unavailable and xcodebuild reported `footage.xcworkspace is not a workspace file`; the workspace XML was inspected and valid, then the same test command succeeded with external Xcode/Simulator permissions.
 - The latest `xcodebuild test` succeeded after wiring the disabled-by-default app-root install dispatcher into `SceneDelegate`.
+- The latest `xcodebuild test` succeeded after moving initial launch root/action planning into `SceneInitialLaunchPlan`.
 - No Storyboard, asset, widget, Realm schema, network, auth, restore, signing, entitlement, bundle identifier, or default root-controller behavior was changed.
 - Next step is to add parity smoke checks for the disabled renewed root route before any feature flag can be enabled outside development.
 
