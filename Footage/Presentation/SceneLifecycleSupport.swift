@@ -24,6 +24,11 @@ struct SceneInitialConnectionPlan: Equatable {
     var shouldStartTrackingFromWidget: Bool
 }
 
+struct SceneInitialLaunchPlan: Equatable {
+    var connectionPlan: SceneInitialConnectionPlan
+    var appRootInstallAction: SceneAppRootInstallAction
+}
+
 enum SceneAppRootInstallAction: Equatable {
     case keepStoryboardRoot
     case replaceRoot(AppRootRoute)
@@ -46,6 +51,25 @@ enum SceneBackgroundRecordingAction: Equatable {
 }
 
 struct SceneLifecycleCoordinator: Equatable {
+    func initialLaunchPlan(
+        isWindowScene: Bool,
+        url: URL?,
+        appRootRoute: AppRootRoute
+    ) -> SceneInitialLaunchPlan {
+        let connectionPlan = initialConnectionPlan(isWindowScene: isWindowScene, url: url)
+        guard connectionPlan.shouldPrepareLegacyHome else {
+            return SceneInitialLaunchPlan(
+                connectionPlan: connectionPlan,
+                appRootInstallAction: .keepStoryboardRoot
+            )
+        }
+
+        return SceneInitialLaunchPlan(
+            connectionPlan: connectionPlan,
+            appRootInstallAction: appRootInstallAction(route: appRootRoute)
+        )
+    }
+
     func initialConnectionPlan(isWindowScene: Bool, url: URL?) -> SceneInitialConnectionPlan {
         guard isWindowScene else {
             return SceneInitialConnectionPlan(

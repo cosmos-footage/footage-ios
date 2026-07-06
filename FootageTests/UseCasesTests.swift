@@ -249,6 +249,47 @@ final class UseCasesTests: XCTestCase {
         )
     }
 
+    func testSceneLifecycleCoordinatorPlansInitialLaunchRootAction() {
+        let coordinator = SceneLifecycleCoordinator()
+
+        XCTAssertEqual(
+            coordinator.initialLaunchPlan(
+                isWindowScene: false,
+                url: URL(string: "widget://toggle"),
+                appRootRoute: .renewedUIKitShell
+            ),
+            SceneInitialLaunchPlan(
+                connectionPlan: SceneInitialConnectionPlan(
+                    shouldPrepareLegacyHome: false,
+                    shouldStartTrackingFromWidget: false
+                ),
+                appRootInstallAction: .keepStoryboardRoot
+            )
+        )
+        XCTAssertEqual(
+            coordinator.initialLaunchPlan(
+                isWindowScene: true,
+                url: URL(string: "widget://toggle"),
+                appRootRoute: .renewedUIKitShell
+            ),
+            SceneInitialLaunchPlan(
+                connectionPlan: SceneInitialConnectionPlan(
+                    shouldPrepareLegacyHome: true,
+                    shouldStartTrackingFromWidget: true
+                ),
+                appRootInstallAction: .replaceRoot(.renewedUIKitShell)
+            )
+        )
+        XCTAssertEqual(
+            coordinator.initialLaunchPlan(
+                isWindowScene: true,
+                url: nil,
+                appRootRoute: .legacyMainTabs
+            ).appRootInstallAction,
+            .keepStoryboardRoot
+        )
+    }
+
     func testSceneLifecycleCoordinatorPlansAppRootInstallAction() {
         let coordinator = SceneLifecycleCoordinator()
 
