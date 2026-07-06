@@ -652,9 +652,11 @@ Current R15 notes:
 - Added `docs/REFACTOR_PHASE_R15_QA_EVIDENCE.md`.
 - Added a QA-only renewed root override through launch argument `--footage-enable-renewed-ui` or environment variable `FOOTAGE_ENABLE_RENEWED_UI=1`.
 - The QA override keeps cloud backup, restore, auth, and development upload disabled, and first-launch users still route to the existing FirstLaunch Storyboard.
+- Ran an iPhone 17 Pro iOS 26.5 simulator Debug build and clean-install launch smoke with the renewed-root flag off and on; both launches returned process identifiers.
+- The QA override screenshot showed a black screen with only the status bar visible, so FirstLaunch visual parity, existing-user parity, physical-device background location, and widget QA are still not claimed.
 - Manual QA is not yet passed or claimed.
 - No Storyboard, widget, Realm schema, signing, entitlement, bundle identifier, app group, Pod, or asset change was made to start R15.
 
 Next step:
 
-- Run simulator and physical-device manual QA from `docs/RENEWED_ROOT_QA_PLAN.md`, then update the R15 QA evidence table with exact observations.
+- Investigate the simulator black-screen observation, then run simulator and physical-device manual QA from `docs/RENEWED_ROOT_QA_PLAN.md` before any production-facing renewed-root cutover.
