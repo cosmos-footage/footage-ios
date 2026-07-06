@@ -53,6 +53,11 @@ Recommended next task:
 R15-S1: Continue programmatic UIKit cutover by selecting one read-only Storyboard-backed surface, adding or hardening its programmatic replacement behind the renewed-root QA flag, and documenting the old Storyboard scene as still retained for rollback.
 ```
 
+Current R15-S1 checkpoint:
+
+- Renewed Settings and About remain read-only and disabled by default.
+- Their programmatic UIKit layouts now use scroll-backed content instead of center-fixed stacks, preparing them for Storyboard removal without touching production routing.
+
 Suggested first candidate:
 
 - Settings/About or Settings detail surfaces, because they are read-only and already isolated behind disabled-by-default factories.
@@ -63,4 +68,3 @@ Avoid as first candidates:
 - Widget start/stop.
 - Password foreground gate.
 - Background location lifecycle.
-
