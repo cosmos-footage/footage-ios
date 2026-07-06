@@ -556,13 +556,15 @@ Phase R14 progress:
 - Added `SceneLifecycleSupport.swift` to the app target in `footage.xcodeproj`.
 - Added `LegacyStoryboardBridge.swift` and moved legacy storyboard descriptors/providers/root factory out of `RenewedShellStoryboardFactory.swift`.
 - Added `LegacyStoryboardBridge.swift` to the app target in `footage.xcodeproj`.
+- Added `RenewedShellPresentation.swift` and moved renewed shell composition types plus the placeholder tab factory out of `RenewedShellViewController.swift`.
+- Added `RenewedShellPresentation.swift` to the app target in `footage.xcodeproj`.
 
 Phase R14 current completion notes:
 
 - `git diff --check` succeeded.
 - `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` succeeded.
 - No Storyboard, asset, widget, Realm schema, network, auth, restore, signing, entitlement, bundle identifier, or root-controller runtime behavior was changed.
-- Next step is to separate future shell composition from legacy storyboard bridging, still keeping the default launch on `Main` until parity QA is complete.
+- Next step is to add screen-level programmatic UIKit composition behind the disabled renewed shell, still keeping the default launch on `Main` until parity QA is complete.
 
 ## First Phase 1 Codex Command
 

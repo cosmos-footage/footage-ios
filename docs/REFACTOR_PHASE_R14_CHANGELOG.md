@@ -129,6 +129,8 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - A twentieth approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after moving Scene lifecycle helpers into their own source file.
 - The storyboard bridge placement search confirmed legacy storyboard descriptors/root factory definitions now live in `LegacyStoryboardBridge.swift` and the renewed shell factory remains in `RenewedShellStoryboardFactory.swift`.
 - A twenty-first approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after moving legacy storyboard bridge/root factory types into their own source file.
+- The renewed shell composition placement search confirmed `RenewedShellPresentation`, `RenewedShellTab`, `RenewedShellTabKind`, and the placeholder factory now live in `RenewedShellPresentation.swift`, with the new file included in `footage.xcodeproj`.
+- A twenty-second approved `xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5' CODE_SIGNING_ALLOWED=NO` run succeeded after splitting renewed shell composition out of the UIKit shell controller file.
 
 ## Changed
 
@@ -196,6 +198,8 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - Removed the now-unneeded `WidgetKit` import from `RenewedShellStoryboardFactory.swift`.
 - Added `LegacyStoryboardBridge.swift` and moved storyboard descriptors, storyboard instantiation, legacy renewed-shell storyboard providers, direct legacy Map provider, and legacy root factory into it.
 - Updated `footage.xcodeproj` target membership for `LegacyStoryboardBridge.swift`.
+- Added `RenewedShellPresentation.swift` and moved renewed shell composition types plus the placeholder tab factory into it.
+- Updated `footage.xcodeproj` target membership for `RenewedShellPresentation.swift`.
 
 ## Safety Notes
 
@@ -222,10 +226,11 @@ xcodebuild test -workspace footage.xcworkspace -scheme footage -destination 'pla
 - `SceneDelegate` still uses the storyboard-selected Home tab for category and tracking dispatch; the removed `homeVC` property was not referenced.
 - Moving Scene helper types changed source placement only; production launch still uses the existing `Main` storyboard path and the same helper implementations.
 - Moving legacy storyboard bridge/root factory types changed source placement only; the same storyboard identifiers and direct Map provider remain in use.
+- Moving renewed shell composition types changed source placement only; the disabled-by-default UIKit shell still has no production launch path.
 - `Info.plist`, Storyboards, widget target files, signing, entitlements, bundle identifiers, app group keys, Realm schema, backup, restore, and auth behavior were not changed.
 
 ## What Remains
 
-- Continue the storyboard-removal runway by separating future shell composition from legacy storyboard bridging, while keeping the production launch on `Main`.
+- Continue the storyboard-removal runway by adding screen-level programmatic UIKit composition behind the disabled renewed shell, while keeping the production launch on `Main`.
 - Add manual QA before enabling the renewed root route, with special attention to widget URL start/stop, password unlock, and Map -> Journey navigation.
 - Keep the default app launch on the existing UIKit/Storyboard shell until manual QA proves parity.
