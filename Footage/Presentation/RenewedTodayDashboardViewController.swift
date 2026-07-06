@@ -13,6 +13,8 @@ final class RenewedTodayDashboardViewController: UIViewController {
     private let todayDistanceLabel = UILabel()
     private let totalDistanceLabel = UILabel()
     private let trackingStateLabel = UILabel()
+    private let scrollView = UIScrollView()
+    private let contentView = UIView()
 
     init(loadSnapshot: @escaping () -> HomeDashboardSnapshot) {
         self.loadSnapshot = loadSnapshot
@@ -54,12 +56,32 @@ final class RenewedTodayDashboardViewController: UIViewController {
         trackingStateLabel.adjustsFontForContentSizeCategory = true
         trackingStateLabel.textColor = .secondaryLabel
 
-        view.addSubview(stackView)
+        [todayDistanceLabel, totalDistanceLabel, trackingStateLabel].forEach { label in
+            label.numberOfLines = 0
+        }
+
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(scrollView)
+        scrollView.addSubview(contentView)
+        contentView.addSubview(stackView)
 
         NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+
+            contentView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
+            contentView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
+
+            stackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 32),
             stackView.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
             stackView.trailingAnchor.constraint(lessThanOrEqualTo: view.layoutMarginsGuide.trailingAnchor),
-            stackView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+            stackView.bottomAnchor.constraint(lessThanOrEqualTo: contentView.bottomAnchor, constant: -32)
         ])
     }
 

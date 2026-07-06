@@ -60,6 +60,7 @@ Current R15-S1 checkpoint:
 - Renewed backup status, restore status, and auth readiness detail screens now use the same scroll-backed read-only layout pattern.
 - Renewed Stats overview now uses the same scroll-backed read-only layout pattern without changing the production Stats Storyboard path.
 - Renewed Timeline now uses the same scroll-backed read-only layout pattern without changing the production Date Storyboard path.
+- Renewed Today dashboard now uses the same scroll-backed read-only layout pattern without changing the production Home Storyboard or recording flow.
 
 Suggested first candidate:
 
